@@ -23,6 +23,8 @@
 
   /* ---- debug labels (toggle with the button or pressing L) ---- */
   .labeled .sprite { outline:3px solid var(--c-sprite); outline-offset:2px; }
+  .labeled .pantalla { outline:3px solid #00cfff; outline-offset:-3px; }
+  .pantalla .tag { border:1px solid #00cfff; color:#aee9ff; }
   .labeled .region { outline:3px dashed var(--c-region); outline-offset:2px; }
   .tag {
     position:absolute; top:-1.6em; left:0;
@@ -86,6 +88,10 @@
          style="left:31.250%; top:7.407%; width:41.667%;">
       <img src="assets/monitor.png" alt="monitor">
       <span class="tag">monitor</span>
+    </div>
+    <div class="el pantalla" id="el-pantalla" data-name="pantalla"
+         style="left:37.083%; top:19.259%; width:29.896%; height:34.630%;">
+      <span class="tag">pantalla</span>
     </div>
     <div class="el sprite" id="el-keyboard" data-name="keyboard"
          style="left:32.031%; top:73.148%; width:37.500%;">
