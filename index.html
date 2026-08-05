@@ -39,8 +39,53 @@
   .labeled .tag { display:block; }
 
   /* ---- pantalla click-catcher + expanded internal screen ---- */
+  .pantalla { overflow:hidden; background:#000; }
+  .pantalla iframe {
+    width:125%; height:125%; border:0; display:block; background:#000;
+    transform:scale(0.8); transform-origin:0 0;
+  }
   .pantalla-click { position:absolute; inset:0; cursor:pointer; z-index:5; }
   .labeled .pantalla-click { inset:3px; }
+  /* PC apagada */
+  .pantalla.off iframe { opacity:0; }
+  .pantalla.off .pantalla-click { pointer-events:none; }
+
+  /* ---- interacciones ---- */
+  #el-speaker, #el-keyboard, #el-cat, #el-lamp { cursor:pointer; }
+  #el-keyboard:active img { transform:translateY(3px); }
+  #el-speaker.playing img { animation:speakerPulse .5s infinite alternate ease-in-out; }
+  @keyframes speakerPulse { from { transform:scale(1); } to { transform:scale(1.06); } }
+
+  .boton { cursor:pointer; }
+  .boton.pressed { filter:brightness(.6); }
+
+  /* lampara: brillo calido cuando esta encendida */
+  #el-lamp img { transition:filter .35s; }
+  #el-lamp.on img { filter:brightness(1.35) drop-shadow(0 0 12px rgba(255,190,80,.9)); }
+  .lamp-glow {
+    position:absolute; left:72%; top:18%; width:30%; height:44%;
+    background:radial-gradient(ellipse at 62% 40%, rgba(255,196,92,.55) 0%, rgba(255,170,60,.22) 38%, transparent 68%);
+    mix-blend-mode:screen; opacity:0; transition:opacity .45s; pointer-events:none; z-index:8;
+  }
+  .scene.lamp-on .lamp-glow { opacity:1; }
+
+  /* zzz del gato */
+  .zzz {
+    position:absolute; left:11.5%; top:42%; width:5.5%;
+    opacity:0; pointer-events:none; transition:opacity .3s; z-index:8;
+  }
+  .zzz img { width:100%; display:block; image-rendering:pixelated; }
+  .zzz.show { opacity:1; }
+  .zzz.show img { animation:zzzFloat 2.2s infinite ease-in-out; }
+  @keyframes zzzFloat {
+    0%   { transform:translateY(0); }
+    50%  { transform:translateY(-14%); }
+    100% { transform:translateY(0); }
+  }
+
+  /* mouse arrastrable */
+  #el-mouse { cursor:grab; touch-action:none; z-index:10; }
+  #el-mouse.dragging { cursor:grabbing; z-index:50; }
 
   .xp-overlay {
     position:fixed; inset:0; z-index:90; display:none;
@@ -123,17 +168,18 @@
     </div>
     <div class="el pantalla" id="el-pantalla" data-name="pantalla"
          style="left:36.458%; top:16.667%; width:31.250%; height:40.278%;">
-      <iframe src="pantalla-app/index.html" title="pantalla"
-              style="width:100%; height:100%; border:0; display:block; background:#000;"></iframe>
+      <iframe src="pantalla-app/index.html" title="pantalla"></iframe>
       <div class="pantalla-click" title="click para expandir" onclick="openXP()"></div>
       <span class="tag">pantalla</span>
     </div>
-    <div class="el boton" id="el-boton" data-name="boton"
-         style="left:65.104%; top:60.185%; width:2.604%; height:3.519%;">
+    <div class="el boton" id="el-boton" data-name="boton" title="power"
+         style="left:65.104%; top:60.185%; width:2.604%; height:3.519%;"
+         onclick="togglePC()">
       <span class="tag">boton</span>
     </div>
     <div class="el sprite" id="el-keyboard" data-name="keyboard"
-         style="left:32.031%; top:73.148%; width:37.500%;">
+         style="left:32.031%; top:73.148%; width:37.500%;"
+         onclick="playKeyboard()">
       <img src="assets/keyboard.png" alt="keyboard">
       <span class="tag">keyboard</span>
     </div>
@@ -143,20 +189,25 @@
       <span class="tag">mouse</span>
     </div>
     <div class="el sprite" id="el-speaker" data-name="speaker"
-         style="left:17.708%; top:55.556%; width:9.062%;">
+         style="left:17.708%; top:55.556%; width:9.062%;"
+         onclick="toggleSpeaker()">
       <img src="assets/speaker.png" alt="speaker">
       <span class="tag">speaker</span>
     </div>
     <div class="el sprite" id="el-cat" data-name="cat"
-         style="left:4.688%; top:50.000%; width:10.938%;">
+         style="left:4.688%; top:50.000%; width:10.938%;"
+         onclick="toggleZzz()">
       <img src="assets/cat.png" alt="cat">
       <span class="tag">cat</span>
     </div>
     <div class="el sprite" id="el-lamp" data-name="lamp"
-         style="left:81.771%; top:26.389%; width:5.469%;">
+         style="left:81.771%; top:26.389%; width:5.469%;"
+         onclick="toggleLamp()">
       <img src="assets/lamp.png" alt="lamp">
       <span class="tag">lamp</span>
     </div>
+    <div class="lamp-glow" id="lampGlow"></div>
+    <div class="zzz" id="el-zzz"><img src="assets/zzz.png" alt="zzz"></div>
   </div>
   <button id="toggle" onclick="toggleLabels()">labels: ON</button>
 
@@ -187,6 +238,77 @@
       'labels: ' + (s.classList.contains('labeled') ? 'ON' : 'OFF');
   }
   document.addEventListener('keydown', e => { if (e.key.toLowerCase() === 'l') toggleLabels(); });
+
+  /* ---------- sonidos ---------- */
+  const sndKeyboard = new Audio('assets/sfx-keyboard.mp3');
+  const sndSpeaker  = new Audio('assets/sfx-speaker.mp3');
+  sndSpeaker.loop = true;
+  const sndShutdown = new Audio('pantalla-app/sounds/xp-shutdown.mp3');
+  const sndStartup  = new Audio('pantalla-app/sounds/xp-startup.mp3');
+
+  function playKeyboard() {
+    sndKeyboard.currentTime = 0;
+    sndKeyboard.play().catch(() => {});
+  }
+
+  /* ---------- speaker: musica on/off ---------- */
+  function toggleSpeaker() {
+    const sp = document.getElementById('el-speaker');
+    if (sndSpeaker.paused) {
+      sndSpeaker.play().then(() => sp.classList.add('playing')).catch(() => {});
+    } else {
+      sndSpeaker.pause();
+      sndSpeaker.currentTime = 0;
+      sp.classList.remove('playing');
+    }
+  }
+
+  /* ---------- lampara on/off ---------- */
+  function toggleLamp() {
+    document.getElementById('el-lamp').classList.toggle('on');
+    document.getElementById('scene').classList.toggle('lamp-on');
+  }
+
+  /* ---------- boton power: apaga/enciende la pantalla ---------- */
+  function togglePC() {
+    const p = document.getElementById('el-pantalla');
+    const b = document.getElementById('el-boton');
+    const off = p.classList.toggle('off');
+    b.classList.toggle('pressed', off);
+    if (off) { closeXP(); sndShutdown.currentTime = 0; sndShutdown.play().catch(() => {}); }
+    else     { sndStartup.currentTime = 0;  sndStartup.play().catch(() => {}); }
+  }
+
+  /* ---------- gato: zzz ---------- */
+  function toggleZzz() { document.getElementById('el-zzz').classList.toggle('show'); }
+
+  /* ---------- mouse arrastrable ---------- */
+  (function () {
+    const el = document.getElementById('el-mouse');
+    const scene = document.getElementById('scene');
+    let drag = null;
+    el.addEventListener('pointerdown', e => {
+      e.preventDefault();
+      const r = scene.getBoundingClientRect();
+      const m = el.getBoundingClientRect();
+      drag = { dx: e.clientX - m.left, dy: e.clientY - m.top, rect: r,
+               w: m.width / r.width * 100, h: m.height / r.height * 100 };
+      el.classList.add('dragging');
+      el.setPointerCapture(e.pointerId);
+    });
+    el.addEventListener('pointermove', e => {
+      if (!drag) return;
+      let x = (e.clientX - drag.rect.left - drag.dx) / drag.rect.width * 100;
+      let y = (e.clientY - drag.rect.top - drag.dy) / drag.rect.height * 100;
+      x = Math.max(0, Math.min(100 - drag.w, x));
+      y = Math.max(0, Math.min(100 - drag.h, y));
+      el.style.left = x + '%';
+      el.style.top = y + '%';
+    });
+    const end = () => { drag = null; el.classList.remove('dragging'); };
+    el.addEventListener('pointerup', end);
+    el.addEventListener('pointercancel', end);
+  })();
 </script>
 </body>
 </html>
