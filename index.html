@@ -38,6 +38,36 @@
   .region .tag { border:1px solid var(--c-region); color:#ffd9a0; }
   .labeled .tag { display:block; }
 
+  /* ---- pantalla click-catcher + expanded internal screen ---- */
+  .pantalla-click { position:absolute; inset:0; cursor:pointer; z-index:5; }
+  .labeled .pantalla-click { inset:3px; }
+
+  .xp-overlay {
+    position:fixed; inset:0; z-index:90; display:none;
+    background:rgba(5,7,10,.72); backdrop-filter:blur(3px);
+    align-items:center; justify-content:center;
+  }
+  .xp-overlay.open { display:flex; }
+  .xp-window {
+    width:min(94vw, 150vh); aspect-ratio:16/9; max-height:92vh;
+    background:#000; border:4px solid #2b2f38; border-radius:10px;
+    box-shadow:0 30px 80px rgba(0,0,0,.8);
+    display:flex; flex-direction:column; overflow:hidden;
+  }
+  .xp-titlebar {
+    flex:0 0 34px; display:flex; align-items:center; gap:10px;
+    background:#1a1e26; color:#9fb2c8; padding:0 10px 0 14px;
+    font:600 13px ui-monospace, monospace; user-select:none;
+  }
+  .xp-titlebar .dot { width:10px; height:10px; border-radius:50%; background:#00cfff; }
+  .xp-titlebar .name { flex:1; }
+  .xp-close {
+    background:#3a2126; color:#ff8fa0; border:1px solid #ff4d6d; border-radius:5px;
+    font:700 12px ui-monospace, monospace; padding:3px 12px; cursor:pointer;
+  }
+  .xp-close:hover { background:#55262e; }
+  .xp-window iframe { flex:1; width:100%; border:0; display:block; background:#000; }
+
   #toggle {
     position:fixed; right:14px; bottom:14px; z-index:99;
     font:600 13px ui-monospace, monospace; padding:8px 14px;
@@ -95,6 +125,7 @@
          style="left:36.458%; top:16.667%; width:31.250%; height:40.278%;">
       <iframe src="pantalla-app/index.html" title="pantalla"
               style="width:100%; height:100%; border:0; display:block; background:#000;"></iframe>
+      <div class="pantalla-click" title="click para expandir" onclick="openXP()"></div>
       <span class="tag">pantalla</span>
     </div>
     <div class="el boton" id="el-boton" data-name="boton"
@@ -128,7 +159,27 @@
     </div>
   </div>
   <button id="toggle" onclick="toggleLabels()">labels: ON</button>
+
+  <div class="xp-overlay" id="xpOverlay" onclick="if(event.target===this)closeXP()">
+    <div class="xp-window">
+      <div class="xp-titlebar">
+        <span class="dot"></span>
+        <span class="name">pantalla — xp-desktop-explorer</span>
+        <button class="xp-close" onclick="closeXP()">cerrar ✕</button>
+      </div>
+      <iframe id="xpFrame" title="xp-desktop-explorer" src="about:blank"></iframe>
+    </div>
+  </div>
+
 <script>
+  function openXP() {
+    const f = document.getElementById('xpFrame');
+    if (!f.dataset.loaded) { f.src = 'pantalla-app/index.html'; f.dataset.loaded = '1'; }
+    document.getElementById('xpOverlay').classList.add('open');
+  }
+  function closeXP() { document.getElementById('xpOverlay').classList.remove('open'); }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeXP(); });
+
   function toggleLabels() {
     const s = document.getElementById('scene');
     s.classList.toggle('labeled');
