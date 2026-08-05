@@ -87,6 +87,14 @@
   #el-mouse { cursor:grab; touch-action:none; z-index:10; }
   #el-mouse.dragging { cursor:grabbing; z-index:50; }
 
+  /* guacamaya en la ventana */
+  #el-guacamaya { cursor:pointer; z-index:9; }
+  #el-guacamaya.playing img { animation:guacamayaBob .55s infinite ease-in-out; transform-origin:50% 90%; }
+  @keyframes guacamayaBob {
+    0%, 100% { transform:rotate(0deg) translateY(0); }
+    50%      { transform:rotate(-4deg) translateY(-3%); }
+  }
+
   /* ventana: persianas que bajan y suben */
   #bg-window { cursor:pointer; }
   .blinds-wrap { position:absolute; left:24.6%; top:25.0%; width:76.2%; height:74.9%; pointer-events:none; }
@@ -217,6 +225,12 @@
     </div>
     <div class="lamp-glow" id="lampGlow"></div>
     <div class="zzz" id="el-zzz"><img src="assets/zzz.png" alt="zzz"></div>
+    <div class="el sprite" id="el-guacamaya" data-name="guacamaya" title="guacamaya"
+         style="left:91.000%; top:19.000%; width:4.700%;"
+         onclick="toggleGuacamaya()">
+      <img src="assets/guacamaya.png" alt="guacamaya">
+      <span class="tag">guacamaya</span>
+    </div>
   </div>
   <button id="toggle" onclick="toggleLabels()">labels: ON</button>
 
@@ -293,6 +307,22 @@
 
   /* ---------- ventana: persianas abrir/cerrar ---------- */
   function toggleWindow() { document.getElementById('bg-window').classList.toggle('closed'); }
+
+  /* ---------- guacamaya: canta (siempre desde el segundo 2) ---------- */
+  const sndGuacamaya = new Audio('assets/guacamaya.mp3');
+  sndGuacamaya.addEventListener('ended', () =>
+    document.getElementById('el-guacamaya').classList.remove('playing'));
+  function toggleGuacamaya() {
+    const g = document.getElementById('el-guacamaya');
+    if (sndGuacamaya.paused) {
+      sndGuacamaya.currentTime = 2;
+      sndGuacamaya.play().then(() => g.classList.add('playing')).catch(() => {});
+    } else {
+      sndGuacamaya.pause();
+      sndGuacamaya.currentTime = 2;
+      g.classList.remove('playing');
+    }
+  }
 
   /* ---------- mouse arrastrable ---------- */
   (function () {
