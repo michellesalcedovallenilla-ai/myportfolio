@@ -1,19 +1,127 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pixel Room</title>
+<title>Pixel Room — labeled</title>
 <style>
-  html, body { margin:0; padding:0; height:100%; background:#1a120c; overflow:hidden; }
-  .stage {
-    position:fixed; inset:0;
-    background: url('scene.png') center / contain no-repeat;
-    image-rendering: pixelated;
+  :root {
+    --c-sprite: #00ff9d;
+    --c-region: #ff9d00;
+    --tag-bg: rgba(0,0,0,.82);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin:0; padding:0; height:100%; background:#0d0f12; overflow:hidden; }
+  .scene {
+    position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+    aspect-ratio: 16/9; max-width:100vw; max-height:100vh; width:min(100vw, 177.78vh);
+  }
+  .scene > img.bg { position:absolute; inset:0; width:100%; height:100%; image-rendering:pixelated; }
+  .el { position:absolute; }
+  .el img { width:100%; display:block; image-rendering:pixelated; }
+  .region { height:auto; }
+
+  /* ---- debug labels (toggle with the button or pressing L) ---- */
+  .labeled .sprite { outline:3px solid var(--c-sprite); outline-offset:2px; }
+  .labeled .region { outline:3px dashed var(--c-region); outline-offset:2px; }
+  .tag {
+    position:absolute; top:-1.6em; left:0;
+    font:600 clamp(9px, 1.1vw, 15px)/1.2 ui-monospace, monospace;
+    color:#fff; background:var(--tag-bg); padding:2px 7px; border-radius:4px;
+    white-space:nowrap; pointer-events:none; display:none;
+  }
+  .sprite .tag { border:1px solid var(--c-sprite); }
+  .region .tag { border:1px solid var(--c-region); color:#ffd9a0; }
+  .labeled .tag { display:block; }
+
+  #toggle {
+    position:fixed; right:14px; bottom:14px; z-index:99;
+    font:600 13px ui-monospace, monospace; padding:8px 14px;
+    background:#161a20; color:#00ff9d; border:2px solid #00ff9d; border-radius:6px;
+    cursor:pointer;
   }
 </style>
 </head>
 <body>
-  <div class="stage"></div>
+  <div class="scene labeled" id="scene">
+    <img class="bg" src="assets/bg.png" alt="room">
+    <div class="el region" id="bg-poster" data-name="poster"
+         style="left:5.625%; top:10.926%; width:17.708%; height:28.426%;">
+      <span class="tag">bg: poster</span>
+    </div>
+    <div class="el region" id="bg-bed" data-name="bed"
+         style="left:0.000%; top:41.204%; width:28.385%; height:43.519%;">
+      <span class="tag">bg: bed</span>
+    </div>
+    <div class="el region" id="bg-desk" data-name="desk"
+         style="left:7.812%; top:67.593%; width:80.208%; height:31.481%;">
+      <span class="tag">bg: desk</span>
+    </div>
+    <div class="el region" id="bg-chair" data-name="chair"
+         style="left:75.260%; top:73.611%; width:24.740%; height:26.389%;">
+      <span class="tag">bg: chair</span>
+    </div>
+    <div class="el region" id="bg-nightstand" data-name="nightstand"
+         style="left:79.427%; top:43.056%; width:12.500%; height:33.333%;">
+      <span class="tag">bg: nightstand</span>
+    </div>
+    <div class="el region" id="bg-window" data-name="window"
+         style="left:93.229%; top:0.000%; width:6.771%; height:47.222%;">
+      <span class="tag">bg: window</span>
+    </div>
+    <div class="el region" id="bg-plant-hanging" data-name="plant-hanging"
+         style="left:78.125%; top:1.389%; width:10.417%; height:27.778%;">
+      <span class="tag">bg: plant-hanging</span>
+    </div>
+    <div class="el region" id="bg-plant-pot" data-name="plant-pot"
+         style="left:89.844%; top:32.870%; width:6.250%; height:16.204%;">
+      <span class="tag">bg: plant-pot</span>
+    </div>
+    <div class="el region" id="bg-shelf" data-name="shelf"
+         style="left:91.146%; top:51.852%; width:8.854%; height:48.148%;">
+      <span class="tag">bg: shelf</span>
+    </div>
+
+    <div class="el sprite" id="el-monitor" data-name="monitor"
+         style="left:31.250%; top:7.407%; width:41.667%;">
+      <img src="assets/monitor.png" alt="monitor">
+      <span class="tag">monitor</span>
+    </div>
+    <div class="el sprite" id="el-keyboard" data-name="keyboard"
+         style="left:32.031%; top:73.148%; width:37.500%;">
+      <img src="assets/keyboard.png" alt="keyboard">
+      <span class="tag">keyboard</span>
+    </div>
+    <div class="el sprite" id="el-mouse" data-name="mouse"
+         style="left:69.896%; top:73.148%; width:5.990%;">
+      <img src="assets/mouse.png" alt="mouse">
+      <span class="tag">mouse</span>
+    </div>
+    <div class="el sprite" id="el-speaker" data-name="speaker"
+         style="left:17.708%; top:55.556%; width:9.062%;">
+      <img src="assets/speaker.png" alt="speaker">
+      <span class="tag">speaker</span>
+    </div>
+    <div class="el sprite" id="el-cat" data-name="cat"
+         style="left:4.688%; top:50.000%; width:10.938%;">
+      <img src="assets/cat.png" alt="cat">
+      <span class="tag">cat</span>
+    </div>
+    <div class="el sprite" id="el-lamp" data-name="lamp"
+         style="left:81.771%; top:26.389%; width:5.469%;">
+      <img src="assets/lamp.png" alt="lamp">
+      <span class="tag">lamp</span>
+    </div>
+  </div>
+  <button id="toggle" onclick="toggleLabels()">labels: ON</button>
+<script>
+  function toggleLabels() {
+    const s = document.getElementById('scene');
+    s.classList.toggle('labeled');
+    document.getElementById('toggle').textContent =
+      'labels: ' + (s.classList.contains('labeled') ? 'ON' : 'OFF');
+  }
+  document.addEventListener('keydown', e => { if (e.key.toLowerCase() === 'l') toggleLabels(); });
+</script>
 </body>
 </html>
