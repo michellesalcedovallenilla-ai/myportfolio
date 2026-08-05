@@ -87,6 +87,13 @@
   #el-mouse { cursor:grab; touch-action:none; z-index:10; }
   #el-mouse.dragging { cursor:grabbing; z-index:50; }
 
+  /* ventana: persianas que bajan y suben */
+  #bg-window { cursor:pointer; }
+  .blinds-wrap { position:absolute; left:24.6%; top:25.0%; width:76.2%; height:74.9%; pointer-events:none; }
+  .blinds-roller { width:100%; height:0; overflow:hidden; transition:height .65s ease-in-out; }
+  .blinds-roller img { width:100%; display:block; image-rendering:pixelated; }
+  #bg-window.closed .blinds-roller { height:100%; }
+
   .xp-overlay {
     position:fixed; inset:0; z-index:90; display:none;
     background:rgba(5,7,10,.72); backdrop-filter:blur(3px);
@@ -144,8 +151,10 @@
          style="left:79.427%; top:43.056%; width:12.500%; height:33.333%;">
       <span class="tag">bg: nightstand</span>
     </div>
-    <div class="el region" id="bg-window" data-name="window"
-         style="left:93.229%; top:0.000%; width:6.771%; height:47.222%;">
+    <div class="el region" id="bg-window" data-name="window" title="abrir/cerrar"
+         style="left:93.229%; top:0.000%; width:6.771%; height:47.222%;"
+         onclick="toggleWindow()">
+      <div class="blinds-wrap"><div class="blinds-roller"><img src="assets/blinds.png" alt=""></div></div>
       <span class="tag">bg: window</span>
     </div>
     <div class="el region" id="bg-plant-hanging" data-name="plant-hanging"
@@ -281,6 +290,9 @@
 
   /* ---------- gato: zzz ---------- */
   function toggleZzz() { document.getElementById('el-zzz').classList.toggle('show'); }
+
+  /* ---------- ventana: persianas abrir/cerrar ---------- */
+  function toggleWindow() { document.getElementById('bg-window').classList.toggle('closed'); }
 
   /* ---------- mouse arrastrable ---------- */
   (function () {
