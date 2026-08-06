@@ -74,6 +74,7 @@
         transform:rotate(45deg);
       }
       .ct-bubble.above:after { bottom:auto; top:-8px; transform:rotate(225deg); }
+      .ct-bubble.tail-r:after { left:auto; right:28px; }
       .ct-pop { animation:ctPop .22s ease-out; }
       @keyframes ctPop { from { opacity:0; transform:translateY(8px) scale(.92); } }
       .ct-title { font-weight:bold; margin-bottom:3px; }
@@ -282,6 +283,42 @@
           });
         }
         window.addEventListener('clippy-gotit', ask);
+
+        /* ---- Clippy explica cada ventana que abres (mismo estilo del tutorial) ---- */
+        var XP_TIPS = {
+          about:      { t: 'ABOUT ME 📖',        x: 'her story, her skills, her whole deal. Required reading before hiring.' },
+          contact:    { t: 'CONTACT ☎️',         x: 'email AND phone number, right there. She made it easy for you. No excuses.' },
+          resume:     { t: 'RESUME.PDF 📜',      x: 'the sacred scroll. Pro tip: there\'s a download button. Take one. It\'s free.' },
+          portfolio:  { t: 'PORTFOLIO 📸',       x: 'her photography lives in here: double-click "@pastflash 2019". Real photos, real vibes.' },
+          finder:     { t: 'FILES & PROJECTS 🗂️', x: 'click things, open stuff. This is a judgement-free clicking zone.' },
+          camera:     { t: 'CAMERA 📷',          x: 'smile! …or don\'t. The flying pig is not judging.' },
+          music:      { t: 'MUSIC PLAYER 🎵',    x: 'her playlist. Volume up, obviously.' },
+          minesweeper:{ t: 'MINESWEEPER 💣',     x: '10 mines, infinite confidence until the first click. GLHF.' },
+          ie:         { t: 'INTERNET EXPLORER 🌐', x: 'her website inside her website. Site-ception.' },
+          messenger:  { t: 'MSN MESSENGER ☀️',   x: 'sign the guestbook! She reads it. I read it too. I read everything.' },
+          video:      { t: 'VIDEO PLAYER 📼',    x: 'cat content, as the internet intended.' },
+          project:    { t: 'A PROJECT 👀',       x: 'one of her babies. Look at it. LOOK AT IT.' },
+          paint:      { t: 'MS PAINT 🎨',        x: 'the tool of legends. Draw something beautiful. Or a stickman.' },
+          solitaire:  { t: 'SOLITAIRE 🃏',       x: 'productivity ends here.' }
+        };
+        var winPop = null, winPopT = null;
+        window.addEventListener('xp-window-open', function (ev) {
+          if (cur >= 0) return; // durante la quest no interrumpir
+          if (!document.querySelector('.desktop')) return;
+          var d = (ev && ev.detail) || {};
+          var key = (d.type === 'finder' && d.title === 'Portfolio') ? 'portfolio' : d.type;
+          var tip = XP_TIPS[key];
+          if (!tip) return;
+          if (winPop) winPop.remove();
+          clearTimeout(winPopT);
+          winPop = document.createElement('div');
+          winPop.className = 'ct-bubble ct-pop tail-r';
+          winPop.innerHTML = '<div class="ct-title">📎 ' + tip.t + '</div><div>' + tip.x + '</div>';
+          document.body.appendChild(winPop);
+          winPop.style.left = Math.max(8, window.innerWidth - winPop.offsetWidth - 20) + 'px';
+          winPop.style.top = Math.max(8, window.innerHeight - winPop.offsetHeight - 190) + 'px';
+          winPopT = setTimeout(function () { if (winPop) { winPop.remove(); winPop = null; } }, 7000);
+        });
       })();
     </script>
   </body>
