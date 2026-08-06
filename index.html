@@ -253,7 +253,7 @@
       <span class="tag">mouse</span>
     </div>
     <div class="el sprite" id="el-speaker" data-name="speaker"
-         style="left:17.708%; top:55.556%; width:9.062%;"
+         style="left:73.500%; top:49.200%; width:9.062%;"
          onclick="toggleSpeaker()">
       <img src="assets/speaker.png" alt="speaker">
       <span class="tag">speaker</span>
@@ -296,7 +296,7 @@
     <div class="city-light tw"    style="left:95.21%; top:38.84%; --d:2.4s; --dl:2.0s"></div>
     <div class="city-light off"   style="left:97.71%; top:38.84%; --d:8.2s; --dl:1.5s"></div>
     <div class="el sprite" id="el-telefono" data-name="telefono" title="arrastrar / click para abrir"
-         style="left:76.100%; top:62.400%; width:7.200%;" onclick="openNokia()">
+         style="left:17.500%; top:66.000%; width:8.600%;" onclick="openNokia()">
       <img src="assets/telefono.png" alt="telefono">
       <span class="tag">telefono</span>
     </div>
@@ -438,6 +438,17 @@
   /* ---------- elementos arrastrables (mouse, telefono) ---------- */
   (function () {
     const scene = document.getElementById('scene');
+    // zona del escritorio que actua como "mouse pad" -> se mapea a toda la pantalla
+    const PAD = { l: 7.812, t: 67.593, r: 88.020, b: 99.074 };
+    function sendCursor(el) {
+      const pf = document.querySelector('#el-pantalla iframe');
+      if (!pf || !pf.contentWindow) return;
+      const cx = parseFloat(el.style.left) + parseFloat(el.dataset.w) / 2;
+      const cy = parseFloat(el.style.top) + parseFloat(el.dataset.h) / 2;
+      const nx = Math.max(0, Math.min(1, (cx - PAD.l) / (PAD.r - PAD.l)));
+      const ny = Math.max(0, Math.min(1, (cy - PAD.t) / (PAD.b - PAD.t)));
+      pf.contentWindow.postMessage({ type: 'xp-cursor', x: nx, y: ny }, '*');
+    }
     ['el-mouse', 'el-telefono', 'el-speaker'].forEach(id => {
       const el = document.getElementById(id);
       let drag = null;
@@ -449,6 +460,7 @@
         drag = { dx: e.clientX - m.left, dy: e.clientY - m.top, rect: r,
                  w: m.width / r.width * 100, h: m.height / r.height * 100,
                  x0: e.clientX, y0: e.clientY };
+        el.dataset.w = drag.w; el.dataset.h = drag.h;
         el.classList.add('dragging');
         el.setPointerCapture(e.pointerId);
       });
@@ -462,6 +474,7 @@
         y = Math.max(0, Math.min(100 - drag.h, y));
         el.style.left = x + '%';
         el.style.top = y + '%';
+        if (id === 'el-mouse' && el.dataset.dragged === '1') sendCursor(el);
       });
       const end = () => { drag = null; el.classList.remove('dragging'); };
       el.addEventListener('pointerup', end);
