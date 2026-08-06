@@ -57,5 +57,232 @@
         });
       })();
     </script>
+
+    <!-- ============ CLIPPY QUEST: tutorial guiado estilo videjuego ============
+         Tras el "got it" de una burbuja de Clippy, pregunta si quieres el tour.
+         Si aceptas: pasos con highlight que auto-avanzan al detectar la accion. -->
+    <style>
+      .ct-bubble {
+        position:fixed; z-index:2147483400; width:min(300px, 86vw);
+        background:#ffffd8; border:2px solid #2b2b2b; border-radius:10px;
+        box-shadow:3px 3px 0 rgba(0,0,0,.35); padding:10px 12px 11px;
+        font-family:Tahoma, Arial, sans-serif; font-size:12.5px; line-height:1.4; color:#222;
+      }
+      .ct-bubble:after {
+        content:''; position:absolute; left:28px; bottom:-8px; width:13px; height:13px;
+        background:#ffffd8; border-right:2px solid #2b2b2b; border-bottom:2px solid #2b2b2b;
+        transform:rotate(45deg);
+      }
+      .ct-bubble.above:after { bottom:auto; top:-8px; transform:rotate(225deg); }
+      .ct-pop { animation:ctPop .22s ease-out; }
+      @keyframes ctPop { from { opacity:0; transform:translateY(8px) scale(.92); } }
+      .ct-title { font-weight:bold; margin-bottom:3px; }
+      .ct-step-n { float:right; font-weight:normal; color:#7a6a00; font-size:11px; }
+      .ct-btns { display:flex; gap:6px; margin-top:9px; flex-wrap:wrap; align-items:center; }
+      .ct-btn {
+        font-family:Tahoma, Arial, sans-serif; font-size:11.5px; padding:3px 10px; cursor:pointer;
+        background:#fff; border:1px solid #999; border-radius:3px; color:#222;
+      }
+      .ct-btn:hover { filter:brightness(.94); }
+      .ct-btn.primary { background:#ffd94d; border-color:#8a7300; font-weight:bold; }
+      .ct-hl {
+        position:fixed; z-index:2147483300; pointer-events:none; border-radius:8px; display:none;
+        animation:ctPulse 1.2s infinite ease-in-out;
+      }
+      @keyframes ctPulse {
+        0%,100% { box-shadow:0 0 0 3px #ffd94d, 0 0 14px 4px rgba(255,217,77,.55); }
+        50%     { box-shadow:0 0 0 3px #ffd94d, 0 0 26px 10px rgba(255,217,77,.9); }
+      }
+    </style>
+    <script>
+      (function () {
+        var KEY_A = 'ctAsked', KEY_N = 'ctNo';
+
+        /* ---- pasos del tour: target = selector o funcion, done = se cumplio solo ---- */
+        function lastWin() {
+          var ws = document.querySelectorAll('.xp-window-wrapper');
+          return ws.length ? ws[ws.length - 1] : null;
+        }
+        function winByTitle(t) {
+          var ws = document.querySelectorAll('.xp-window-wrapper');
+          for (var i = 0; i < ws.length; i++) {
+            var tb = ws[i].querySelector('.xp-titlebar-text');
+            if (tb && tb.textContent.indexOf(t) !== -1) return ws[i];
+          }
+          return null;
+        }
+        function iconByLabel(label) {
+          var ics = document.querySelectorAll('.xp-landscape-icon');
+          for (var i = 0; i < ics.length; i++) {
+            var l = ics[i].querySelector('.xp-landscape-label');
+            if (l && l.textContent.trim() === label) return ics[i];
+          }
+          return null;
+        }
+        var STEPS = [
+          { title: '📎 CLIPPY\'S QUICK TOUR',
+            text: 'QUEST START! 🎮 Every chunky animal on this grass is secretly an app. DOUBLE-CLICK one to open it — go on, try the orange cat with the tie (that\'s the resume, fancy).',
+            target: function () { return iconByLabel('Resume.pdf') || document.querySelector('.xp-landscape-icon'); },
+            done: function () { return !!lastWin(); } },
+          { title: '🪟 A WILD WINDOW APPEARED!',
+            text: 'Drag it around by its blue title bar — yeet it anywhere. When you\'re done, bonk the red ✕. I\'ll wait here. Waiting is literally my whole job.',
+            target: function () { var w = lastWin(); return w ? (w.querySelector('.xp-titlebar') || w) : null; },
+            enter: function () { var w = lastWin(); return w ? w.style.transform : null; },
+            done: function (snap) { var w = lastWin(); return !w || (snap !== null && w.style.transform !== snap); } },
+          { title: '🍞 THE FLYING HARINA PAN',
+            text: 'That levitating PAN pack is the PORTFOLIO folder. Double-click it! Inside live "test 1" and "test 2" — real projects respawning soon™️.',
+            target: function () { return iconByLabel('Portfolio'); },
+            done: function () { return !!winByTitle('Portfolio'); } },
+          { title: '🐄👢 THE COW WITH BOOTS',
+            text: 'Yes, boots. No, I don\'t know why either. Double-click the cow to open the Projects folder (aka My Documents).',
+            target: function () { return iconByLabel('Projects'); },
+            done: function () { return !!document.querySelector('.xp-explorer'); } },
+          { title: '🟢 THE LOBBY',
+            text: 'Hit the green start button (bottom-left). Every app lives there: Paint, Music Player, MINESWEEPER 💣... the classics.',
+            target: function () { return document.querySelector('.xp-start-btn'); },
+            done: function () { return !!document.querySelector('.xp-start-menu'); } },
+          { title: '☀️ SECRET NPC: THE SUN',
+            text: 'Pro move: click the sun in the corner — it\'s MSN Messenger! Leave Michelle a message in the guestbook. She reads it. I read it too. I read everything.',
+            target: function () { return document.querySelector('.xp-sun-wrapper'); },
+            done: function () { return !!winByTitle('MSN Messenger'); } },
+          { title: '🌾 FENG SHUI, BUT MAKE IT XP',
+            text: 'Last trick: you can DRAG every animal anywhere on the grass. Rearrange the whole farm. I can\'t move. I\'m stuck here. Forever.',
+            target: function () { return iconByLabel('About Me') || document.querySelector('.xp-landscape-icon'); },
+            enter: function () {
+              var m = {};
+              document.querySelectorAll('.xp-landscape-icon').forEach(function (ic, i) { m[i] = ic.style.left + '|' + ic.style.top; });
+              return m;
+            },
+            done: function (snap) {
+              if (!snap) return false;
+              var ics = document.querySelectorAll('.xp-landscape-icon');
+              for (var i = 0; i < ics.length; i++) if (snap[i] !== ics[i].style.left + '|' + ics[i].style.top) return true;
+              return false;
+            } },
+          { title: '🏆 TUTORIAL COMPLETE!',
+            text: 'Achievement unlocked: "Certified XP Explorer". Close windows with the red ✕ and press ESC to go back to Michelle\'s room. Now go hire her before I haunt this desktop. 📎✌️',
+            target: function () { return null; },
+            done: function () { return false; } }
+        ];
+
+        var bubble = null, hl = null, cur = -1, snap = null, advancing = false, poll = null;
+
+        function ensureHl() {
+          if (!hl) { hl = document.createElement('div'); hl.className = 'ct-hl'; document.body.appendChild(hl); }
+          return hl;
+        }
+        function showHl(el) {
+          var h = ensureHl();
+          if (!el) { h.style.display = 'none'; return; }
+          var r = el.getBoundingClientRect(), pad = 5;
+          h.style.display = 'block';
+          h.style.left = (r.left - pad) + 'px'; h.style.top = (r.top - pad) + 'px';
+          h.style.width = (r.width + pad * 2) + 'px'; h.style.height = (r.height + pad * 2) + 'px';
+        }
+
+        function placeBubble(el) {
+          if (!bubble) return;
+          var bw = bubble.offsetWidth, bh = bubble.offsetHeight;
+          var x = 24, y = 24, above = false;
+          if (el) {
+            var r = el.getBoundingClientRect();
+            x = Math.max(8, Math.min(window.innerWidth - bw - 8, r.left + r.width / 2 - bw / 2));
+            if (r.bottom + bh + 18 < window.innerHeight) y = r.bottom + 14;
+            else { y = Math.max(8, r.top - bh - 14); above = true; }
+          } else { x = window.innerWidth - bw - 20; y = window.innerHeight - bh - 110; }
+          bubble.style.left = x + 'px'; bubble.style.top = y + 'px';
+          bubble.classList.toggle('above', above);
+        }
+
+        function render() {
+          var s = STEPS[cur], last = cur === STEPS.length - 1;
+          bubble.innerHTML = '<div class="ct-title">' + s.title
+            + '<span class="ct-step-n">' + (cur + 1) + '/' + STEPS.length + '</span></div>'
+            + '<div>' + s.text + '</div>'
+            + '<div class="ct-btns">'
+            + '<button class="ct-btn" data-a="skip">skip tour</button>'
+            + (cur > 0 ? '<button class="ct-btn" data-a="back">◀</button>' : '')
+            + '<button class="ct-btn primary" data-a="next">' + (last ? 'DONE 🏁' : 'next ▶') + '</button>'
+            + '</div>';
+          bubble.classList.remove('ct-pop'); void bubble.offsetWidth; bubble.classList.add('ct-pop');
+          advancing = false;
+          var el = null;
+          try { el = s.target(); } catch (e) {}
+          showHl(el); placeBubble(el);
+        }
+
+        function go(i) {
+          cur = Math.max(0, Math.min(STEPS.length - 1, i));
+          snap = STEPS[cur].enter ? STEPS[cur].enter() : null;
+          render();
+        }
+
+        function start() {
+          stop(true);
+          bubble = document.createElement('div');
+          bubble.className = 'ct-bubble';
+          document.body.appendChild(bubble);
+          bubble.addEventListener('click', function (e) {
+            var a = e.target.getAttribute('data-a');
+            if (a === 'skip') stop();
+            else if (a === 'back') go(cur - 1);
+            else if (a === 'next') { if (cur === STEPS.length - 1) stop(); else go(cur + 1); }
+          });
+          /* avisa al tutorial del cuarto que Clippy toma el control */
+          try { localStorage.setItem('pr_tutXPDone', '1'); } catch (e) {}
+          go(0);
+          poll = setInterval(tick, 400);
+        }
+
+        function stop(silent) {
+          if (poll) { clearInterval(poll); poll = null; }
+          if (bubble) { bubble.remove(); bubble = null; }
+          if (hl) { hl.remove(); hl = null; }
+          cur = -1; snap = null;
+        }
+
+        function tick() {
+          if (cur < 0) return;
+          var s = STEPS[cur];
+          if (!advancing && cur < STEPS.length - 1 && s.done(snap)) {
+            advancing = true;
+            setTimeout(function () { if (advancing) go(cur + 1); }, 650);
+            return;
+          }
+          var el = null;
+          try { el = s.target(); } catch (e) {}
+          showHl(el); placeBubble(el);
+        }
+
+        /* ---- la pregunta, estilo Clippy, tras el "got it" ---- */
+        function ask() {
+          try {
+            if (sessionStorage.getItem(KEY_A)) return;
+            sessionStorage.setItem(KEY_A, '1');
+          } catch (e) {}
+          if (cur >= 0 || !document.querySelector('.desktop')) return;
+          var q = document.createElement('div');
+          q.className = 'ct-bubble ct-pop';
+          q.innerHTML = '<div class="ct-title">📎 QUESTION FOR YOU</div>'
+            + '<div>do you want a quick tutorial on how to use this website? (it\'s fun, I promise — I\'m basically a quest NPC)</div>'
+            + '<div class="ct-btns">'
+            + '<button class="ct-btn primary" data-a="yes">YES, SHOW ME 🎮</button>'
+            + '<button class="ct-btn" data-a="no">maybe later</button>'
+            + '</div>';
+          document.body.appendChild(q);
+          var bw = Math.min(300, window.innerWidth * .86);
+          q.style.left = Math.max(8, window.innerWidth - q.offsetWidth - 24) + 'px';
+          q.style.top = Math.max(8, window.innerHeight - q.offsetHeight - 120) + 'px';
+          q.addEventListener('click', function (e) {
+            var a = e.target.getAttribute('data-a');
+            if (!a) return;
+            q.remove();
+            if (a === 'yes') start();
+            else { try { sessionStorage.setItem(KEY_N, '1'); } catch (er) {} }
+          });
+        }
+        window.addEventListener('clippy-gotit', ask);
+      })();
+    </script>
   </body>
 </html>

@@ -498,6 +498,7 @@
   sndSpeaker.loop = true;
   const sndShutdown = new Audio('pantalla-app/sounds/xp-shutdown.mp3');
   const sndStartup  = new Audio('pantalla-app/sounds/xp-startup.mp3');
+  const sndPurr     = new Audio('assets/purr.mp3');
 
   function playKeyboard() {
     sndKeyboard.currentTime = 0;
@@ -533,8 +534,12 @@
     else     { sndStartup.currentTime = 0;  sndStartup.play().catch(() => {}); }
   }
 
-  /* ---------- gato: zzz ---------- */
-  function toggleZzz() { document.getElementById('el-zzz').classList.toggle('show'); }
+  /* ---------- gato: zzz + purr en cada toque ---------- */
+  function toggleZzz() {
+    document.getElementById('el-zzz').classList.toggle('show');
+    sndPurr.currentTime = 0;
+    sndPurr.play().catch(() => {});
+  }
 
   /* ---------- poster: notificacion whatsapp ---------- */
   const sndDing = new Audio('pantalla-app/sounds/xp-ding.mp3');
@@ -717,9 +722,9 @@
     50%      { box-shadow:0 0 0 2px rgba(255,217,77,.12), 0 0 28px 10px rgba(255,217,77,.55); }
   }
   .quest-arrow {
-    position:absolute; left:50%; top:-36px; transform:translateX(-50%);
-    width:30px; height:26px; animation:arrowBounce .8s infinite ease-in-out;
-    filter:drop-shadow(2px 2px 0 rgba(0,0,0,.5));
+    position:absolute; left:50%; top:-34px; transform:translateX(-50%);
+    width:30px; height:20px; animation:arrowBounce .8s infinite ease-in-out;
+    filter:drop-shadow(2px 3px 0 rgba(0,0,0,.45));
   }
   @keyframes arrowBounce { 0%,100% { transform:translate(-50%,0); } 50% { transform:translate(-50%,-8px); } }
 
@@ -830,7 +835,7 @@
 <button id="helpBtn" title="repetir tutorial">?</button>
 
 <div class="coach" id="coach">
-  <svg class="coach-arrow" viewBox="0 0 30 26" shape-rendering="crispEdges"><polygon points="7,0 23,0 23,8 30,8 15,26 0,8 7,8" fill="#ffd94d" stroke="#4a3500" stroke-width="2"/></svg>
+  <svg class="coach-arrow" viewBox="0 0 24 16" shape-rendering="crispEdges"><polygon points="9,0 15,0 15,8 18,8 18,10 16,10 16,12 14,12 14,14 13,14 13,15 11,15 11,14 10,14 10,12 8,12 8,10 6,10 6,8 9,8" fill="#ffd94d"/></svg>
   <div class="coach-text" id="coachText"></div>
   <div class="coach-foot"><span class="coach-count" id="coachCount"></span><span class="dlg-hint">▼</span></div>
 </div>
@@ -915,8 +920,8 @@
   /* resaltado: caja de glow + flecha, creada dentro de la escena */
   const hl = document.createElement('div');
   hl.className = 'quest-hl';
-  hl.innerHTML = '<svg class="quest-arrow" viewBox="0 0 30 26" shape-rendering="crispEdges">'
-    + '<polygon points="7,0 23,0 23,8 30,8 15,26 0,8 7,8" fill="#ffd94d" stroke="#4a3500" stroke-width="2"/></svg>';
+  hl.innerHTML = '<svg class="quest-arrow" viewBox="0 0 24 16" shape-rendering="crispEdges">'
+    + '<polygon points="9,0 15,0 15,8 18,8 18,10 16,10 16,12 14,12 14,14 13,14 13,15 11,15 11,14 10,14 10,12 8,12 8,10 6,10 6,8 9,8" fill="#ffd94d"/></svg>';
   scene.appendChild(hl);
   let hlTarget = null;
 
@@ -1013,7 +1018,7 @@
 
   /* sonido: silencia/activa TODOS los audios existentes; nunca reproduce solo */
   function applySound(on) {
-    [sndKeyboard, sndSpeaker, sndShutdown, sndStartup, sndDing, sndGuacamaya]
+    [sndKeyboard, sndSpeaker, sndShutdown, sndStartup, sndDing, sndGuacamaya, sndPurr]
       .forEach(a => { a.muted = !on; });
     store.set('pr_sound', on ? 'on' : 'off');
   }
