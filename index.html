@@ -205,6 +205,21 @@
   }
   @keyframes twOff { 0%,52% { opacity:0; } 53%,82% { opacity:.94; } 83%,100% { opacity:0; } }
 
+  /* luciernagas tipo minecraft: cuadritos de luz que flotan y parpadean en la pared */
+  .ffly {
+    position:absolute; width:var(--s,.4%); aspect-ratio:1; z-index:7; pointer-events:none;
+    background:var(--c,#ffed8a); box-shadow:0 0 8px 2px var(--g,rgba(255,237,138,.45));
+    animation:ffDrift var(--d,10s) ease-in-out infinite, ffGlow var(--b,2.6s) ease-in-out infinite;
+    animation-delay:var(--dl,0s), var(--dlb,0s);
+  }
+  @keyframes ffDrift {
+    0%,100% { transform:translate(0,0); }
+    30%     { transform:translate(.4vw,-1.8vh); }
+    60%     { transform:translate(-.35vw,-3.2vh); }
+    80%     { transform:translate(.25vw,-1.4vh); }
+  }
+  @keyframes ffGlow { 0%,100% { opacity:.22; } 50% { opacity:1; } }
+
   /* mouse, telefono y speaker arrastrables */
   #el-mouse, #el-telefono, #el-speaker { cursor:grab; touch-action:none; z-index:10; }
   #el-mouse.dragging, #el-telefono.dragging, #el-speaker.dragging { cursor:grabbing; z-index:50; }
@@ -381,6 +396,20 @@
     <!-- avion y estrella fugaz en el cielo de la ventana -->
     <div class="plane"></div>
     <div class="shooting-star"></div>
+    <!-- luciernagas tipo minecraft en las zonas oscuras junto al monitor y bajo el escritorio -->
+    <div class="ffly" style="left:26.2%; top:20%; --s:.45%; --d:9s;  --dl:.4s;  --b:2.4s; --dlb:.3s"></div>
+    <div class="ffly" style="left:29.3%; top:31%; --s:.34%; --c:#d8f76a; --g:rgba(216,247,106,.4); --d:12s; --dl:2.1s; --b:3.1s; --dlb:1.2s"></div>
+    <div class="ffly" style="left:26.8%; top:43%; --s:.5%;  --d:10s; --dl:4.4s; --b:2.8s; --dlb:.8s"></div>
+    <div class="ffly" style="left:30.1%; top:52%; --s:.3%;  --c:#d8f76a; --g:rgba(216,247,106,.4); --d:13s; --dl:1.5s; --b:2.2s; --dlb:1.7s"></div>
+    <div class="ffly" style="left:27.4%; top:59%; --s:.4%;  --d:11s; --dl:3.2s; --b:3.4s; --dlb:.1s"></div>
+    <div class="ffly" style="left:78.6%; top:18%; --s:.4%;  --c:#d8f76a; --g:rgba(216,247,106,.4); --d:10s; --dl:.9s;  --b:2.7s; --dlb:.6s"></div>
+    <div class="ffly" style="left:82.5%; top:26%; --s:.5%;  --d:12s; --dl:2.8s; --b:2.3s; --dlb:1.4s"></div>
+    <div class="ffly" style="left:79.8%; top:36%; --s:.32%; --c:#d8f76a; --g:rgba(216,247,106,.4); --d:9s;  --dl:5.1s; --b:3.2s; --dlb:.9s"></div>
+    <div class="ffly" style="left:84.2%; top:44%; --s:.42%; --d:14s; --dl:1.1s; --b:2.5s; --dlb:1.9s"></div>
+    <div class="ffly" style="left:78.9%; top:50%; --s:.3%;  --c:#d8f76a; --g:rgba(216,247,106,.4); --d:11s; --dl:3.7s; --b:2.9s; --dlb:.4s"></div>
+    <div class="ffly" style="left:21.5%; top:84%; --s:.4%;  --d:12s; --dl:.6s;  --b:2.6s; --dlb:1.1s"></div>
+    <div class="ffly" style="left:44.0%; top:88%; --s:.32%; --c:#d8f76a; --g:rgba(216,247,106,.4); --d:10s; --dl:2.4s; --b:3.0s; --dlb:.2s"></div>
+    <div class="ffly" style="left:64.5%; top:85%; --s:.38%; --d:13s; --dl:4.8s; --b:2.4s; --dlb:1.5s"></div>
     <div class="el sprite" id="el-telefono" data-name="telefono" title="arrastrar / click para abrir"
          style="left:17.500%; top:66.000%; width:8.600%;" onclick="openNokia()">
       <img src="assets/telefono.png" alt="telefono">
@@ -408,7 +437,7 @@
       <div class="tips-box" id="tipsXP"><div class="tips-title">💡 TIPS</div><ul></ul></div>
     </div>
     <div class="xp-tut" id="xpTut">
-      <img class="xp-tut-cat" src="assets/cat.png" alt="gato guia">
+      <img class="xp-tut-cat" id="xpTutCat" src="assets/michelle.png" alt="Michelle">
       <div class="xp-tut-main">
         <div class="xp-tut-head">
           <span class="xp-tut-title" id="xpTutTitle"></span>
@@ -732,7 +761,7 @@
 </style>
 
 <div class="dlg" id="dlg">
-  <img class="dlg-cat" src="assets/cat.png" alt="gato guia">
+  <img class="dlg-cat" id="dlgCat" src="assets/michelle.png" alt="Michelle">
   <div class="dlg-main">
     <div class="dlg-name" id="dlgName"></div>
     <div class="dlg-text" id="dlgText" title="click para completar el texto"></div>
@@ -758,11 +787,11 @@
 
   const T = {
     en: {
-      name: 'TUXEDO CAT',
-      entry: "Hey, traveler! Welcome to Michelle's room.\nHow do you want to enter?",
+      name: 'MICHELLE SALCEDO PORTFOLIO',
+      entry: "Hey, traveler! Welcome to my room.\nHow do you want to enter?",
       sound: 'ENTER WITH SOUND', quiet: 'ENTER QUIETLY', skip: 'SKIP TUTORIAL',
       questPC: 'MAIN QUEST\nTurn on the computer. Press the power button!',
-      questScreen: "Quest complete!\nNow click the screen to enter Michelle's main portfolio.",
+      questScreen: "Quest complete!\nNow click the screen to enter my main portfolio.",
       xpC1: 'Log in, then DOUBLE-CLICK the desktop icons to open each app.',
       xpC2: 'Drag windows around by their title bars, just like real Windows.',
       xpC3: "To go back: press ESC, the X button, or the monitor's power button.",
@@ -780,11 +809,11 @@
       xs5: "You're all set! Everything on this desktop is clickable.\nPress ESC or 'cerrar ✕' to go back to the room."
     },
     es: {
-      name: 'GATO ESMOQUIN',
-      entry: '¡Hey, viajero! Bienvenido al cuarto de Michelle.\n¿Cómo quieres entrar?',
+      name: 'MICHELLE SALCEDO PORTFOLIO',
+      entry: '¡Hey, viajero! Bienvenido a mi cuarto.\n¿Cómo quieres entrar?',
       sound: 'ENTRAR CON SONIDO', quiet: 'ENTRAR SIN SONIDO', skip: 'SALTAR TUTORIAL',
       questPC: 'MISIÓN PRINCIPAL\nEnciende la computadora. ¡Presiona el botón de poder!',
-      questScreen: '¡Misión cumplida!\nAhora haz click en la pantalla para entrar al portafolio principal de Michelle.',
+      questScreen: '¡Misión cumplida!\nAhora haz click en la pantalla para entrar a mi portafolio principal.',
       xpC1: 'Inicia sesión y haz DOBLE CLICK en los íconos del escritorio para abrir cada app.',
       xpC2: 'Arrastra las ventanas por su barra de título, como en Windows de verdad.',
       xpC3: 'Para volver: presiona ESC, la X, o el botón de poder del monitor.',
@@ -845,18 +874,28 @@
   window.addEventListener('resize', () => { if (hlTarget) highlight(hlTarget); });
   scene.addEventListener('pointerup', () => { if (hlTarget === telefono) setTimeout(() => highlight(telefono), 30); });
 
+  /* avatar de Michelle: "habla" con la secuencia de 4 cuadros mientras se escribe */
+  const dlgCat = document.getElementById('dlgCat');
+  const FACE_IDLE = 'assets/michelle.png', FACE_TALK = 'assets/michelle-talk.gif';
+  const facePre = new Image(); facePre.src = FACE_TALK; /* precargar para que no parpadee */
+  function faceTalk(on) {
+    const s = on ? FACE_TALK : FACE_IDLE;
+    if (!dlgCat.src.endsWith(s)) dlgCat.src = s;
+  }
+
   /* texto con efecto typewriter; click lo completa */
   function typeText(str) {
     clearInterval(twTimer); twStr = str; typing = true; dlgText.textContent = '';
+    faceTalk(true);
     let i = 0;
     twTimer = setInterval(() => {
       i += 2;
       dlgText.textContent = str.slice(0, i);
-      if (i >= str.length) { clearInterval(twTimer); typing = false; }
+      if (i >= str.length) { clearInterval(twTimer); typing = false; faceTalk(false); }
     }, 16);
   }
   dlgText.addEventListener('click', () => {
-    if (typing) { clearInterval(twTimer); typing = false; dlgText.textContent = twStr; }
+    if (typing) { clearInterval(twTimer); typing = false; dlgText.textContent = twStr; faceTalk(false); }
   });
 
   function mkBtn(label, cls, fn) {
@@ -1030,7 +1069,9 @@
   const xpTutBack = document.getElementById('xpTutBack');
   const xpTutSkip = document.getElementById('xpTutSkip');
   const xpTutNext = document.getElementById('xpTutNext');
+  const xpTutCat = document.getElementById('xpTutCat');
   const xpFrameEl = document.getElementById('xpFrame');
+  let xtFaceT = null;
   let xt = null;          /* { i, snap, advancing } */
   let xtPoll = null;
   let xtHl = null, xtHlDoc = null;  /* glow inyectado dentro del iframe */
@@ -1110,6 +1151,10 @@
     xpTutCount.textContent = (xt.i + 1) + '/' + XT_STEPS.length;
     xpTutCount.classList.remove('done');
     xpTutText.textContent = XT_STEPS[xt.i].txt(t);
+    /* Michelle "dice" el paso: gif de habla un momento y vuelve a reposo */
+    xpTutCat.src = FACE_TALK + '?t=' + Date.now();
+    clearTimeout(xtFaceT);
+    xtFaceT = setTimeout(() => { xpTutCat.src = FACE_IDLE; }, 1100);
     xpTutBack.disabled = xt.i === 0;
     xpTutSkip.textContent = t.xsSkip;
     xpTutNext.textContent = last ? t.xsGotIt : '▶';
