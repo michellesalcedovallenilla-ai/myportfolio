@@ -95,12 +95,7 @@
     50%      { transform:rotate(-4deg) translateY(-3%); }
   }
 
-  /* ventana: persianas que bajan y suben */
-  #bg-window { cursor:pointer; }
-  .blinds-wrap { position:absolute; left:24.6%; top:25.0%; width:76.2%; height:74.9%; pointer-events:none; }
-  .blinds-roller { width:100%; height:0; overflow:hidden; transition:height .65s ease-in-out; }
-  .blinds-roller img { width:100%; display:block; image-rendering:pixelated; }
-  #bg-window.closed .blinds-roller { height:100%; }
+
 
   .xp-overlay {
     position:fixed; inset:0; z-index:90; display:none;
@@ -159,10 +154,8 @@
          style="left:79.427%; top:43.056%; width:12.500%; height:33.333%;">
       <span class="tag">bg: nightstand</span>
     </div>
-    <div class="el region" id="bg-window" data-name="window" title="abrir/cerrar"
-         style="left:93.229%; top:0.000%; width:6.771%; height:47.222%;"
-         onclick="toggleWindow()">
-      <div class="blinds-wrap"><div class="blinds-roller"><img src="assets/blinds.png" alt=""></div></div>
+    <div class="el region" id="bg-window" data-name="window"
+         style="left:93.229%; top:0.000%; width:6.771%; height:47.222%;">
       <span class="tag">bg: window</span>
     </div>
     <div class="el region" id="bg-plant-hanging" data-name="plant-hanging"
@@ -179,13 +172,13 @@
       <img src="assets/monitor.png" alt="monitor">
       <span class="tag">monitor</span>
     </div>
-    <div class="el pantalla" id="el-pantalla" data-name="pantalla"
+    <div class="el pantalla off" id="el-pantalla" data-name="pantalla"
          style="left:36.458%; top:16.667%; width:31.250%; height:40.278%;">
       <iframe src="pantalla-app/index.html" title="pantalla"></iframe>
       <div class="pantalla-click" title="click para expandir" onclick="openXP()"></div>
       <span class="tag">pantalla</span>
     </div>
-    <div class="el boton" id="el-boton" data-name="boton" title="power"
+    <div class="el boton pressed" id="el-boton" data-name="boton" title="power"
          style="left:65.104%; top:60.185%; width:2.604%; height:3.519%;"
          onclick="togglePC()">
       <span class="tag">boton</span>
@@ -300,9 +293,6 @@
 
   /* ---------- gato: zzz ---------- */
   function toggleZzz() { document.getElementById('el-zzz').classList.toggle('show'); }
-
-  /* ---------- ventana: persianas abrir/cerrar ---------- */
-  function toggleWindow() { document.getElementById('bg-window').classList.toggle('closed'); }
 
   /* ---------- guacamaya: canta (siempre desde el segundo 2) ---------- */
   const sndGuacamaya = new Audio('assets/guacamaya.mp3');
