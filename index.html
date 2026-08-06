@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pixel Room — labeled</title>
+<title>Michelle's Pixel Room</title>
 <style>
   :root {
     --c-sprite: #00ff9d;
@@ -21,7 +21,7 @@
   .el img { width:100%; display:block; image-rendering:pixelated; }
   .region { height:auto; }
 
-  /* ---- debug labels (toggle with the button or pressing L) ---- */
+  /* ---- debug "lines": ocultas por defecto; presiona L o reactiva #toggle ---- */
   .labeled .sprite { outline:3px solid var(--c-sprite); outline-offset:2px; }
   .labeled .pantalla { outline:3px solid #00cfff; outline-offset:-3px; }
   .pantalla .tag { border:1px solid #00cfff; color:#aee9ff; }
@@ -285,7 +285,7 @@
 </style>
 </head>
 <body>
-  <div class="scene labeled" id="scene">
+  <div class="scene" id="scene">
     <img class="bg" src="assets/bg.png?v=2" alt="room">
     <div class="el region" id="bg-poster" data-name="poster" title="click!"
          style="left:5.625%; top:10.926%; width:17.708%; height:28.426%;"
@@ -418,7 +418,8 @@
       <span class="tag">guacamaya</span>
     </div>
   </div>
-  <button id="toggle" onclick="toggleLabels()">labels: ON</button>
+  <!-- boton "lines": invisible (opacity 0) para uso futuro; tambien se activa con la tecla L -->
+  <button id="toggle" onclick="toggleLines()" style="opacity:0; pointer-events:none;">lines</button>
 
   <div class="xp-overlay" id="xpOverlay" onclick="if(event.target===this)closeXP()">
     <div class="xp-window">
@@ -478,13 +479,14 @@
   function closeNokia() { document.getElementById('nokiaOverlay').classList.remove('open'); }
   document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeXP(); closeNokia(); } });
 
-  function toggleLabels() {
+  /* debug "lines": ocultas por defecto. para usarlas: tecla L o hacer visible #toggle */
+  function toggleLines() {
     const s = document.getElementById('scene');
     s.classList.toggle('labeled');
     document.getElementById('toggle').textContent =
-      'labels: ' + (s.classList.contains('labeled') ? 'ON' : 'OFF');
+      'lines: ' + (s.classList.contains('labeled') ? 'ON' : 'OFF');
   }
-  document.addEventListener('keydown', e => { if (e.key.toLowerCase() === 'l') toggleLabels(); });
+  document.addEventListener('keydown', e => { if (e.key.toLowerCase() === 'l') toggleLines(); });
 
   /* ---------- sonidos ---------- */
   const sndKeyboard = new Audio('assets/sfx-keyboard.mp3');
