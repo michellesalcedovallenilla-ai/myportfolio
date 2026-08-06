@@ -124,9 +124,9 @@
   }
   @keyframes twOff { 0%,52% { opacity:0; } 53%,82% { opacity:.94; } 83%,100% { opacity:0; } }
 
-  /* mouse y telefono arrastrables */
-  #el-mouse, #el-telefono { cursor:grab; touch-action:none; z-index:10; }
-  #el-mouse.dragging, #el-telefono.dragging { cursor:grabbing; z-index:50; }
+  /* mouse, telefono y speaker arrastrables */
+  #el-mouse, #el-telefono, #el-speaker { cursor:grab; touch-action:none; z-index:10; }
+  #el-mouse.dragging, #el-telefono.dragging, #el-speaker.dragging { cursor:grabbing; z-index:50; }
 
   /* guacamaya en la ventana */
   #el-guacamaya { cursor:pointer; z-index:9; }
@@ -280,7 +280,7 @@
     <div class="city-light tw"    style="left:95.21%; top:38.84%; --d:2.4s; --dl:2.0s"></div>
     <div class="city-light off"   style="left:97.71%; top:38.84%; --d:8.2s; --dl:1.5s"></div>
     <div class="el sprite" id="el-telefono" data-name="telefono" title="arrastrar"
-         style="left:76.300%; top:64.200%; width:6.400%;">
+         style="left:76.100%; top:62.400%; width:7.200%;">
       <img src="assets/telefono.png" alt="telefono">
       <span class="tag">telefono</span>
     </div>
@@ -336,6 +336,7 @@
   /* ---------- speaker: musica on/off ---------- */
   function toggleSpeaker() {
     const sp = document.getElementById('el-speaker');
+    if (sp.dataset.dragged === '1') { sp.dataset.dragged = ''; return; }
     if (sndSpeaker.paused) {
       sndSpeaker.play().then(() => sp.classList.add('playing')).catch(() => {});
     } else {
@@ -402,20 +403,24 @@
   /* ---------- elementos arrastrables (mouse, telefono) ---------- */
   (function () {
     const scene = document.getElementById('scene');
-    ['el-mouse', 'el-telefono'].forEach(id => {
+    ['el-mouse', 'el-telefono', 'el-speaker'].forEach(id => {
       const el = document.getElementById(id);
       let drag = null;
       el.addEventListener('pointerdown', e => {
         e.preventDefault();
+        el.dataset.dragged = '';
         const r = scene.getBoundingClientRect();
         const m = el.getBoundingClientRect();
         drag = { dx: e.clientX - m.left, dy: e.clientY - m.top, rect: r,
-                 w: m.width / r.width * 100, h: m.height / r.height * 100 };
+                 w: m.width / r.width * 100, h: m.height / r.height * 100,
+                 x0: e.clientX, y0: e.clientY };
         el.classList.add('dragging');
         el.setPointerCapture(e.pointerId);
       });
       el.addEventListener('pointermove', e => {
         if (!drag) return;
+        if (Math.abs(e.clientX - drag.x0) + Math.abs(e.clientY - drag.y0) > 6)
+          el.dataset.dragged = '1';
         let x = (e.clientX - drag.rect.left - drag.dx) / drag.rect.width * 100;
         let y = (e.clientY - drag.rect.top - drag.dy) / drag.rect.height * 100;
         x = Math.max(0, Math.min(100 - drag.w, x));
