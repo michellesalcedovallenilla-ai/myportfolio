@@ -425,9 +425,11 @@
       <div class="xp-titlebar">
         <span class="dot"></span>
         <span class="name">pantalla — xp-desktop-explorer</span>
+        <button class="xp-tips" onclick="toggleTips(event, 'xp')">tips 💡</button>
         <button class="xp-close" onclick="closeXP()">cerrar ✕</button>
       </div>
       <iframe id="xpFrame" title="xp-desktop-explorer" src="about:blank"></iframe>
+      <div class="tips-box" id="tipsXP"><div class="tips-title">💡 TIPS</div><ul></ul></div>
     </div>
   </div>
 
@@ -436,9 +438,11 @@
       <div class="xp-titlebar">
         <span class="dot" style="background:#8bac0f"></span>
         <span class="name">telefono — nokia-project</span>
+        <button class="xp-tips" onclick="toggleTips(event, 'nokia')">tips 💡</button>
         <button class="xp-close" onclick="closeNokia()">cerrar ✕</button>
       </div>
       <iframe id="nokiaFrame" title="nokia-project" src="about:blank"></iframe>
+      <div class="tips-box" id="tipsNK"><div class="tips-title">💡 TIPS</div><ul></ul></div>
     </div>
   </div>
 
@@ -666,6 +670,26 @@
     transform:rotate(180deg); filter:drop-shadow(2px 2px 0 rgba(0,0,0,.5));
   }
   .coach.above .coach-arrow { top:auto; bottom:-22px; transform:none; }
+
+  /* caja de consejos dentro de cada interfaz */
+  .xp-window { position:relative; }
+  .xp-tips {
+    background:#1c2f1e; color:#9fe6a0; border:1px solid #4caf6d; border-radius:5px;
+    font:700 12px ui-monospace, monospace; padding:3px 12px; cursor:pointer;
+  }
+  .xp-tips:hover { background:#274527; }
+  .tips-box {
+    position:absolute; right:10px; top:42px; z-index:20; width:min(330px, 82%);
+    background:#10131c; border:3px solid #3d4763; border-radius:10px;
+    box-shadow:0 0 0 3px #0a0c12, 0 14px 40px rgba(0,0,0,.6);
+    font-family:'VT323', ui-monospace, monospace; color:#e8ecf8;
+    padding:10px 14px 12px; display:none;
+  }
+  .tips-box.show { display:block; animation:dlgIn .2s ease-out; }
+  .tips-title { color:#ffd94d; font-size:16px; letter-spacing:2px; margin-bottom:4px; }
+  .tips-box ul { margin:0; padding-left:18px; font-size:18px; line-height:1.3; }
+  .tips-box li { margin:5px 0; }
+  @media (max-width:560px) { .tips-box ul { font-size:15px; } }
 
   @media (max-width:560px) {
     .dlg { padding:10px; gap:9px; max-height:52vh; overflow-y:auto; }
@@ -945,6 +969,17 @@
   }
   coachEl.addEventListener('click', nextMark);
   window.addEventListener('resize', () => { if (coach) showMark(); });
+
+  /* caja de consejos permanente en cada interfaz (mismo diccionario bilingue) */
+  window.toggleTips = function (e, which) {
+    e.stopPropagation();
+    const t = T[lang];
+    const box = document.getElementById(which === 'xp' ? 'tipsXP' : 'tipsNK');
+    const items = which === 'xp' ? [t.xpC1, t.xpC2, t.xpC3] : [t.nkC1, t.nkC2, t.nkC3];
+    box.querySelector('ul').innerHTML = items.map(i => '<li>' + i + '</li>').join('');
+    box.querySelector('.tips-title').textContent = '💡 ' + (lang === 'es' ? 'CONSEJOS' : 'TIPS');
+    box.classList.toggle('show');
+  };
 
   /* ---- avance por eventos REALES (sin duplicar interacciones) ---- */
   boton.addEventListener('click', () => setTimeout(() => {
