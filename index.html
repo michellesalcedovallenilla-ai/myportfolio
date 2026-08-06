@@ -750,7 +750,13 @@
   const xpOv = document.getElementById('xpOverlay');
   const nokiaOv = document.getElementById('nokiaOverlay');
 
-  let lang = localStorage.getItem('pr_lang') || 'en';
+  /* acceso seguro: si el navegador/preview bloquea localStorage, no romper nada */
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  };
+
+  let lang = store.get('pr_lang') || 'en';
   let step = null;
   let twTimer = null, twStr = '', typing = false;
 
@@ -809,7 +815,7 @@
       dlgActions.append(
         mkBtn(t.sound, 'primary', () => { applySound(true); blip(); startQuests(); }),
         mkBtn(t.quiet, '', () => { applySound(false); startQuests(); }),
-        mkBtn('EN / ES', '', () => { lang = lang === 'en' ? 'es' : 'en'; localStorage.setItem('pr_lang', lang); render(); }),
+        mkBtn('EN / ES', '', () => { lang = lang === 'en' ? 'es' : 'en'; store.set('pr_lang', lang); render(); }),
         mkBtn(t.skip, '', () => finishTutorial())
       );
     } else if (step === 'questPC') {
@@ -839,7 +845,7 @@
   }
 
   function finishTutorial() {
-    localStorage.setItem('pr_tutorialDone', '1');
+    store.set('pr_tutorialDone', '1');
     step = null; render();
   }
 
@@ -847,7 +853,7 @@
   function applySound(on) {
     [sndKeyboard, sndSpeaker, sndShutdown, sndStartup, sndDing, sndGuacamaya]
       .forEach(a => { a.muted = !on; });
-    localStorage.setItem('pr_sound', on ? 'on' : 'off');
+    store.set('pr_sound', on ? 'on' : 'off');
   }
   function blip() {
     try {
@@ -935,7 +941,7 @@
     if (!coach) return;
     const c = coach; coach = null;
     coachEl.style.display = 'none'; coachHl.style.display = 'none';
-    if (save && c.doneKey) localStorage.setItem(c.doneKey, '1');
+    if (save && c.doneKey) store.set(c.doneKey, '1');
   }
   coachEl.addEventListener('click', nextMark);
   window.addEventListener('resize', () => { if (coach) showMark(); });
@@ -951,7 +957,7 @@
     const open = xpOv.classList.contains('open');
     if (open) {
       if (step === 'questScreen') setStep('xpTips');
-      else if (!step && !localStorage.getItem('pr_tutXPDone')) startXPCoach();
+      else if (!step && !store.get('pr_tutXPDone')) startXPCoach();
     } else {
       if (coach && coach.tag === 'xp') endCoach(true);
       if (step === 'xpTips') setStep('questPhone');
@@ -962,7 +968,7 @@
     const open = nokiaOv.classList.contains('open');
     if (open) {
       if (step === 'questPhone') setStep('phoneTips');
-      else if (!step && !localStorage.getItem('pr_tutNokiaDone')) startNokiaCoach();
+      else if (!step && !store.get('pr_tutNokiaDone')) startNokiaCoach();
     } else {
       if (coach && coach.tag === 'nk') endCoach(true);
       if (step === 'phoneTips') setStep('finale');
@@ -1002,9 +1008,11 @@
   });
 
   /* ---- arranque: solo primera visita; preferencias guardadas ---- */
-  if (!localStorage.getItem('pr_lang')) localStorage.setItem('pr_lang', lang);
-  applySound(localStorage.getItem('pr_sound') !== 'off');
-  if (!localStorage.getItem('pr_tutorialDone')) setStep('entry');
+  if (!store.get('pr_lang')) store.set('pr_lang', lang);
+  applySound(store.get('pr_sound') !== 'off');
+  /* ?tutorial en la URL fuerza el tutorial aunque ya este completado */
+  const forceTut = /[?&#]tutorial\b/.test(location.href);
+  if (forceTut || !store.get('pr_tutorialDone')) setStep('entry');
 })();
 </script>
 </body>
