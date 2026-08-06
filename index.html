@@ -647,6 +647,26 @@
   }
   #helpBtn:hover, #helpBtn:focus-visible { color:#ffd94d; border-color:#ffd94d; outline:none; }
 
+  /* coach marks (mini-tutoriales XP / Nokia) */
+  .coach-hl {
+    position:fixed; pointer-events:none; z-index:95; display:none; border-radius:10px;
+    animation:hlPulse 1.4s infinite ease-in-out;
+  }
+  .coach {
+    position:fixed; z-index:96; display:none; max-width:330px; cursor:pointer;
+    background:#10131c; border:3px solid #3d4763; border-radius:10px;
+    box-shadow:0 0 0 3px #0a0c12, 0 14px 40px rgba(0,0,0,.6);
+    padding:10px 14px; font-family:'VT323', ui-monospace, monospace; color:#e8ecf8;
+    animation:dlgIn .2s ease-out;
+  }
+  .coach-text { font-size:19px; line-height:1.25; }
+  .coach-foot { display:flex; justify-content:space-between; margin-top:6px; color:#8fa0c8; font-size:16px; }
+  .coach-arrow {
+    position:absolute; width:26px; height:22px; left:var(--ax,20px); top:-22px;
+    transform:rotate(180deg); filter:drop-shadow(2px 2px 0 rgba(0,0,0,.5));
+  }
+  .coach.above .coach-arrow { top:auto; bottom:-22px; transform:none; }
+
   @media (max-width:560px) {
     .dlg { padding:10px; gap:9px; max-height:52vh; overflow-y:auto; }
     .dlg-cat { width:54px; height:54px; }
@@ -654,6 +674,8 @@
     .dlg-text { font-size:17px; min-height:48px; }
     .dlg-btn { font-size:15px; padding:5px 10px; }
     #helpBtn { bottom:auto; top:14px; }
+    .coach { max-width:78vw; }
+    .coach-text { font-size:16px; }
   }
 </style>
 
@@ -666,6 +688,13 @@
   </div>
 </div>
 <button id="helpBtn" title="repetir tutorial">?</button>
+
+<div class="coach" id="coach">
+  <svg class="coach-arrow" viewBox="0 0 30 26" shape-rendering="crispEdges"><polygon points="7,0 23,0 23,8 30,8 15,26 0,8 7,8" fill="#ffd94d" stroke="#4a3500" stroke-width="2"/></svg>
+  <div class="coach-text" id="coachText"></div>
+  <div class="coach-foot"><span class="coach-count" id="coachCount"></span><span class="dlg-hint">▼</span></div>
+</div>
+<div class="coach-hl" id="coachHl"></div>
 
 <script>
 (function () {
@@ -682,9 +711,13 @@
       sound: 'ENTER WITH SOUND', quiet: 'ENTER QUIETLY', skip: 'SKIP TUTORIAL',
       questPC: 'MAIN QUEST\nTurn on the computer. Press the power button!',
       questScreen: "Quest complete!\nNow click the screen to enter Michelle's main portfolio.",
-      xpTips: 'Inside the portfolio:\n· Double-click the desktop icons\n· Drag the windows around\n· Press ESC, X, or the power button to return',
+      xpC1: 'Log in, then DOUBLE-CLICK the desktop icons to open each app.',
+      xpC2: 'Drag windows around by their title bars, just like real Windows.',
+      xpC3: "To go back: press ESC, the X button, or the monitor's power button.",
       questPhone: 'SIDE QUEST\nPick up the phone on the desk.',
-      phoneTips: 'Use the phone controls to explore.\nPress ESC or X to come back.',
+      nkC1: 'Move through the menus with the D-PAD and press the center to select.',
+      nkC2: 'The number keys work too — tap them, or tap items right on the screen.',
+      nkC3: 'Press ESC or the X to come back to the room.',
       finale: 'The computer holds the main portfolio.\nEverything else is yours to discover. Good luck!',
       finish: 'FINISH', cont: '▼'
     },
@@ -694,9 +727,13 @@
       sound: 'ENTRAR CON SONIDO', quiet: 'ENTRAR SIN SONIDO', skip: 'SALTAR TUTORIAL',
       questPC: 'MISIÓN PRINCIPAL\nEnciende la computadora. ¡Presiona el botón de poder!',
       questScreen: '¡Misión cumplida!\nAhora haz click en la pantalla para entrar al portafolio principal de Michelle.',
-      xpTips: 'Dentro del portafolio:\n· Doble click en los íconos del escritorio\n· Arrastra las ventanas\n· Presiona ESC, X o el botón de poder para volver',
+      xpC1: 'Inicia sesión y haz DOBLE CLICK en los íconos del escritorio para abrir cada app.',
+      xpC2: 'Arrastra las ventanas por su barra de título, como en Windows de verdad.',
+      xpC3: 'Para volver: presiona ESC, la X, o el botón de poder del monitor.',
       questPhone: 'MISIÓN SECUNDARIA\nToma el teléfono del escritorio.',
-      phoneTips: 'Usa los controles del teléfono para explorar.\nPresiona ESC o X para volver.',
+      nkC1: 'Muévete por los menús con el D-PAD y presiona el centro para elegir.',
+      nkC2: 'Las teclas numéricas también funcionan — tócalas o toca los elementos en pantalla.',
+      nkC3: 'Presiona ESC o la X para volver al cuarto.',
       finale: 'La computadora guarda el portafolio principal.\nTodo lo demás es tuyo para descubrir. ¡Suerte!',
       finish: 'TERMINAR', cont: '▼'
     }
@@ -780,15 +817,11 @@
     } else if (step === 'questScreen') {
       typeText(t.questScreen); highlight(pantalla);
     } else if (step === 'xpTips') {
-      typeText(t.xpTips);
-      const h = document.createElement('span'); h.className = 'dlg-hint'; h.textContent = t.cont;
-      dlgActions.append(h);
+      dlg.classList.remove('show'); startXPCoach();
     } else if (step === 'questPhone') {
       typeText(t.questPhone); highlight(telefono);
     } else if (step === 'phoneTips') {
-      typeText(t.phoneTips);
-      const h = document.createElement('span'); h.className = 'dlg-hint'; h.textContent = t.cont;
-      dlgActions.append(h);
+      dlg.classList.remove('show'); startNokiaCoach();
     } else if (step === 'finale') {
       typeText(t.finale);
       dlgActions.append(mkBtn(t.finish, 'primary', () => finishTutorial()));
@@ -827,6 +860,86 @@
     } catch (e) {}
   }
 
+  /* ================= MINI-TUTORIALES coach (XP / Nokia) ================= */
+  const coachEl = document.getElementById('coach');
+  const coachText = document.getElementById('coachText');
+  const coachCount = document.getElementById('coachCount');
+  const coachHl = document.getElementById('coachHl');
+  let coach = null; /* { tag, marks, i, doneKey } */
+
+  function btnRect(sel) {
+    const r = document.querySelector(sel).getBoundingClientRect();
+    return { x: r.x, y: r.y, w: r.width, h: r.height };
+  }
+  function xpSubRect(fx, fy, fw, fh) {
+    const r = document.getElementById('xpFrame').getBoundingClientRect();
+    return { x: r.x + r.width * fx, y: r.y + r.height * fy, w: r.width * fw, h: r.height * fh };
+  }
+  function nkSubRect(fx, fy, fw, fh) {
+    const fr = document.getElementById('nokiaFrame').getBoundingClientRect();
+    try { /* medir el telefono real dentro del iframe (mismo origen) */
+      const p = document.getElementById('nokiaFrame').contentDocument
+        .querySelector('#phone').getBoundingClientRect();
+      return { x: fr.x + p.x + p.width * fx, y: fr.y + p.y + p.height * fy, w: p.width * fw, h: p.height * fh };
+    } catch (e) {
+      return { x: fr.x + fr.width * .2, y: fr.y + fr.height * fy, w: fr.width * .6, h: fr.height * fh };
+    }
+  }
+  function coachMarksXP() {
+    const t = T[lang];
+    return [
+      { rect: () => xpSubRect(.01, .30, .22, .62), text: t.xpC1 },
+      { rect: () => xpSubRect(.25, .02, .50, .10), text: t.xpC2 },
+      { rect: () => btnRect('#xpOverlay .xp-close'), text: t.xpC3 }
+    ];
+  }
+  function coachMarksNokia() {
+    const t = T[lang];
+    return [
+      { rect: () => nkSubRect(.36, .55, .28, .15), text: t.nkC1 },
+      { rect: () => nkSubRect(.08, .73, .84, .25), text: t.nkC2 },
+      { rect: () => btnRect('#nokiaOverlay .xp-close'), text: t.nkC3 }
+    ];
+  }
+  function startCoach(tag, doneKey) {
+    endCoach(true);
+    coach = { tag, marks: tag === 'xp' ? coachMarksXP() : coachMarksNokia(), i: 0, doneKey };
+    showMark();
+  }
+  function startXPCoach() { startCoach('xp', 'pr_tutXPDone'); }
+  function startNokiaCoach() { startCoach('nk', 'pr_tutNokiaDone'); }
+  function showMark() {
+    if (!coach) return;
+    const m = coach.marks[coach.i], r = m.rect();
+    coachHl.style.display = 'block';
+    coachHl.style.left = r.x + 'px'; coachHl.style.top = r.y + 'px';
+    coachHl.style.width = r.w + 'px'; coachHl.style.height = r.h + 'px';
+    coachEl.style.display = 'block';
+    coachText.textContent = m.text;
+    coachCount.textContent = (coach.i + 1) + '/' + coach.marks.length;
+    const cw = coachEl.offsetWidth, ch = coachEl.offsetHeight;
+    const below = (r.y + r.h + ch + 26 < window.innerHeight);
+    const cx = Math.max(8, Math.min(window.innerWidth - cw - 8, r.x + r.w / 2 - cw / 2));
+    const cy = below ? r.y + r.h + 14 : Math.max(8, r.y - ch - 14);
+    coachEl.style.left = cx + 'px'; coachEl.style.top = cy + 'px';
+    coachEl.classList.toggle('above', !below);
+    coachEl.style.setProperty('--ax',
+      Math.max(12, Math.min(cw - 40, r.x + r.w / 2 - cx - 13)) + 'px');
+  }
+  function nextMark() {
+    if (!coach) return;
+    coach.i++;
+    if (coach.i >= coach.marks.length) endCoach(true); else showMark();
+  }
+  function endCoach(save) {
+    if (!coach) return;
+    const c = coach; coach = null;
+    coachEl.style.display = 'none'; coachHl.style.display = 'none';
+    if (save && c.doneKey) localStorage.setItem(c.doneKey, '1');
+  }
+  coachEl.addEventListener('click', nextMark);
+  window.addEventListener('resize', () => { if (coach) showMark(); });
+
   /* ---- avance por eventos REALES (sin duplicar interacciones) ---- */
   boton.addEventListener('click', () => setTimeout(() => {
     const off = pantalla.classList.contains('off');
@@ -836,33 +949,57 @@
 
   new MutationObserver(() => {
     const open = xpOv.classList.contains('open');
-    if (open && step === 'questScreen') setStep('xpTips');
-    else if (!open && step === 'xpTips') setStep('questPhone');
+    if (open) {
+      if (step === 'questScreen') setStep('xpTips');
+      else if (!step && !localStorage.getItem('pr_tutXPDone')) startXPCoach();
+    } else {
+      if (coach && coach.tag === 'xp') endCoach(true);
+      if (step === 'xpTips') setStep('questPhone');
+    }
   }).observe(xpOv, { attributes: true, attributeFilter: ['class'] });
 
   new MutationObserver(() => {
     const open = nokiaOv.classList.contains('open');
-    if (open && step === 'questPhone') setStep('phoneTips');
-    else if (!open && step === 'phoneTips') setStep('finale');
+    if (open) {
+      if (step === 'questPhone') setStep('phoneTips');
+      else if (!step && !localStorage.getItem('pr_tutNokiaDone')) startNokiaCoach();
+    } else {
+      if (coach && coach.tag === 'nk') endCoach(true);
+      if (step === 'phoneTips') setStep('finale');
+    }
   }).observe(nokiaOv, { attributes: true, attributeFilter: ['class'] });
 
-  /* tips: click / Enter / Space / Escape los ocultan (la mision sigue) */
-  function dismissTips() { if (step === 'xpTips' || step === 'phoneTips') dlg.classList.remove('show'); }
-  dlg.addEventListener('click', e => { if (!e.target.closest('.dlg-btn') && !typing) dismissTips(); });
+  /* teclado: coach primero, luego dialogos */
+  let lastEsc = 0; /* Escape puede llegar duplicado desde iframes: ignorar el eco */
+  /* capture:true -> este handler ve la tecla ANTES de que se cierren los overlays,
+     asi actua con el estado previo (los MutationObserver corren entre listeners) */
   document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      const now = Date.now();
+      if (now - lastEsc < 350) return;
+      lastEsc = now;
+    }
+    if (coach) {
+      if (e.key === 'Enter' || e.key === ' ') { nextMark(); e.preventDefault(); }
+      else if (e.key === 'Escape') endCoach(true);
+      return;
+    }
     if (!step) return;
     if (e.key === 'Enter' || e.key === ' ') {
-      if (step === 'xpTips' || step === 'phoneTips') { dismissTips(); e.preventDefault(); }
-      else if (step === 'finale') { finishTutorial(); e.preventDefault(); }
+      if (step === 'finale') { finishTutorial(); e.preventDefault(); }
     } else if (e.key === 'Escape') {
-      if (step === 'xpTips' || step === 'phoneTips') dismissTips();
-      else if (step === 'entry' || step === 'finale') finishTutorial();
+      if (step === 'entry' || step === 'finale') finishTutorial();
       /* en misiones Escape no hace nada: pertenece a cerrar XP/Nokia */
     }
-  });
+  }, { capture: true });
 
-  /* boton ? permanente: repite las instrucciones */
-  document.getElementById('helpBtn').addEventListener('click', () => startQuests());
+  /* boton ? permanente: repite las instrucciones segun el contexto */
+  document.getElementById('helpBtn').addEventListener('click', () => {
+    if (coach) return;
+    if (xpOv.classList.contains('open')) startXPCoach();
+    else if (nokiaOv.classList.contains('open')) startNokiaCoach();
+    else startQuests();
+  });
 
   /* ---- arranque: solo primera visita; preferencias guardadas ---- */
   if (!localStorage.getItem('pr_lang')) localStorage.setItem('pr_lang', lang);
