@@ -431,6 +431,21 @@
       <iframe id="xpFrame" title="xp-desktop-explorer" src="about:blank"></iframe>
       <div class="tips-box" id="tipsXP"><div class="tips-title">💡 TIPS</div><ul></ul></div>
     </div>
+    <div class="xp-tut" id="xpTut">
+      <img class="xp-tut-cat" src="assets/cat.png" alt="gato guia">
+      <div class="xp-tut-main">
+        <div class="xp-tut-head">
+          <span class="xp-tut-title" id="xpTutTitle"></span>
+          <span class="xp-tut-count" id="xpTutCount"></span>
+        </div>
+        <div class="xp-tut-text" id="xpTutText"></div>
+      </div>
+      <div class="xp-tut-nav">
+        <button class="xp-tut-btn" id="xpTutBack" title="anterior">◀</button>
+        <button class="xp-tut-btn" id="xpTutSkip" title="saltar">skip</button>
+        <button class="xp-tut-btn primary" id="xpTutNext" title="siguiente">▶</button>
+      </div>
+    </div>
   </div>
 
   <div class="xp-overlay" id="nokiaOverlay" onclick="if(event.target===this)closeNokia()">
@@ -691,6 +706,36 @@
   .tips-box li { margin:5px 0; }
   @media (max-width:560px) { .tips-box ul { font-size:15px; } }
 
+  /* panel de tutorial guiado dentro de XP (espacio negro bajo la ventana) */
+  #xpOverlay { flex-direction:column; gap:10px; padding:10px; }
+  #xpOverlay.with-tut .xp-window { width:min(94vw,116vh); max-height:62vh; flex:0 0 auto; }
+  .xp-tut {
+    display:none; width:min(94vw,116vh); flex:0 0 auto; align-items:center; gap:12px;
+    background:#10131c; border:3px solid #3d4763; border-radius:10px;
+    box-shadow:0 0 0 3px #0a0c12, 0 14px 40px rgba(0,0,0,.6);
+    padding:10px 14px; font-family:'VT323', ui-monospace, monospace; color:#e8ecf8;
+  }
+  #xpOverlay.with-tut .xp-tut { display:flex; animation:dlgIn .2s ease-out; }
+  .xp-tut-cat {
+    width:58px; height:58px; object-fit:cover; border-radius:8px; flex:0 0 auto;
+    image-rendering:pixelated; border:2px solid #3d4763; background:#0a0c12;
+  }
+  .xp-tut-main { flex:1; min-width:0; }
+  .xp-tut-head { display:flex; justify-content:space-between; align-items:baseline; gap:10px; }
+  .xp-tut-title { color:#ffd94d; font-size:16px; letter-spacing:2px; }
+  .xp-tut-count { color:#8fa0c8; font-size:16px; }
+  .xp-tut-count.done { color:#9fe6a0; }
+  .xp-tut-text { font-size:19px; line-height:1.28; white-space:pre-line; margin-top:2px; }
+  .xp-tut-nav { display:flex; flex-direction:column; gap:6px; flex:0 0 auto; }
+  .xp-tut-btn {
+    font:400 16px 'VT323', ui-monospace, monospace; color:#e8ecf8; cursor:pointer;
+    background:#1a2030; border:2px solid #3d4763; border-radius:6px; padding:3px 12px;
+  }
+  .xp-tut-btn:hover, .xp-tut-btn:focus-visible { border-color:#ffd94d; color:#ffd94d; outline:none; }
+  .xp-tut-btn.primary { background:#274327; border-color:#4caf6d; color:#c8f0c8; }
+  .xp-tut-btn.primary:hover { background:#2f522f; color:#fff; border-color:#7bd87b; }
+  .xp-tut-btn:disabled { opacity:.35; cursor:default; pointer-events:none; }
+
   @media (max-width:560px) {
     .dlg { padding:10px; gap:9px; max-height:52vh; overflow-y:auto; }
     .dlg-cat { width:54px; height:54px; }
@@ -700,6 +745,12 @@
     #helpBtn { bottom:auto; top:14px; }
     .coach { max-width:78vw; }
     .coach-text { font-size:16px; }
+    #xpOverlay.with-tut .xp-window { max-height:44vh; }
+    .xp-tut { padding:8px 10px; gap:8px; }
+    .xp-tut-cat { width:42px; height:42px; }
+    .xp-tut-text { font-size:15px; }
+    .xp-tut-title, .xp-tut-count { font-size:13px; }
+    .xp-tut-btn { font-size:14px; padding:2px 9px; }
   }
 </style>
 
@@ -743,7 +794,13 @@
       nkC2: 'The number keys work too — tap them, or tap items right on the screen.',
       nkC3: 'Press ESC or the X to come back to the room.',
       finale: 'The computer holds the main portfolio.\nEverything else is yours to discover. Good luck!',
-      finish: 'FINISH', cont: '▼'
+      finish: 'FINISH', cont: '▼',
+      xsTitle: 'HOW TO USE THIS PC', xsSkip: 'skip', xsGotIt: 'GOT IT ✓',
+      xs1: "Wait for the loading screen, then click 'Michelle Salcedo'.\nThe password types itself — no typing needed!",
+      xs2: "DOUBLE-CLICK any desktop icon to open it.\nTry 'Resume.pdf' (the orange cat) or 'Projects' (the cow).",
+      xs3: "Drag the window by its blue title bar to move it around.\nClose it with the red ✕ when you're done.",
+      xs4: "Click the green 'start' button (bottom-left)\nto find every app in one place.",
+      xs5: "You're all set! Everything on this desktop is clickable.\nPress ESC or 'cerrar ✕' to go back to the room."
     },
     es: {
       name: 'GATO ESMOQUIN',
@@ -759,7 +816,13 @@
       nkC2: 'Las teclas numéricas también funcionan — tócalas o toca los elementos en pantalla.',
       nkC3: 'Presiona ESC o la X para volver al cuarto.',
       finale: 'La computadora guarda el portafolio principal.\nTodo lo demás es tuyo para descubrir. ¡Suerte!',
-      finish: 'TERMINAR', cont: '▼'
+      finish: 'TERMINAR', cont: '▼',
+      xsTitle: 'CÓMO USAR ESTA PC', xsSkip: 'saltar', xsGotIt: 'ENTENDIDO ✓',
+      xs1: "Espera la pantalla de carga y haz click en 'Michelle Salcedo'.\n¡La contraseña se escribe sola!",
+      xs2: "Haz DOBLE CLICK en cualquier ícono del escritorio para abrirlo.\nPrueba 'Resume.pdf' (el gato naranja) o 'Projects' (la vaca).",
+      xs3: 'Arrastra la ventana por su barra de título azul para moverla.\nCiérrala con la ✕ roja cuando termines.',
+      xs4: "Haz click en el botón verde 'start' (abajo a la izquierda)\npara encontrar todas las apps en un solo lugar.",
+      xs5: "¡Listo! Todo en este escritorio se puede clickear.\nPresiona ESC o 'cerrar ✕' para volver al cuarto."
     }
   };
 
@@ -936,7 +999,7 @@
     coach = { tag, marks: tag === 'xp' ? coachMarksXP() : coachMarksNokia(), i: 0, doneKey };
     showMark();
   }
-  function startXPCoach() { startCoach('xp', 'pr_tutXPDone'); }
+  function startXPCoach() { startXPTut(); } /* el panel guiado reemplaza al coach XP */
   function startNokiaCoach() { startCoach('nk', 'pr_tutNokiaDone'); }
   function showMark() {
     if (!coach) return;
@@ -981,6 +1044,155 @@
     box.classList.toggle('show');
   };
 
+  /* ============ TUTORIAL GUIADO XP (panel bajo la ventana) ============
+     Detecta el DOM real de la app XP (mismo origen) y avanza solo:
+     login -> abrir app -> arrastrar/cerrar ventana -> menu inicio -> listo */
+  const xpTutCount = document.getElementById('xpTutCount');
+  const xpTutText = document.getElementById('xpTutText');
+  const xpTutTitle = document.getElementById('xpTutTitle');
+  const xpTutBack = document.getElementById('xpTutBack');
+  const xpTutSkip = document.getElementById('xpTutSkip');
+  const xpTutNext = document.getElementById('xpTutNext');
+  const xpFrameEl = document.getElementById('xpFrame');
+  let xt = null;          /* { i, snap, advancing } */
+  let xtPoll = null;
+  let xtHl = null, xtHlDoc = null;  /* glow inyectado dentro del iframe */
+
+  function xpDoc() {
+    try { return xpFrameEl.contentDocument || null; } catch (e) { return null; }
+  }
+  function xtIcon(d, label) {
+    const ics = d.querySelectorAll('.xp-landscape-icon');
+    for (const ic of ics) {
+      const l = ic.querySelector('.xp-landscape-label');
+      if (l && l.textContent.trim() === label) return ic;
+    }
+    return null;
+  }
+  function xtLastWin(d) {
+    const ws = d.querySelectorAll('.xp-window-wrapper');
+    return ws.length ? ws[ws.length - 1] : null;
+  }
+  const XT_STEPS = [
+    { txt: t => t.xs1,
+      target: d => d.querySelector('.xp-user-card'),
+      done: d => !!d.querySelector('.desktop') },
+    { txt: t => t.xs2,
+      target: d => xtIcon(d, 'Resume.pdf') || d.querySelector('.xp-landscape-icon'),
+      done: d => !!d.querySelector('.xp-window-wrapper') },
+    { txt: t => t.xs3,
+      target: d => { const w = xtLastWin(d); return w ? (w.querySelector('.xp-titlebar') || w) : null; },
+      enter: d => { const w = xtLastWin(d); return w ? { tf: w.style.transform } : null; },
+      done: (d, snap) => {
+        const w = xtLastWin(d);
+        if (!w) return !!snap; /* cerro la ventana que habia al entrar */
+        return !!(snap && w.style.transform !== snap.tf); /* la arrastro (translate cambia) */
+      } },
+    { txt: t => t.xs4,
+      target: d => d.querySelector('.xp-start-btn'),
+      done: d => !!d.querySelector('.xp-start-menu') },
+    { txt: t => t.xs5, target: () => null, done: () => false }
+  ];
+
+  function xtEnsureHl(doc) {
+    if (xtHl && xtHlDoc === doc && xtHl.isConnected) return xtHl;
+    try {
+      const st = doc.createElement('style');
+      st.textContent = '.xpt-hl{position:absolute;z-index:2147483000;pointer-events:none;border-radius:10px;'
+        + 'animation:xptPulse 1.2s infinite ease-in-out;}'
+        + '@keyframes xptPulse{0%,100%{box-shadow:0 0 0 3px #ffd94d,0 0 16px 5px rgba(255,217,77,.55);}'
+        + '50%{box-shadow:0 0 0 3px #ffd94d,0 0 30px 12px rgba(255,217,77,.9);}}';
+      doc.head.appendChild(st);
+      xtHl = doc.createElement('div');
+      xtHl.className = 'xpt-hl';
+      doc.body.appendChild(xtHl);
+      xtHlDoc = doc;
+      return xtHl;
+    } catch (e) { return null; }
+  }
+  function xtShowHl(el) {
+    if (!el) { xtClearHl(); return; }
+    const h = xtEnsureHl(el.ownerDocument);
+    if (!h) return;
+    const r = el.getBoundingClientRect();
+    const w = el.ownerDocument.defaultView;
+    const pad = 6;
+    h.style.display = 'block';
+    h.style.left = (r.left + (w ? w.scrollX : 0) - pad) + 'px';
+    h.style.top = (r.top + (w ? w.scrollY : 0) - pad) + 'px';
+    h.style.width = (r.width + pad * 2) + 'px';
+    h.style.height = (r.height + pad * 2) + 'px';
+  }
+  function xtClearHl() { if (xtHl) xtHl.style.display = 'none'; }
+
+  function xtRender() {
+    if (!xt) return;
+    const t = T[lang];
+    const last = xt.i === XT_STEPS.length - 1;
+    xpTutTitle.textContent = '💡 ' + t.xsTitle;
+    xpTutCount.textContent = (xt.i + 1) + '/' + XT_STEPS.length;
+    xpTutCount.classList.remove('done');
+    xpTutText.textContent = XT_STEPS[xt.i].txt(t);
+    xpTutBack.disabled = xt.i === 0;
+    xpTutSkip.textContent = t.xsSkip;
+    xpTutNext.textContent = last ? t.xsGotIt : '▶';
+  }
+  function xtGo(i) {
+    if (!xt) return;
+    xt.i = Math.max(0, Math.min(XT_STEPS.length - 1, i));
+    xt.advancing = false;
+    const d = xpDoc(), s = XT_STEPS[xt.i];
+    xt.snap = (d && s.enter) ? s.enter(d) : null;
+    xtRender();
+  }
+  function startXPTut() {
+    endCoach(true);
+    xtStopPoll();
+    xt = { i: 0, snap: null, advancing: false };
+    /* add() de una clase ya presente re-dispara al MutationObserver en chromium:
+       solo mutar si falta, asi el observer no entra en bucle */
+    if (!xpOv.classList.contains('with-tut')) xpOv.classList.add('with-tut');
+    xtGo(0);
+    xtPoll = setInterval(xtTick, 400);
+  }
+  function endXPTut(save) {
+    if (!xt) return;
+    xt = null;
+    xtStopPoll();
+    xtClearHl();
+    xpOv.classList.remove('with-tut');
+    if (save) store.set('pr_tutXPDone', '1');
+  }
+  function xtStopPoll() { if (xtPoll) { clearInterval(xtPoll); xtPoll = null; } }
+
+  function xtTick() {
+    if (!xt) return;
+    const d = xpDoc();
+    if (!d || !d.body) return;
+    const s = XT_STEPS[xt.i];
+    /* foto tardia: si al entrar no habia ventana, tomarla cuando aparezca */
+    if (s.enter && xt.snap === null) xt.snap = s.enter(d);
+    if (!xt.advancing && xt.i < XT_STEPS.length - 1 && s.done(d, xt.snap)) {
+      xt.advancing = true;
+      xpTutCount.classList.add('done');
+      xpTutCount.textContent = '✓ ' + (xt.i + 1) + '/' + XT_STEPS.length;
+      blip();
+      setTimeout(() => { if (xt && xt.advancing) xtGo(xt.i + 1); }, 750);
+      return;
+    }
+    let el = null;
+    try { el = s.target(d); } catch (e) {}
+    xtShowHl(el);
+  }
+
+  xpTutBack.addEventListener('click', () => { if (xt) { blip(); xtGo(xt.i - 1); } });
+  xpTutNext.addEventListener('click', () => {
+    if (!xt) return;
+    blip();
+    if (xt.i === XT_STEPS.length - 1) endXPTut(true); else xtGo(xt.i + 1);
+  });
+  xpTutSkip.addEventListener('click', () => { if (xt) endXPTut(true); });
+
   /* ---- avance por eventos REALES (sin duplicar interacciones) ---- */
   boton.addEventListener('click', () => setTimeout(() => {
     const off = pantalla.classList.contains('off');
@@ -992,8 +1204,10 @@
     const open = xpOv.classList.contains('open');
     if (open) {
       if (step === 'questScreen') setStep('xpTips');
-      else if (!step && !store.get('pr_tutXPDone')) startXPCoach();
+      /* guard !xt: startXPTut muta la clase (with-tut) y re-dispara este observer */
+      else if (!step && !xt && !store.get('pr_tutXPDone')) startXPCoach();
     } else {
+      if (xt) endXPTut(true);
       if (coach && coach.tag === 'xp') endCoach(true);
       if (step === 'xpTips') setStep('questPhone');
     }
@@ -1020,6 +1234,11 @@
       if (now - lastEsc < 350) return;
       lastEsc = now;
     }
+    if (xt) {
+      /* Escape cierra el overlay y el observador termina el panel solo */
+      if (e.key === 'Enter' || e.key === ' ') { xpTutNext.click(); e.preventDefault(); }
+      return;
+    }
     if (coach) {
       if (e.key === 'Enter' || e.key === ' ') { nextMark(); e.preventDefault(); }
       else if (e.key === 'Escape') endCoach(true);
@@ -1036,7 +1255,7 @@
 
   /* boton ? permanente: repite las instrucciones segun el contexto */
   document.getElementById('helpBtn').addEventListener('click', () => {
-    if (coach) return;
+    if (coach || xt) return;
     if (xpOv.classList.contains('open')) startXPCoach();
     else if (nokiaOv.classList.contains('open')) startNokiaCoach();
     else startQuests();
