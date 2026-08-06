@@ -124,9 +124,9 @@
   }
   @keyframes twOff { 0%,52% { opacity:0; } 53%,82% { opacity:.94; } 83%,100% { opacity:0; } }
 
-  /* mouse arrastrable */
-  #el-mouse { cursor:grab; touch-action:none; z-index:10; }
-  #el-mouse.dragging { cursor:grabbing; z-index:50; }
+  /* mouse y telefono arrastrables */
+  #el-mouse, #el-telefono { cursor:grab; touch-action:none; z-index:10; }
+  #el-mouse.dragging, #el-telefono.dragging { cursor:grabbing; z-index:50; }
 
   /* guacamaya en la ventana */
   #el-guacamaya { cursor:pointer; z-index:9; }
@@ -279,8 +279,8 @@
     <div class="city-light tw"    style="left:98.88%; top:38.84%; --d:3.6s; --dl:1.1s"></div>
     <div class="city-light tw"    style="left:95.21%; top:38.84%; --d:2.4s; --dl:2.0s"></div>
     <div class="city-light off"   style="left:97.71%; top:38.84%; --d:8.2s; --dl:1.5s"></div>
-    <div class="el sprite" id="el-telefono" data-name="telefono"
-         style="left:20.000%; top:44.500%; width:3.600%;">
+    <div class="el sprite" id="el-telefono" data-name="telefono" title="arrastrar"
+         style="left:76.500%; top:67.000%; width:5.200%;">
       <img src="assets/telefono.png" alt="telefono">
       <span class="tag">telefono</span>
     </div>
@@ -399,32 +399,34 @@
     }
   }
 
-  /* ---------- mouse arrastrable ---------- */
+  /* ---------- elementos arrastrables (mouse, telefono) ---------- */
   (function () {
-    const el = document.getElementById('el-mouse');
     const scene = document.getElementById('scene');
-    let drag = null;
-    el.addEventListener('pointerdown', e => {
-      e.preventDefault();
-      const r = scene.getBoundingClientRect();
-      const m = el.getBoundingClientRect();
-      drag = { dx: e.clientX - m.left, dy: e.clientY - m.top, rect: r,
-               w: m.width / r.width * 100, h: m.height / r.height * 100 };
-      el.classList.add('dragging');
-      el.setPointerCapture(e.pointerId);
+    ['el-mouse', 'el-telefono'].forEach(id => {
+      const el = document.getElementById(id);
+      let drag = null;
+      el.addEventListener('pointerdown', e => {
+        e.preventDefault();
+        const r = scene.getBoundingClientRect();
+        const m = el.getBoundingClientRect();
+        drag = { dx: e.clientX - m.left, dy: e.clientY - m.top, rect: r,
+                 w: m.width / r.width * 100, h: m.height / r.height * 100 };
+        el.classList.add('dragging');
+        el.setPointerCapture(e.pointerId);
+      });
+      el.addEventListener('pointermove', e => {
+        if (!drag) return;
+        let x = (e.clientX - drag.rect.left - drag.dx) / drag.rect.width * 100;
+        let y = (e.clientY - drag.rect.top - drag.dy) / drag.rect.height * 100;
+        x = Math.max(0, Math.min(100 - drag.w, x));
+        y = Math.max(0, Math.min(100 - drag.h, y));
+        el.style.left = x + '%';
+        el.style.top = y + '%';
+      });
+      const end = () => { drag = null; el.classList.remove('dragging'); };
+      el.addEventListener('pointerup', end);
+      el.addEventListener('pointercancel', end);
     });
-    el.addEventListener('pointermove', e => {
-      if (!drag) return;
-      let x = (e.clientX - drag.rect.left - drag.dx) / drag.rect.width * 100;
-      let y = (e.clientY - drag.rect.top - drag.dy) / drag.rect.height * 100;
-      x = Math.max(0, Math.min(100 - drag.w, x));
-      y = Math.max(0, Math.min(100 - drag.h, y));
-      el.style.left = x + '%';
-      el.style.top = y + '%';
-    });
-    const end = () => { drag = null; el.classList.remove('dragging'); };
-    el.addEventListener('pointerup', end);
-    el.addEventListener('pointercancel', end);
   })();
 </script>
 </body>
