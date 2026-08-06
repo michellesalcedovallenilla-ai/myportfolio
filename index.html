@@ -576,14 +576,58 @@
     const scene = document.getElementById('scene');
     // zona del escritorio que actua como "mouse pad" -> se mapea a toda la pantalla
     const PAD = { l: 7.812, t: 67.593, r: 88.020, b: 99.074 };
+    function cursorNorm(el) {
+      const cx = parseFloat(el.style.left) + parseFloat(el.dataset.w) / 2;
+      const cy = parseFloat(el.style.top) + parseFloat(el.dataset.h) / 2;
+      return {
+        x: Math.max(0, Math.min(1, (cx - PAD.l) / (PAD.r - PAD.l))),
+        y: Math.max(0, Math.min(1, (cy - PAD.t) / (PAD.b - PAD.t)))
+      };
+    }
     function sendCursor(el) {
       const pf = document.querySelector('#el-pantalla iframe');
       if (!pf || !pf.contentWindow) return;
-      const cx = parseFloat(el.style.left) + parseFloat(el.dataset.w) / 2;
-      const cy = parseFloat(el.style.top) + parseFloat(el.dataset.h) / 2;
-      const nx = Math.max(0, Math.min(1, (cx - PAD.l) / (PAD.r - PAD.l)));
-      const ny = Math.max(0, Math.min(1, (cy - PAD.t) / (PAD.b - PAD.t)));
-      pf.contentWindow.postMessage({ type: 'xp-cursor', x: nx, y: ny }, '*');
+      const n = cursorNorm(el);
+      pf.contentWindow.postMessage({ type: 'xp-cursor', x: n.x, y: n.y }, '*');
+    }
+    /* clickcito sintetico (respeta el mute del tutorial) */
+    function mouseClickSnd() {
+      try {
+        if (localStorage.getItem('pr_sound') === 'off') return;
+        const ac = new (window.AudioContext || window.webkitAudioContext)();
+        const o = ac.createOscillator(), g = ac.createGain();
+        o.type = 'square'; o.frequency.value = 1900;
+        g.gain.setValueAtTime(.07, ac.currentTime);
+        g.gain.exponentialRampToValueAtTime(.001, ac.currentTime + .045);
+        o.connect(g).connect(ac.destination); o.start(); o.stop(ac.currentTime + .05);
+      } catch (e) {}
+    }
+    /* despierta el monitor si esta apagado (como un mouse real) */
+    function wakeScreen() {
+      const p = document.getElementById('el-pantalla');
+      if (p.classList.contains('off')) togglePC();
+    }
+    /* doble click en el mouse de la mesa = doble click real dentro de la pantalla XP */
+    function xpDblClick(el) {
+      const pf = document.querySelector('#el-pantalla iframe');
+      if (!pf) return;
+      sendCursor(el);
+      mouseClickSnd();
+      wakeScreen();
+      let w, d;
+      try { w = pf.contentWindow; d = pf.contentDocument; } catch (e) { return; }
+      if (!w || !d) return;
+      const n = cursorNorm(el);
+      const x = n.x * w.innerWidth, y = n.y * w.innerHeight;
+      const t = d.elementFromPoint(x, y);
+      if (!t) return;
+      const opts = { bubbles: true, cancelable: true, clientX: x, clientY: y, button: 0 };
+      for (let i = 0; i < 2; i++) {
+        t.dispatchEvent(new w.MouseEvent('mousedown', opts));
+        t.dispatchEvent(new w.MouseEvent('mouseup', opts));
+        t.dispatchEvent(new w.MouseEvent('click', opts));
+      }
+      t.dispatchEvent(new w.MouseEvent('dblclick', opts));
     }
     ['el-mouse', 'el-telefono', 'el-speaker'].forEach(id => {
       const el = document.getElementById(id);
@@ -610,12 +654,27 @@
         y = Math.max(0, Math.min(100 - drag.h, y));
         el.style.left = x + '%';
         el.style.top = y + '%';
-        if (id === 'el-mouse' && el.dataset.dragged === '1') sendCursor(el);
+        if (id === 'el-mouse' && el.dataset.dragged === '1') {
+          wakeScreen(); /* mover el mouse despierta el monitor, como uno real */
+          sendCursor(el);
+        }
       });
       const end = () => { drag = null; el.classList.remove('dragging'); };
       el.addEventListener('pointerup', end);
       el.addEventListener('pointercancel', end);
     });
+
+    /* doble-tap sobre el mouse de la mesa (sin arrastrar) -> click real en la pantalla */
+    (function () {
+      const m = document.getElementById('el-mouse');
+      let lastTap = 0;
+      m.addEventListener('pointerup', () => {
+        if (m.dataset.dragged === '1') return; /* fue arrastre, no click */
+        const now = performance.now();
+        if (now - lastTap < 400) { lastTap = 0; xpDblClick(m); }
+        else lastTap = now;
+      });
+    })();
   })();
 </script>
 
