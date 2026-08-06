@@ -593,5 +593,282 @@
     });
   })();
 </script>
+
+<!-- ================= TUTORIAL RPG (bilingue EN/ES) ================= -->
+<style>
+  .dlg {
+    position:fixed; left:50%; bottom:14px; transform:translateX(-50%); z-index:80;
+    width:min(720px, 94vw); display:none; gap:12px; padding:12px 14px;
+    background:#10131c; border:3px solid #3d4763; border-radius:10px;
+    box-shadow:0 0 0 3px #0a0c12, 0 14px 40px rgba(0,0,0,.6);
+    font-family:'VT323', ui-monospace, monospace; color:#e8ecf8;
+  }
+  .dlg.show { display:flex; animation:dlgIn .25s ease-out; }
+  @keyframes dlgIn { from { transform:translate(-50%,16px); opacity:0; } }
+  .dlg-cat {
+    width:84px; height:84px; object-fit:contain; image-rendering:pixelated;
+    background:#1a1f2e; border:3px solid #3d4763; border-radius:8px; align-self:flex-start;
+  }
+  .dlg-main { flex:1; min-width:0; }
+  .dlg-name { color:#ffd94d; font-size:15px; letter-spacing:2px; margin-bottom:2px; }
+  .dlg-text { font-size:21px; line-height:1.25; min-height:54px; white-space:pre-line; cursor:pointer; }
+  .dlg-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; align-items:center; }
+  .dlg-btn {
+    font-family:inherit; font-size:18px; letter-spacing:1px; color:#e8ecf8;
+    background:#232a3d; border:2px solid #3d4763; border-radius:6px;
+    padding:6px 14px; cursor:pointer; touch-action:manipulation;
+  }
+  .dlg-btn:hover, .dlg-btn:focus-visible { background:#2e3852; border-color:#ffd94d; outline:none; }
+  .dlg-btn.primary { background:#3d2f0e; border-color:#ffd94d; color:#ffd94d; }
+  .dlg-hint { margin-left:auto; color:#8fa0c8; font-size:20px; animation:hintBlink 1.1s steps(1) infinite; }
+  @keyframes hintBlink { 50% { opacity:0; } }
+
+  /* resaltado sutil: glow pulsante + flecha pixel (sin bordes grandes) */
+  .quest-hl {
+    position:absolute; pointer-events:none; z-index:70; display:none; border-radius:12px;
+    animation:hlPulse 1.4s infinite ease-in-out;
+  }
+  @keyframes hlPulse {
+    0%, 100% { box-shadow:0 0 0 2px rgba(255,217,77,.5), 0 0 16px 4px rgba(255,217,77,.3); }
+    50%      { box-shadow:0 0 0 2px rgba(255,217,77,.12), 0 0 28px 10px rgba(255,217,77,.55); }
+  }
+  .quest-arrow {
+    position:absolute; left:50%; top:-36px; transform:translateX(-50%);
+    width:30px; height:26px; animation:arrowBounce .8s infinite ease-in-out;
+    filter:drop-shadow(2px 2px 0 rgba(0,0,0,.5));
+  }
+  @keyframes arrowBounce { 0%,100% { transform:translate(-50%,0); } 50% { transform:translate(-50%,-8px); } }
+
+  /* boton permanente de ayuda */
+  #helpBtn {
+    position:fixed; right:14px; bottom:58px; z-index:99; width:34px; height:34px;
+    font:400 20px 'VT323', ui-monospace, monospace; color:#9fb2c8;
+    background:#12161f; border:2px solid #3d4763; border-radius:8px; cursor:pointer;
+  }
+  #helpBtn:hover, #helpBtn:focus-visible { color:#ffd94d; border-color:#ffd94d; outline:none; }
+
+  @media (max-width:560px) {
+    .dlg { padding:10px; gap:9px; max-height:52vh; overflow-y:auto; }
+    .dlg-cat { width:54px; height:54px; }
+    .dlg-name { font-size:12px; }
+    .dlg-text { font-size:17px; min-height:48px; }
+    .dlg-btn { font-size:15px; padding:5px 10px; }
+    #helpBtn { bottom:auto; top:14px; }
+  }
+</style>
+
+<div class="dlg" id="dlg">
+  <img class="dlg-cat" src="assets/cat.png" alt="gato guia">
+  <div class="dlg-main">
+    <div class="dlg-name" id="dlgName"></div>
+    <div class="dlg-text" id="dlgText" title="click para completar el texto"></div>
+    <div class="dlg-actions" id="dlgActions"></div>
+  </div>
+</div>
+<button id="helpBtn" title="repetir tutorial">?</button>
+
+<script>
+(function () {
+  /* fuente pixel para el tutorial */
+  const fl = document.createElement('link');
+  fl.rel = 'stylesheet';
+  fl.href = 'https://fonts.googleapis.com/css2?family=VT323&display=swap';
+  document.head.appendChild(fl);
+
+  const T = {
+    en: {
+      name: 'TUXEDO CAT',
+      entry: "Hey, traveler! Welcome to Michelle's room.\nHow do you want to enter?",
+      sound: 'ENTER WITH SOUND', quiet: 'ENTER QUIETLY', skip: 'SKIP TUTORIAL',
+      questPC: 'MAIN QUEST\nTurn on the computer. Press the power button!',
+      questScreen: "Quest complete!\nNow click the screen to enter Michelle's main portfolio.",
+      xpTips: 'Inside the portfolio:\n· Double-click the desktop icons\n· Drag the windows around\n· Press ESC, X, or the power button to return',
+      questPhone: 'SIDE QUEST\nPick up the phone on the desk.',
+      phoneTips: 'Use the phone controls to explore.\nPress ESC or X to come back.',
+      finale: 'The computer holds the main portfolio.\nEverything else is yours to discover. Good luck!',
+      finish: 'FINISH', cont: '▼'
+    },
+    es: {
+      name: 'GATO ESMOQUIN',
+      entry: '¡Hey, viajero! Bienvenido al cuarto de Michelle.\n¿Cómo quieres entrar?',
+      sound: 'ENTRAR CON SONIDO', quiet: 'ENTRAR SIN SONIDO', skip: 'SALTAR TUTORIAL',
+      questPC: 'MISIÓN PRINCIPAL\nEnciende la computadora. ¡Presiona el botón de poder!',
+      questScreen: '¡Misión cumplida!\nAhora haz click en la pantalla para entrar al portafolio principal de Michelle.',
+      xpTips: 'Dentro del portafolio:\n· Doble click en los íconos del escritorio\n· Arrastra las ventanas\n· Presiona ESC, X o el botón de poder para volver',
+      questPhone: 'MISIÓN SECUNDARIA\nToma el teléfono del escritorio.',
+      phoneTips: 'Usa los controles del teléfono para explorar.\nPresiona ESC o X para volver.',
+      finale: 'La computadora guarda el portafolio principal.\nTodo lo demás es tuyo para descubrir. ¡Suerte!',
+      finish: 'TERMINAR', cont: '▼'
+    }
+  };
+
+  const dlg = document.getElementById('dlg');
+  const dlgName = document.getElementById('dlgName');
+  const dlgText = document.getElementById('dlgText');
+  const dlgActions = document.getElementById('dlgActions');
+  const scene = document.getElementById('scene');
+  const boton = document.getElementById('el-boton');
+  const pantalla = document.getElementById('el-pantalla');
+  const telefono = document.getElementById('el-telefono');
+  const xpOv = document.getElementById('xpOverlay');
+  const nokiaOv = document.getElementById('nokiaOverlay');
+
+  let lang = localStorage.getItem('pr_lang') || 'en';
+  let step = null;
+  let twTimer = null, twStr = '', typing = false;
+
+  /* resaltado: caja de glow + flecha, creada dentro de la escena */
+  const hl = document.createElement('div');
+  hl.className = 'quest-hl';
+  hl.innerHTML = '<svg class="quest-arrow" viewBox="0 0 30 26" shape-rendering="crispEdges">'
+    + '<polygon points="7,0 23,0 23,8 30,8 15,26 0,8 7,8" fill="#ffd94d" stroke="#4a3500" stroke-width="2"/></svg>';
+  scene.appendChild(hl);
+  let hlTarget = null;
+
+  function highlight(el) {
+    hlTarget = el;
+    const s = scene.getBoundingClientRect(), r = el.getBoundingClientRect();
+    hl.style.left = ((r.left - s.left) / s.width * 100) + '%';
+    hl.style.top = ((r.top - s.top) / s.height * 100) + '%';
+    hl.style.width = (r.width / s.width * 100) + '%';
+    hl.style.height = (r.height / s.height * 100) + '%';
+    hl.style.display = 'block';
+  }
+  function clearHl() { hlTarget = null; hl.style.display = 'none'; }
+  window.addEventListener('resize', () => { if (hlTarget) highlight(hlTarget); });
+  scene.addEventListener('pointerup', () => { if (hlTarget === telefono) setTimeout(() => highlight(telefono), 30); });
+
+  /* texto con efecto typewriter; click lo completa */
+  function typeText(str) {
+    clearInterval(twTimer); twStr = str; typing = true; dlgText.textContent = '';
+    let i = 0;
+    twTimer = setInterval(() => {
+      i += 2;
+      dlgText.textContent = str.slice(0, i);
+      if (i >= str.length) { clearInterval(twTimer); typing = false; }
+    }, 16);
+  }
+  dlgText.addEventListener('click', () => {
+    if (typing) { clearInterval(twTimer); typing = false; dlgText.textContent = twStr; }
+  });
+
+  function mkBtn(label, cls, fn) {
+    const b = document.createElement('button');
+    b.className = 'dlg-btn' + (cls ? ' ' + cls : '');
+    b.textContent = label;
+    b.addEventListener('click', fn);
+    return b;
+  }
+
+  function render() {
+    const t = T[lang];
+    dlgName.textContent = t.name;
+    dlgActions.innerHTML = '';
+    clearHl();
+    if (!step) { dlg.classList.remove('show'); return; }
+    dlg.classList.add('show');
+    if (step === 'entry') {
+      typeText(t.entry);
+      dlgActions.append(
+        mkBtn(t.sound, 'primary', () => { applySound(true); blip(); startQuests(); }),
+        mkBtn(t.quiet, '', () => { applySound(false); startQuests(); }),
+        mkBtn('EN / ES', '', () => { lang = lang === 'en' ? 'es' : 'en'; localStorage.setItem('pr_lang', lang); render(); }),
+        mkBtn(t.skip, '', () => finishTutorial())
+      );
+    } else if (step === 'questPC') {
+      typeText(t.questPC); highlight(boton);
+    } else if (step === 'questScreen') {
+      typeText(t.questScreen); highlight(pantalla);
+    } else if (step === 'xpTips') {
+      typeText(t.xpTips);
+      const h = document.createElement('span'); h.className = 'dlg-hint'; h.textContent = t.cont;
+      dlgActions.append(h);
+    } else if (step === 'questPhone') {
+      typeText(t.questPhone); highlight(telefono);
+    } else if (step === 'phoneTips') {
+      typeText(t.phoneTips);
+      const h = document.createElement('span'); h.className = 'dlg-hint'; h.textContent = t.cont;
+      dlgActions.append(h);
+    } else if (step === 'finale') {
+      typeText(t.finale);
+      dlgActions.append(mkBtn(t.finish, 'primary', () => finishTutorial()));
+    }
+  }
+
+  function setStep(s) { step = s; render(); }
+
+  /* empieza las misiones respetando el estado real de la escena */
+  function startQuests() {
+    if (nokiaOv.classList.contains('open')) setStep('phoneTips');
+    else if (xpOv.classList.contains('open')) setStep('xpTips');
+    else if (!pantalla.classList.contains('off')) setStep('questScreen');
+    else setStep('questPC');
+  }
+
+  function finishTutorial() {
+    localStorage.setItem('pr_tutorialDone', '1');
+    step = null; render();
+  }
+
+  /* sonido: silencia/activa TODOS los audios existentes; nunca reproduce solo */
+  function applySound(on) {
+    [sndKeyboard, sndSpeaker, sndShutdown, sndStartup, sndDing, sndGuacamaya]
+      .forEach(a => { a.muted = !on; });
+    localStorage.setItem('pr_sound', on ? 'on' : 'off');
+  }
+  function blip() {
+    try {
+      const ac = new (window.AudioContext || window.webkitAudioContext)();
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.type = 'square'; o.frequency.value = 660;
+      g.gain.setValueAtTime(.06, ac.currentTime);
+      g.gain.exponentialRampToValueAtTime(.001, ac.currentTime + .18);
+      o.connect(g).connect(ac.destination); o.start(); o.stop(ac.currentTime + .2);
+    } catch (e) {}
+  }
+
+  /* ---- avance por eventos REALES (sin duplicar interacciones) ---- */
+  boton.addEventListener('click', () => setTimeout(() => {
+    const off = pantalla.classList.contains('off');
+    if (step === 'questPC' && !off) setStep('questScreen');
+    else if (step === 'questScreen' && off) setStep('questPC');
+  }, 60));
+
+  new MutationObserver(() => {
+    const open = xpOv.classList.contains('open');
+    if (open && step === 'questScreen') setStep('xpTips');
+    else if (!open && step === 'xpTips') setStep('questPhone');
+  }).observe(xpOv, { attributes: true, attributeFilter: ['class'] });
+
+  new MutationObserver(() => {
+    const open = nokiaOv.classList.contains('open');
+    if (open && step === 'questPhone') setStep('phoneTips');
+    else if (!open && step === 'phoneTips') setStep('finale');
+  }).observe(nokiaOv, { attributes: true, attributeFilter: ['class'] });
+
+  /* tips: click / Enter / Space / Escape los ocultan (la mision sigue) */
+  function dismissTips() { if (step === 'xpTips' || step === 'phoneTips') dlg.classList.remove('show'); }
+  dlg.addEventListener('click', e => { if (!e.target.closest('.dlg-btn') && !typing) dismissTips(); });
+  document.addEventListener('keydown', e => {
+    if (!step) return;
+    if (e.key === 'Enter' || e.key === ' ') {
+      if (step === 'xpTips' || step === 'phoneTips') { dismissTips(); e.preventDefault(); }
+      else if (step === 'finale') { finishTutorial(); e.preventDefault(); }
+    } else if (e.key === 'Escape') {
+      if (step === 'xpTips' || step === 'phoneTips') dismissTips();
+      else if (step === 'entry' || step === 'finale') finishTutorial();
+      /* en misiones Escape no hace nada: pertenece a cerrar XP/Nokia */
+    }
+  });
+
+  /* boton ? permanente: repite las instrucciones */
+  document.getElementById('helpBtn').addEventListener('click', () => startQuests());
+
+  /* ---- arranque: solo primera visita; preferencias guardadas ---- */
+  if (!localStorage.getItem('pr_lang')) localStorage.setItem('pr_lang', lang);
+  applySound(localStorage.getItem('pr_sound') !== 'off');
+  if (!localStorage.getItem('pr_tutorialDone')) setStep('entry');
+})();
+</script>
 </body>
 </html>
