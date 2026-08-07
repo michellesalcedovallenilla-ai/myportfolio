@@ -168,13 +168,13 @@
     perspective-origin: 50% 50%;
     touch-action: manipulation;
     -webkit-touch-callout: none;
-    transform: scale(var(--phone-scale, 1.50)) translateY(16px);
+    transform: scale(var(--phone-scale, 1.10)) translateY(16px);
     /* Phone is always visible — hidden behind cover overlay via z-index */
   }
 
   .phone-flipper {
     position: relative;
-    width: 330px;
+    width: 452px;
     height: 620px;
     transform-style: preserve-3d;
     cursor: grab;
@@ -212,29 +212,10 @@
 
   .phone {
     position: absolute;
-    width: 330px;
+    width: 452px;
     height: 620px;
-    /* iPhone 3GS front: glossy black polycarbonate */
-    background: linear-gradient(160deg, #232323 0%, #181818 35%, #111111 70%, #0d0d0d 100%);
-    border-radius: 50px;
-    box-shadow:
-      /* stainless-steel band — visible chrome ring */
-      0 0 0 2px #707070,
-      0 0 0 3px #555555,
-      0 0 0 4.5px #2a2a2a,
-      /* top-edge highlight — catches warm ambient light */
-      inset 0 1px 0 rgba(255,255,255,0.14),
-      /* left-edge 3D shine — simulates light reflecting off bezel */
-      inset 2px 0 8px rgba(255,255,255,0.06),
-      /* bottom-edge shadow */
-      inset 0 -1px 0 rgba(0,0,0,0.65),
-      /* deep drop shadow */
-      0 30px 80px rgba(0,0,0,0.75),
-      0 10px 35px rgba(0,0,0,0.55);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow: hidden;
+    /* Mango body — 3D render, shadow baked into the image */
+    background: url('assets/mango-front.webp') center / 100% 100% no-repeat;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
     transform: translateZ(5px);
@@ -242,22 +223,16 @@
   }
 
   .phone::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 50px;
-    border: 1px solid rgba(255,255,255,0.07);
-    pointer-events: none;
-    z-index: 10;
+    display: none;
   }
 
   /* === iPhone 3 / 3GS Back Shell === */
 
   .phone-back {
     position: absolute;
-    width: 330px;
+    width: 452px;
     height: 620px;
-    border-radius: 56px;
+    border-radius: 0;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
     transform: rotateY(180deg) translateZ(8px);
@@ -268,67 +243,20 @@
   .phone-back-inner {
     width: 100%;
     height: 100%;
-    border-radius: 56px;
-    overflow: hidden;
     position: relative;
-    /* Glossy white polycarbonate — fat curved iPhone 3GS shell */
-    background:
-      /* Center bright, edges darken for 3D curvature illusion */
-      radial-gradient(ellipse at 48% 42%, #fcfcfc 0%, #f5f5f3 25%, #edece8 50%, #e0ddd8 75%, #d2cec6 100%);
-    box-shadow:
-      /* outer chrome/stainless band — thicker for fat look */
-      0 0 0 3px #d4d4d4,
-      0 0 0 5px #a8a8a8,
-      0 0 0 6.5px #787878,
-      0 0 0 7.5px #555,
-      /* inner curvature highlights — strong left/right falloff for roundness */
-      inset 0 3px 10px rgba(255,255,255,0.95),
-      inset 0 -4px 12px rgba(0,0,0,0.10),
-      inset 10px 0 22px rgba(0,0,0,0.07),
-      inset -10px 0 22px rgba(0,0,0,0.07),
-      /* top/bottom curvature shadow */
-      inset 0 15px 30px rgba(0,0,0,0.03),
-      inset 0 -15px 30px rgba(0,0,0,0.05),
-      /* drop shadow for physical depth — bigger for fat phone */
-      0 8px 16px rgba(0,0,0,0.25),
-      0 30px 70px rgba(0,0,0,0.55),
-      0 55px 110px rgba(0,0,0,0.30);
+    /* Mango body back — 3D render, shadow baked into the image */
+    background: url('assets/mango-back.webp') center / 100% 100% no-repeat;
   }
 
-  /* Glossy reflection — big curved highlight like real iPhone 3GS glossy back */
-  .phone-back-inner::before {
-    content: '';
-    position: absolute;
-    top: -25%; left: -35%;
-    width: 170%;
-    height: 75%;
-    border-radius: 50%;
-    background: linear-gradient(
-      150deg,
-      rgba(255,255,255,0.70) 0%,
-      rgba(255,255,255,0.45) 20%,
-      rgba(255,255,255,0.18) 45%,
-      rgba(255,255,255,0)    60%
-    );
-    transform: rotate(-8deg);
-    pointer-events: none;
-    z-index: 4;
-  }
+  /* Hide the old iPhone-shell detailing — the mango render replaces it all */
+  .phone-back-inner > * { display: none !important; }
 
-  /* Inner rim highlight — thin bright edge separating shell from chrome ring */
-  .phone-back-inner::after {
-    content: '';
-    position: absolute;
-    inset: 1px;
-    border-radius: 55px;
-    border: 1.5px solid rgba(255,255,255,0.85);
-    box-shadow:
-      inset 0 0 0 0.5px rgba(0,0,0,0.04),
-      /* secondary soft gloss at bottom */
-      inset 0 -25px 50px rgba(255,255,255,0.10);
-    pointer-events: none;
-    z-index: 5;
-  }
+
+  .phone-back-inner::before { display: none; }
+
+
+  .phone-back-inner::after { display: none; }
+
 
   /* Dust/wear/micro-scratch overlay — makes it look used */
   .back-wear {
@@ -386,6 +314,7 @@
 
   /* === 3D Phone Edge / Thickness === */
   .phone-edge {
+    display: none;
     position: absolute;
     width: 330px;
     height: 620px;
@@ -547,7 +476,7 @@
   .phone__top-bezel {
     width: 100%;
     height: 76px;
-    display: flex;
+    display: none;
     flex-direction: column;
     align-items: center;
     justify-content: flex-end;
@@ -580,64 +509,48 @@
   }
 
   .phone__screen-slot {
+    position: absolute;
+    left: 123.2px;
+    top: 151.5px;
     width: 290px;
     height: 434px;
+    transform: scale(0.7137, 0.7033);
+    transform-origin: top left;
     background: #000;
-    position: relative;
     overflow: hidden;
-    flex-shrink: 0;
-    border-radius: 4px;
-    /* Screen embedded in recess — subtle rim catches ambient light, deep inset shadows */
+    border-radius: 20px;
+    /* deep inset shadows — screen set into the mango body */
     box-shadow:
-      /* very faint rim separating screen from dark bezel */
-      0 0 0 1px rgba(255,255,255,0.07),
-      /* deep inset shadows on all four edges — screen-in-glass feel */
       inset 0 3px 10px rgba(0,0,0,0.85),
       inset 0 -2px 8px rgba(0,0,0,0.65),
       inset 3px 0 8px rgba(0,0,0,0.55),
       inset -3px 0 8px rgba(0,0,0,0.55);
   }
 
+
   .phone__bottom-bezel {
-    width: 100%;
-    height: 106px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
   }
 
   .phone__home-btn {
-    width: 50px; height: 50px;
+    position: absolute;
+    left: 49.77%;
+    top: 494px;
+    transform: translate(-50%, -50%);
+    width: 64px; height: 64px;
     border-radius: 50%;
-    /* Dark glossy dome — matches iPhone 3GS black polycarbonate face */
-    background: radial-gradient(circle at 48% 38%, #303030 0%, #1e1e1e 45%, #111 100%);
+    background: transparent;
     border: none;
-    box-shadow:
-      /* outer ring — thin chrome-ish band */
-      0 0 0 1.5px #404040,
-      0 0 0 3px #161616,
-      /* top-light specular — glass dome effect */
-      inset 0 1px 0 rgba(255,255,255,0.14),
-      /* bottom depth shadow */
-      inset 0 -2px 4px rgba(0,0,0,0.6),
-      /* drop shadow to seat it in the bezel */
-      0 2px 6px rgba(0,0,0,0.6);
+    box-shadow: none;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
+    pointer-events: auto;
   }
 
-  .phone__home-btn::after {
-    content: '';
-    width: 18px; height: 18px;
-    border-radius: 5px;
-    /* Rounded-square symbol: dark, barely visible, period-accurate */
-    border: 1.5px solid rgba(130,130,130,0.45);
-    background: transparent;
-  }
+
+  .phone__home-btn::after { display: none; }
+
 
   .lock-screen {
     position: absolute;
@@ -2936,63 +2849,63 @@
 
   /* Large desktop (1400px+): full size */
   @media (min-width: 1400px) and (min-height: 800px) {
-    :root { --phone-scale: 1.50; }
+    :root { --phone-scale: 1.10; }
   }
 
   /* Standard desktop / laptop (1024-1399px) */
   @media (max-width: 1399px) {
-    :root { --phone-scale: 1.30; }
+    :root { --phone-scale: 0.95; }
   }
 
   /* Laptop with short viewport */
   @media (max-width: 1399px) and (max-height: 750px) {
-    :root { --phone-scale: 1.05; }
+    :root { --phone-scale: 0.77; }
   }
 
   /* Tablet portrait */
   @media (max-width: 1024px) {
-    :root { --phone-scale: 1.30; }
+    :root { --phone-scale: 0.95; }
   }
 
   /* Small tablet / large phone */
   @media (max-width: 768px) {
-    :root { --phone-scale: 1.05; }
+    :root { --phone-scale: 0.77; }
   }
 
   /* Mobile portrait */
   @media (max-width: 480px) {
-    :root { --phone-scale: 0.82; }
+    :root { --phone-scale: 0.60; }
     .flip-hint { font-size: 10px; margin-top: 8px; }
   }
 
   /* Very small screens */
   @media (max-width: 375px) {
-    :root { --phone-scale: 0.75; }
+    :root { --phone-scale: 0.55; }
   }
 
   /* Short mobile viewports (browser chrome eating space) */
   @media (max-width: 480px) and (max-height: 750px) {
-    :root { --phone-scale: 0.72; }
+    :root { --phone-scale: 0.53; }
   }
 
   @media (max-width: 480px) and (max-height: 667px) {
-    :root { --phone-scale: 0.65; }
+    :root { --phone-scale: 0.47; }
   }
 
   /* Short viewports — landscape phones */
   @media (max-height: 500px) {
-    :root { --phone-scale: 0.60; }
+    :root { --phone-scale: 0.44; }
     .flip-hint { margin-top: 4px; font-size: 9px; }
   }
 
   /* Medium-short viewports — small laptops */
   @media (min-width: 769px) and (max-height: 650px) {
-    :root { --phone-scale: 0.95; }
+    :root { --phone-scale: 0.69; }
   }
 
   /* Tablet landscape */
   @media (min-width: 769px) and (max-width: 1024px) and (orientation: landscape) {
-    :root { --phone-scale: 1.0; }
+    :root { --phone-scale: 0.73; }
   }
 
   /* Reduced motion — kill heavy animations for performance */
@@ -3748,7 +3661,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const wFactor = isMobile ? 0.85 : isTablet ? 0.88 : 0.95;
     const hFactor = isMobile ? 0.82 : isTablet ? 0.85 : 0.97;
     const maxScale = isMobile ? 1.10 : isTablet ? 1.30 : 1.55;
-    const scaleW = (vw * wFactor) / 330;
+    const scaleW = (vw * wFactor) / 452;
     const scaleH = (vh * hFactor) / 650;
     // Ensure enough space below centered phone for flip hint + back button
     const uiBelow = isMobile ? 70 : isTablet ? 50 : 25;
@@ -3841,7 +3754,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const ox = (W - sw) / 2, oy = (H - sh) / 2;
       ctx.drawImage(img, ox, oy, sw, sh);
     };
-    img.src = 'assets/wallpaper.png';
+    img.src = 'assets/wallpaper.jpg';
   }
   drawWallpaper();
 
@@ -5589,6 +5502,8 @@ document.addEventListener('DOMContentLoaded', () => {
        msgs:[{f:'michi the cat',t:'meow'},{f:'michelle',t:'you literally just ate'},{f:'michi the cat',t:'meow.'},{f:'michelle',t:'no'},{f:'michi the cat',t:'MEOW'},{f:'michelle',t:'...fine. third dinner it is'}]},
       {name:'mom', color:'#c0a050', preview:'te mando arepas?', time:'Yesterday', unread:false,
        msgs:[{f:'mom',t:'ya comiste?'},{f:'michelle',t:'si mamá'},{f:'mom',t:'no te creo. te mando arepas?'},{f:'michelle',t:'siempre. mándame arepas'}]},
+      {name:'dad', color:'#4a6fa5', preview:'llámame cuando puedas, mi amor', time:'Sunday', unread:false,
+       msgs:[{f:'dad',t:'mi amor, cómo estás?'},{f:'michelle',t:'bien papá, trabajando mucho'},{f:'dad',t:'y eso de las redes sociales va bien?'},{f:'michelle',t:'papá, es marketing de influencers'},{f:'dad',t:'eso mismo. los influyentes'},{f:'michelle',t:'jajaja sí papá'},{f:'dad',t:'tu mamá dice que no comes bien'},{f:'michelle',t:'ustedes se ponen de acuerdo?'},{f:'dad',t:'llámame cuando puedas, mi amor'}]},
       {name:'unknown number', color:'#777', preview:'kindly send $50 itunes gift card', time:'Tuesday', unread:false,
        msgs:[{f:'unknown number',t:'CONGRATULATIONS!! You have been selected to receive $5,000,000 USD'},{f:'michelle',t:'omg finally'},{f:'unknown number',t:'kindly send $50 itunes gift card to claim'},{f:'michelle',t:'seems legit'}]}
     ];
@@ -5667,6 +5582,21 @@ document.addEventListener('DOMContentLoaded', () => {
           {match: /(cat|gato|michi)/i, replies: ['y el gato? mándame fotos','ese gato come mejor que yo']}
         ],
         fallback: ['ok mi amor','bendiciones','llámame cuando puedas','te quiero','cuéntame más']
+      },
+      'dad': {
+        delay: [1000, 2500],
+        doubleTextChance: 0.2,
+        ignoreChance: 0.0,
+        patterns: [
+          {match: /(eat|food|comida|comiste|comí|hungry|arepa|cena|almuerzo)/i, replies: ['come bien, mi amor','el mango no es cena, mija','tu mamá y yo nos preocupamos']},
+          {match: /(money|plata|dinero|rent|alquiler|sueldo|paga)/i, replies: ['te mando unos reales','cuida la plata que no crece en los mangos','avísame si necesitas algo, vale']},
+          {match: /(work|trabajo|busy|ocupada|marketing|client)/i, replies: ['y eso de los influyentes va bien?','trabaja duro pero descansa','mi hija la empresaria']},
+          {match: /(love|quiero|miss|extraño|abrazo)/i, replies: ['te quiero mucho, mi amor','aquí estamos para ti','te extrañamos, vale']},
+          {match: /(cat|gato|michi)/i, replies: ['saludos al gato','ese gato es mi nieto favorito']},
+          {match: /(llam|call|hablar|teléfono)/i, replies: ['llámame el fin de semana','aquí espero tu llamada, mi amor']},
+          {match: /(mamá|mom|madre)/i, replies: ['tu mamá te manda bendiciones','tu mamá dice que la llames también']}
+        ],
+        fallback: ['ok mi amor','bendiciones','cuéntame más','llámame el fin de semana','saludos al gato','epa, qué más']
       },
       'unknown number': {
         delay: [300, 900],
@@ -11880,7 +11810,7 @@ notes to self:
 
     const rect = phoneEl.getBoundingClientRect();
     const scale = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--phone-scale')) || 1.5;
-    const visualW = 330 * scale;
+    const visualW = 452 * scale;
     const visualH = 620 * scale;
     const phoneCenterX = rect.left + rect.width / 2;
     const phoneCenterY = rect.top + rect.height / 2;
