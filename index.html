@@ -786,6 +786,7 @@
     padding:10px 14px; font-family:'VT323', ui-monospace, monospace; color:#e8ecf8;
   }
   #xpOverlay.with-tut .xp-tut { display:flex; animation:dlgIn .2s ease-out; }
+  #xpOverlay.with-say .xp-tut { display:flex; animation:dlgIn .2s ease-out; }
   .xp-tut-cat {
     width:58px; height:58px; object-fit:cover; border-radius:8px; flex:0 0 auto;
     image-rendering:pixelated; border:2px solid #3d4763; background:#0a0c12;
@@ -1233,6 +1234,9 @@
   }
   function startXPTut() {
     endCoach(true);
+    xpSayHide();
+    xpTutBack.style.display = '';
+    xpTutSkip.style.display = '';
     xtStopPoll();
     xt = { i: 0, snap: null, advancing: false };
     /* add() de una clase ya presente re-dispara al MutationObserver en chromium:
@@ -1273,11 +1277,92 @@
 
   xpTutBack.addEventListener('click', () => { if (xt) { blip(); xtGo(xt.i - 1); } });
   xpTutNext.addEventListener('click', () => {
+    if (xpSayMode) { blip(); xpSayHide(); return; }
     if (!xt) return;
     blip();
     if (xt.i === XT_STEPS.length - 1) endXPTut(true); else xtGo(xt.i + 1);
   });
   xpTutSkip.addEventListener('click', () => { if (xt) endXPTut(true); });
+
+  /* ============ MICHELLE EXPLICA CADA VENTANA QUE ABRES ============
+     La app XP emite 'xp-window-open' (mismo origen); aqui Michelle lo
+     comenta en el mismo panel/estilo del tutorial. Solo tras el tutorial. */
+  const XP_SAY = {
+    about:      { en: "That's my story — skills, experience, and why your feed needs me. 📖",
+                  es: 'Esa soy yo — skills, experiencia y por qué tu feed me necesita. 📖' },
+    contact:    { en: 'Email AND phone, right there. I made it easy for you — say hi! ☎️',
+                  es: 'Email Y teléfono, ahí mismo. Te lo dejé fácil — ¡escríbeme! ☎️' },
+    resume:     { en: "The sacred scroll. There's a download button — take me with you. 📜",
+                  es: 'El pergamino sagrado. Hay botón de descarga — llévame contigo. 📜' },
+    portfolio:  { en: 'My work lives here! Photography in @pastflash 2019 and my websites portfolio. 📸',
+                  es: '¡Aquí vive mi trabajo! Fotografía en @pastflash 2019 y mi portafolio de websites. 📸' },
+    finder:     { en: 'Files and projects — click around, everything opens. 🗂️',
+                  es: 'Archivos y proyectos — dale click a todo, todo abre. 🗂️' },
+    camera:     { en: "Smile! ...or don't. The flying pig doesn't judge. 📷",
+                  es: '¡Sonríe! ...o no. El cerdito volador no juzga. 📷' },
+    music:      { en: 'My playlist. Volume up, obviously. 🎵',
+                  es: 'Mi playlist. Volumen al máximo, obviamente. 🎵' },
+    minesweeper:{ en: '10 mines. One wrong click and boom. GLHF. 💣',
+                  es: '10 minas. Un click mal y boom. Suerte. 💣' },
+    ie:         { en: 'My website inside my website. Site-ception. 🌐',
+                  es: 'Mi website dentro de mi website. Web-cepción. 🌐' },
+    messenger:  { en: 'Sign my guestbook! I read everything. ☀️',
+                  es: '¡Firma mi guestbook! Lo leo todo. ☀️' },
+    video:      { en: 'Cat content, as the internet intended. 📼',
+                  es: 'Contenido de gatos, como el internet lo quiso. 📼' },
+    project:    { en: 'One of my babies. Look at it. LOOK AT IT. 👀',
+                  es: 'Uno de mis bebés. Míralo. MÍRALO. 👀' },
+    paint:      { en: 'The tool of legends. Draw me something. 🎨',
+                  es: 'La herramienta de leyendas. Dibújame algo. 🎨' },
+    solitaire:  { en: 'Productivity ends here. 🃏',
+                  es: 'La productividad termina aquí. 🃏' }
+  };
+  let xpSayMode = false, xpSayT = null;
+
+  function xpSayHide() {
+    xpSayMode = false;
+    clearTimeout(xpSayT);
+    xpOv.classList.remove('with-say');
+  }
+  function xpSayShow(detail) {
+    if (xt || xpSayMode === 'locked' || !store.get('pr_tutXPDone')) return; /* el tutorial manda */
+    if (!xpOv.classList.contains('open')) return;
+    const d = detail || {};
+    const key = (d.type === 'finder' && d.title === 'Portfolio') ? 'portfolio' : d.type;
+    const say = XP_SAY[key];
+    if (!say) return;
+    xpSayMode = true;
+    xpTutTitle.textContent = '💬 ' + String(d.title || key).toUpperCase();
+    xpTutCount.textContent = '';
+    xpTutCount.classList.remove('done');
+    xpTutText.textContent = say[lang] || say.en;
+    xpTutCat.src = FACE_TALK + '?t=' + Date.now();
+    clearTimeout(xtFaceT);
+    xtFaceT = setTimeout(() => { if (!xt) xpTutCat.src = FACE_IDLE; }, 1400);
+    xpTutBack.style.display = 'none';
+    xpTutSkip.style.display = 'none';
+    xpTutNext.textContent = 'got it 👍';
+    if (!xpOv.classList.contains('with-say')) xpOv.classList.add('with-say');
+    blip();
+    clearTimeout(xpSayT);
+    xpSayT = setTimeout(xpSayHide, 9000);
+  }
+  function xpSayBind(frame) {
+    try {
+      const w = frame && frame.contentWindow;
+      if (!w || w.__xpSayBound) return;
+      w.__xpSayBound = true;
+      w.addEventListener('xp-window-open', e => xpSayShow(e.detail));
+    } catch (e) {}
+  }
+  function xpSayAttach() {
+    xpSayBind(xpFrameEl);
+    xpSayBind(document.getElementById('el-pantalla'));
+  }
+  xpFrameEl.addEventListener('load', xpSayAttach);
+  const elPantallaFrame = document.getElementById('el-pantalla');
+  if (elPantallaFrame) elPantallaFrame.addEventListener('load', xpSayAttach);
+  xpSayAttach();
 
   /* ---- avance por eventos REALES (sin duplicar interacciones) ---- */
   boton.addEventListener('click', () => setTimeout(() => {
@@ -1294,6 +1379,7 @@
       else if (!step && !xt && !store.get('pr_tutXPDone')) startXPCoach();
     } else {
       if (xt) endXPTut(true);
+      if (xpSayMode) xpSayHide();
       if (coach && coach.tag === 'xp') endCoach(true);
       if (step === 'xpTips') setStep('questPhone');
     }
@@ -1323,6 +1409,10 @@
     if (xt) {
       /* Escape cierra el overlay y el observador termina el panel solo */
       if (e.key === 'Enter' || e.key === ' ') { xpTutNext.click(); e.preventDefault(); }
+      return;
+    }
+    if (xpSayMode === true) {
+      if (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') { xpSayHide(); e.preventDefault(); }
       return;
     }
     if (coach) {
