@@ -6,6 +6,14 @@
 <title>My Digital Crib</title>
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<script>
+/* modo mobile: oculta la version desktop (forzable con ?mobile para probar) */
+(function(){try{
+  var force=/[?&#]mobile\b/.test(location.href);
+  if(force||window.matchMedia('(max-width:820px)').matches)
+    document.documentElement.classList.add('is-mobile');
+}catch(e){}})();
+</script>
 <style>
   :root {
     --c-sprite: #00ff9d;
@@ -284,9 +292,33 @@
     background:#161a20; color:#00ff9d; border:2px solid #00ff9d; border-radius:6px;
     cursor:pointer;
   }
+
+  /* ---- modo mobile: solo la home mobile; la escena desktop queda oculta ---- */
+  #mobileHome { display:none; }
+  html.is-mobile body > *:not(#mobileHome) { display:none !important; }
+  html.is-mobile #mobileHome {
+    display:flex; position:fixed; inset:0; z-index:400;
+    background:#0d0d16; flex-direction:column; align-items:center; justify-content:center;
+    gap:16px; text-align:center; padding:28px;
+    font-family:'VT323', ui-monospace, monospace; color:#e8ecf8;
+  }
+  #mobileHome .mh-face {
+    width:104px; height:104px; image-rendering:pixelated; border-radius:14px;
+    border:3px solid #00ff9d; box-shadow:0 0 24px rgba(0,255,157,.25);
+  }
+  #mobileHome .mh-title { font-size:38px; letter-spacing:2px; color:#00ff9d; text-shadow:3px 3px 0 #031; }
+  #mobileHome .mh-sub { font-size:23px; color:#ffd94d; }
+  #mobileHome .mh-note { font-size:19px; color:#8a93b8; max-width:320px; line-height:1.25; }
 </style>
 </head>
 <body>
+  <!-- home mobile: lienzo exclusivo para la version de telefono (desktop intacto) -->
+  <div id="mobileHome">
+    <img class="mh-face" src="assets/michelle.png" alt="Michelle">
+    <div class="mh-title">MY DIGITAL CRIB</div>
+    <div class="mh-sub" id="mhSub">mobile version in the works</div>
+    <div class="mh-note" id="mhNote">meanwhile, the full pixel room lives on desktop</div>
+  </div>
   <div class="scene" id="scene">
     <img class="bg" src="assets/bg.png?v=2" alt="room">
     <div class="el region" id="bg-poster" data-name="poster" title="click!"
@@ -482,8 +514,9 @@
     if (!f.dataset.loaded) { f.src = 'nokia-app/index.html'; f.dataset.loaded = '1'; }
     document.getElementById('nokiaOverlay').classList.add('open');
   }
-  /* precargar el telefono en segundo plano: la primera apertura es instantanea */
+  /* precargar el telefono en segundo plano: la primera apertura es instantanea (no en mobile) */
   window.addEventListener('load', () => setTimeout(() => {
+    if (document.documentElement.classList.contains('is-mobile')) return;
     const f = document.getElementById('nokiaFrame');
     if (f && !f.dataset.loaded) { f.src = 'nokia-app/index.html'; f.dataset.loaded = '1'; }
   }, 2500));
@@ -1456,6 +1489,17 @@
     else if (nokiaOv.classList.contains('open')) startNokiaCoach();
     else startQuests();
   });
+
+  /* ---- splash mobile: textos segun idioma guardado ---- */
+  if (document.documentElement.classList.contains('is-mobile')) {
+    const mhLang = store.get('pr_lang') === 'es' ? 'es' : 'en';
+    const mhTxt = {
+      en: ['mobile version in the works', 'meanwhile, the full pixel room lives on desktop'],
+      es: ['versión mobile en construcción', 'mientras, el pixel room completo vive en desktop']
+    }[mhLang];
+    document.getElementById('mhSub').textContent = mhTxt[0];
+    document.getElementById('mhNote').textContent = mhTxt[1];
+  }
 
   /* ---- arranque: solo primera visita; preferencias guardadas ---- */
   if (!store.get('pr_lang')) store.set('pr_lang', lang);
