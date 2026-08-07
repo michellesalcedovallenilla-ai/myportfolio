@@ -96,8 +96,8 @@
     pointer-events: none;
     /* Start slightly zoomed — eases to 1.0 during reveal for cinematic pull-back */
     transform: scale(1.04);
-    transition: opacity 1.6s ease 0.2s,
-                transform 2.2s cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
+    transition: opacity 0.5s ease 0s,
+                transform 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0s;
     will-change: opacity, transform;
   }
   .bg-interior.visible {
@@ -168,7 +168,7 @@
     perspective-origin: 50% 50%;
     touch-action: manipulation;
     -webkit-touch-callout: none;
-    transform: scale(var(--phone-scale, 1.50)) translateY(0);
+    transform: scale(var(--phone-scale, 1.50)) translateY(16px);
     /* Phone is always visible — hidden behind cover overlay via z-index */
   }
 
@@ -1107,6 +1107,7 @@
   }
 
   .icon-canvas { width: 54px; height: 54px; display: block; image-rendering: pixelated; image-rendering: crisp-edges; }
+  .icon-img { object-fit: contain; -webkit-user-drag: none; user-select: none; -webkit-user-select: none; }
 
   .icon-label {
     font-family:'VT323', ui-monospace, monospace;
@@ -3211,6 +3212,8 @@
     transform: scale(0.9);
   }
 </style>
+<link rel="preload" as="image" href="assets/bg-night.png">
+<link rel="preload" as="image" href="assets/bg-day.png">
 <script>(function(){try{var t=localStorage.getItem('crib_theme');if(t!=='light'&&t!=='night'){var h=new Date().getHours();t=(h>=6&&h<19)?'light':'night';}if(t==='light')document.documentElement.classList.add('theme-light');}catch(e){}})();</script>
 </head>
 <body>
@@ -5514,10 +5517,8 @@ document.addEventListener('DOMContentLoaded', () => {
     cell.dataset.app = icon.id;
     const delBadge = document.createElement('div'); delBadge.className = 'delete-badge'; delBadge.textContent = '×'; cell.appendChild(delBadge);
     const wrap = document.createElement('div'); wrap.className = 'icon-wrap';
-    const dpr = Math.max(2, Math.min(window.devicePixelRatio || 2, 3));
-    const S = 27; /* pixel-art: render en baja y upscale crisp */
-    const canvas = document.createElement('canvas'); canvas.className = 'icon-canvas'; canvas.width = S; canvas.height = S;
-    drawIcon(canvas.getContext('2d'), S, icon.id); wrap.appendChild(canvas); cell.appendChild(wrap);
+    const img = document.createElement('img'); img.className = 'icon-canvas icon-img'; img.src = 'assets/icons/' + icon.id + '.png'; img.alt = icon.label; img.draggable = false;
+    wrap.appendChild(img); cell.appendChild(wrap);
     if (icon.id === 'messages') { const badge = document.createElement('div'); badge.className = 'icon-badge'; badge.textContent = '1'; wrap.appendChild(badge); }
     const label = document.createElement('div'); label.className = 'icon-label'; label.textContent = icon.label; cell.appendChild(label);
     if (forDock) {
