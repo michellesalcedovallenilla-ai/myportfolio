@@ -13,7 +13,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulati
 html,body{height:100%;background:#0a0a0a;display:flex;justify-content:center;align-items:center;overflow:hidden;font-family:'VT323','Courier New',monospace;touch-action:manipulation;-ms-content-zooming:none;}
 #phone{position:relative;height:96vh;width:auto;flex-shrink:0;user-select:none;touch-action:manipulation;}
 #phone-img{height:100%;width:auto;display:block;pointer-events:none;}
-#screen{position:absolute;top:1%;left:3%;width:94%;height:46%;background:var(--bg);overflow:hidden;border-radius:1.2%;display:flex;flex-direction:column;--fs:calc(96vh * 0.46 / 20);font-size:var(--fs);color:var(--fg);image-rendering:pixelated;box-shadow:inset 0 0 0 .08em rgba(0,0,0,.16),inset 0 0 2.4em var(--screen-glow);}
+#screen{position:absolute;top:1%;left:3%;width:94%;height:52.5%;background:var(--bg);overflow:hidden;border-radius:1.2%;display:flex;flex-direction:column;--fs:calc(96vh * 0.46 / 20);font-size:var(--fs);color:var(--fg);image-rendering:pixelated;box-shadow:inset 0 0 0 .08em rgba(0,0,0,.16),inset 0 0 2.4em var(--screen-glow);}
 #screen::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:99;background:linear-gradient(180deg,var(--screen-sheen),rgba(255,255,255,0) 22%,rgba(255,255,255,0) 78%,rgba(0,0,0,.12) 100%);border-radius:inherit;}
 #screen::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:100;background:repeating-linear-gradient(to bottom,transparent 0,transparent 1px,var(--scan-line) 1px,var(--scan-line) 2px);border-radius:inherit;}
 /* STATUS BAR */
@@ -780,7 +780,7 @@ function rBoot(){
   setApp(`
     <div class="cscreen">
       <pre style="font-size:.42em;line-height:1.25;color:var(--fg);margin-bottom:.18em;animation:fadeIn .6s ease-in;letter-spacing:.08em">${art}</pre>
-      <div class="boot-logo" style="animation:fadeIn .5s ease-in .3s both">DOORS XD</div>
+      <div class="boot-logo" style="animation:fadeIn .5s ease-in .3s both">PEROLITO</div>
       <div style="font-size:.6em;color:var(--mid);letter-spacing:.1em;animation:fadeIn .5s ease-in .5s both">connecting brands</div>
       <div class="boot-bar" style="animation:fadeIn .5s ease-in .6s both"><div class="boot-fill"></div></div>
     </div>`);
