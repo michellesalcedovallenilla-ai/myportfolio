@@ -3200,39 +3200,7 @@
 </head>
 <body>
 
-<!-- ========== COVER OVERLAY — PARED OPACA con slider visible ========== -->
-<div id="cover-overlay">
-  <div id="cover-notif-container">
-    <div class="cover-notif" id="coverNotif1">
-      <div class="cover-notif-icon"><img src="assets/icon-message.png" alt="Messages"></div>
-      <div class="cover-notif-content">
-        <div class="cover-notif-header">
-          <span class="cover-notif-sender">michi the cat</span>
-          <span class="cover-notif-time">now</span>
-        </div>
-        <div class="cover-notif-body">feed me. right now. this is not a drill</div>
-      </div>
-    </div>
-    <div class="cover-notif" id="coverNotif2">
-      <div class="cover-notif-icon"><img src="assets/icon-message.png" alt="Messages"></div>
-      <div class="cover-notif-content">
-        <div class="cover-notif-header">
-          <span class="cover-notif-sender">linkedin</span>
-          <span class="cover-notif-time">now</span>
-        </div>
-        <div class="cover-notif-body">you appeared in 12 searches this week</div>
-      </div>
-    </div>
-  </div>
-  <div id="cover-swipe-zone">
-    <div class="slide-track" id="coverSlideTrack">
-      <div class="slide-knob" id="coverKnob"></div>
-      <div class="slide-text-container"><div class="slide-text">slide to unlock</div></div>
-    </div>
-  </div>
-</div>
-
-<!-- Interior background — revealed after cover unlock -->
+<!-- Interior background -->
 <div class="bg-interior" id="bgInterior"></div>
 <div class="grain-overlay" id="grainOverlay"></div>
 <script>
@@ -3256,7 +3224,6 @@
 
 <!-- Exterior decorative elements -->
 
-<button class="back-to-cover-btn" id="backToCoverBtn" title="Back to cover">&#8249;</button>
 <div class="phone-scene">
   <div class="phone-flipper" id="phoneFlipper">
 
@@ -3360,8 +3327,8 @@
               <div class="nc-notif">
                 <div class="nc-notif-icon">💬</div>
                 <div class="nc-notif-body">
-                  <div class="nc-notif-title">sunny <span class="nc-notif-time">1:22 PM</span></div>
-                  <div class="nc-notif-text">pool day?? bring the camera</div>
+                  <div class="nc-notif-title">mom <span class="nc-notif-time">1:22 PM</span></div>
+                  <div class="nc-notif-text">te mando arepas?</div>
                 </div>
               </div>
             </div>
@@ -5512,13 +5479,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const page1Icons = [
     {id:'messages', label:'Messages'}, {id:'camera', label:'Camera'}, {id:'map', label:'Map'}, {id:'music', label:'Music'},
     {id:'photobooth', label:'Photobooth'}, {id:'youtube', label:'Youtube'}, {id:'weather', label:'Weather'}, {id:'voicememo', label:'Voice Memo'},
-    {id:'pages', label:'Pages'}, {id:'notes', label:'Notes'}, {id:'newstand', label:'Newstand'}, {id:'appstore', label:'App Store'},
+    {id:'pages', label:'Pages'}, {id:'notes', label:'Notes'},
     {id:'calculator', label:'Calculator'}, {id:'compass', label:'Compass'}, {id:'cards', label:'Cards'}, {id:'clock', label:'Clock'}
   ];
   const page2Icons = [
     {id:'videos', label:'Videos'}, {id:'photos', label:'Photos'}, {id:'numbers', label:'Numbers'}, {id:'keynote', label:'Keynote'},
-    {id:'itunes', label:'iTunes'}, {id:'imovie', label:'iMovie'}, {id:'instagram', label:'Instagram'}, {id:'garageband', label:'Garageband'},
-    {id:'gamecenter', label:'Game Center'}, {id:'facetime', label:'Facetime'}, {id:'airport', label:'Airport'}, {id:'_empty', label:''}
+    {id:'imovie', label:'iMovie'}, {id:'instagram', label:'Instagram'}, {id:'garageband', label:'Garageband'},
+    {id:'facetime', label:'Facetime'}, {id:'airport', label:'Airport'}, {id:'_empty', label:''}
   ];
   const dockIcons = [
     {id:'phone', label:'Phone'}, {id:'safari', label:'Safari'}, {id:'mail', label:'Mail'}, {id:'settings', label:'Settings'}
@@ -5535,7 +5502,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const S = 27; /* pixel-art: render en baja y upscale crisp */
     const canvas = document.createElement('canvas'); canvas.className = 'icon-canvas'; canvas.width = S; canvas.height = S;
     drawIcon(canvas.getContext('2d'), S, icon.id); wrap.appendChild(canvas); cell.appendChild(wrap);
-    if (icon.id === 'messages') { const badge = document.createElement('div'); badge.className = 'icon-badge'; badge.textContent = '3'; wrap.appendChild(badge); }
+    if (icon.id === 'messages') { const badge = document.createElement('div'); badge.className = 'icon-badge'; badge.textContent = '1'; wrap.appendChild(badge); }
     const label = document.createElement('div'); label.className = 'icon-label'; label.textContent = icon.label; cell.appendChild(label);
     if (forDock) {
       const refl = document.createElement('div'); refl.className = 'dock-reflection';
@@ -5603,10 +5570,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const msgThreads = [
       {name:'michi the cat', color:'#c07040', preview:'MEOW', time:'11:47 PM', unread:true,
        msgs:[{f:'michi the cat',t:'meow'},{f:'michelle',t:'you literally just ate'},{f:'michi the cat',t:'meow.'},{f:'michelle',t:'no'},{f:'michi the cat',t:'MEOW'},{f:'michelle',t:'...fine. third dinner it is'}]},
-      {name:'sunny — solara pools', color:'#3a7ac0', preview:'booking form works perfect', time:'3:22 PM', unread:true,
-       msgs:[{f:'sunny — solara pools',t:'omg the pool site is live!! my clients love it'},{f:'michelle',t:'told you the blue tiles palette would hit'},{f:'sunny — solara pools',t:'booking form works perfect'},{f:'michelle',t:'pixel by pixel, amiga'}]},
-      {name:'argenis zabala', color:'#4a8a5a', preview:'making me look fancy out here', time:'2:08 PM', unread:true,
-       msgs:[{f:'argenis zabala',t:'the realtor page got me two showings this week'},{f:'michelle',t:'told you. good photos + fast site = showings'},{f:'argenis zabala',t:'making me look fancy out here'}]},
       {name:'mom', color:'#c0a050', preview:'te mando arepas?', time:'Yesterday', unread:false,
        msgs:[{f:'mom',t:'ya comiste?'},{f:'michelle',t:'si mamá'},{f:'mom',t:'no te creo. te mando arepas?'},{f:'michelle',t:'siempre. mándame arepas'}]},
       {name:'unknown number', color:'#777', preview:'kindly send $50 itunes gift card', time:'Tuesday', unread:false,
@@ -11896,7 +11859,7 @@ notes to self:
     const phoneEl = document.querySelector('.phone-scene');
     const backBtn = document.getElementById('backToCoverBtn');
     const flipHint = document.getElementById('flipHint');
-    if (!phoneEl || !backBtn) return;
+    if (!phoneEl) return;
 
     const rect = phoneEl.getBoundingClientRect();
     const scale = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--phone-scale')) || 1.5;
@@ -11919,16 +11882,18 @@ notes to self:
       flipHint.style.margin = '0';
     }
 
-    if (isMobile) {
-      // Mobile: back button centered below the flip hint
-      backBtn.style.left = '50%';
-      backBtn.style.transform = 'translateX(-50%)';
-      backBtn.style.top = (phoneBottom + 28) + 'px';
-    } else {
-      // Desktop: back button to the left of the phone, vertically centered
-      backBtn.style.left = Math.max(8, phoneLeft - btnSize - 12) + 'px';
-      backBtn.style.top = (phoneCenterY - btnSize / 2) + 'px';
-      backBtn.style.transform = '';
+    if (backBtn) {
+      if (isMobile) {
+        // Mobile: back button centered below the flip hint
+        backBtn.style.left = '50%';
+        backBtn.style.transform = 'translateX(-50%)';
+        backBtn.style.top = (phoneBottom + 28) + 'px';
+      } else {
+        // Desktop: back button to the left of the phone, vertically centered
+        backBtn.style.left = Math.max(8, phoneLeft - btnSize - 12) + 'px';
+        backBtn.style.top = (phoneCenterY - btnSize / 2) + 'px';
+        backBtn.style.transform = '';
+      }
     }
   }
 
@@ -11940,508 +11905,17 @@ notes to self:
 }); // end DOMContentLoaded
 </script>
 
-<!-- ========== COVER OVERLAY SCRIPT — slider superpuesto exacto ========== -->
+<!-- ========== BOOT — no cover: straight to the phone ========== -->
 <script>
-// Global site lock — phone interactions check this before responding
-window.siteUnlocked = false;
-
-// Cover overlay image is now set directly in CSS — no preload delay needed.
-
+// No cover overlay — phone is visible and interactive from the start
+window.siteUnlocked = true;
 document.addEventListener('DOMContentLoaded', function() {
-  const overlay = document.getElementById('cover-overlay');
-  const swipeZone = document.getElementById('cover-swipe-zone');
-  const knob = document.getElementById('coverKnob');
-
-  if (!overlay || !swipeZone || !knob) {
-    window.siteUnlocked = true;
-    return;
-  }
-
-  // ==========================================
-  // Position cover slider on top of phone's slide-to-unlock
-  // ==========================================
-  function applyPosition() {
-    const phoneSlideTrack = document.getElementById('slideTrack');
-    if (phoneSlideTrack) {
-      const rect = phoneSlideTrack.getBoundingClientRect();
-      // Position cover slider exactly on top of the phone's slide track
-      // getBoundingClientRect() already accounts for transform:scale
-      swipeZone.style.left = rect.left + 'px';
-      swipeZone.style.top = rect.top + 'px';
-      swipeZone.style.width = rect.width + 'px';
-      swipeZone.style.height = rect.height + 'px';
-      swipeZone.style.transform = 'none';
-      return { left: rect.left, top: rect.top, width: rect.width, height: rect.height };
-    }
-    // Fallback if phone element not found — center slider at bottom of viewport
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    const sliderW = Math.min(200, vw * 0.45);
-    const sliderH = 28;
-    swipeZone.style.left = ((vw - sliderW) / 2) + 'px';
-    swipeZone.style.top = (vh - sliderH - Math.max(60, vh * 0.12)) + 'px';
-    swipeZone.style.width = sliderW + 'px';
-    swipeZone.style.height = sliderH + 'px';
-    swipeZone.style.transform = 'none';
-    return { left: parseFloat(swipeZone.style.left), top: parseFloat(swipeZone.style.top), width: sliderW, height: sliderH };
-  }
-
-  // ===== NOTIFICATION POSITIONING =====
-  const notifContainer = document.getElementById('cover-notif-container');
-
-  function positionNotifications() {
-    if (!notifContainer || !swipeZone) return;
-    const szLeft = parseFloat(swipeZone.style.left) || 0;
-    const szTop = parseFloat(swipeZone.style.top) || 0;
-    const szWidth = parseFloat(swipeZone.style.width) || 0;
-    const szHeight = parseFloat(swipeZone.style.height) || 0;
-    notifContainer.style.left = szLeft + 'px';
-    notifContainer.style.width = szWidth + 'px';
-    // Stack above the slider with a small gap
-    const notifH = notifContainer.offsetHeight || 110;
-    notifContainer.style.top = (szTop - notifH - 8) + 'px';
-  }
-
-  // Aplicar posición inicial
-  let sliderPos = applyPosition();
-  positionNotifications();
-
-  // Recalcular en resize
-  window.addEventListener('resize', function() {
-    sliderPos = applyPosition();
-    positionNotifications();
-  });
-
-  // También en cambio de orientación en mobile
-  window.addEventListener('orientationchange', function() {
-    setTimeout(function() {
-      sliderPos = applyPosition();
-      positionNotifications();
-    }, 100);
-  });
-
-  // ===== NOTIFICATION ANIMATION =====
-  // Triggered after user's first interaction (so AudioContext can play sound)
-  (function() {
-    const notif1 = document.getElementById('coverNotif1');
-    const notif2 = document.getElementById('coverNotif2');
-    const phoneEl = document.querySelector('.phone');
-    let notifTriggered = false;
-
-    function playNotifSound() {
-      if (typeof iPhoneSounds === 'undefined' || !iPhoneSounds._getCtx) return;
-      try {
-        const ac = iPhoneSounds._getCtx();
-        const now = ac.currentTime;
-        [1046.5, 1318.5, 1568].forEach(function(freq, i) {
-          const osc = ac.createOscillator();
-          osc.type = 'sine';
-          osc.frequency.value = freq;
-          const g = ac.createGain();
-          const t = now + i * 0.18;
-          g.gain.setValueAtTime(0, t);
-          g.gain.linearRampToValueAtTime(0.15, t + 0.01);
-          g.gain.setValueAtTime(0.15, t + 0.08);
-          g.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
-          osc.connect(g).connect(ac.destination);
-          osc.start(t); osc.stop(t + 0.16);
-        });
-      } catch(e) {}
-    }
-
-    function vibratePhone() {
-      if (phoneEl) {
-        phoneEl.classList.remove('phone-vibrate');
-        void phoneEl.offsetWidth;
-        phoneEl.classList.add('phone-vibrate');
-        phoneEl.addEventListener('animationend', function h() {
-          phoneEl.classList.remove('phone-vibrate');
-          phoneEl.removeEventListener('animationend', h);
-        });
-      }
-    }
-
-    function startNotifSequence() {
-      if (notifTriggered) return;
-      notifTriggered = true;
-      // Try to play sound (works on desktop; mobile may need first gesture)
-      if (typeof iPhoneSounds !== 'undefined' && iPhoneSounds._warmUp) {
-        try { iPhoneSounds._warmUp(); } catch(e) {}
-      }
-      // First notification after 0.8s
-      setTimeout(function() {
-        playNotifSound(); vibratePhone();
-        if (notif1) notif1.classList.add('visible');
-        setTimeout(positionNotifications, 50);
-      }, 800);
-      // Second notification after 2.5s
-      setTimeout(function() {
-        playNotifSound(); vibratePhone();
-        if (notif2) notif2.classList.add('visible');
-        setTimeout(positionNotifications, 50);
-      }, 2500);
-    }
-
-    // Start notification sequence immediately on load
-    startNotifSequence();
-  })();
-
-  // ===== AUDIO PRE-WARM: instant sounds on mobile =====
-  // Prime AudioContext on very first touch so no delay on any subsequent sound
-  (function() {
-    function earlyWarmUp() {
-      if (typeof iPhoneSounds !== 'undefined' && iPhoneSounds._warmUp) {
-        try { iPhoneSounds._warmUp(); } catch(e) {}
-      }
-    }
-    document.addEventListener('touchstart', earlyWarmUp, { once: true, passive: true });
-    document.addEventListener('mousedown', earlyWarmUp, { once: true, passive: true });
-  })();
-
-  const track = knob.parentElement;
-  let startX = 0;
-  let knobLeft = 2;
-  let isDragging = false;
-  const padding = 2;
-
-  function maxSlide() {
-    return sliderPos.width - knob.offsetWidth - (padding * 2);
-  }
-
-  function handleStart(e) {
-    // Accept any touch/click within the swipe zone (knob, track, or text)
-    // Pre-warm audio context on first slide interaction
-    if (typeof iPhoneSounds !== 'undefined' && iPhoneSounds._warmUp) {
-      try { iPhoneSounds._warmUp(); } catch(ex) {}
-    }
-    isDragging = true;
-    knob.classList.add('dragging');
-    startX = (e.touches ? e.touches[0].clientX : e.clientX) - knobLeft;
-    e.preventDefault();
-  }
-
-  function handleMove(e) {
-    if (!isDragging) return;
-    // touch-action:none on #cover-swipe-zone handles scroll prevention
-
-    const cx = e.touches ? e.touches[0].clientX : e.clientX;
-    const pos = Math.max(padding, Math.min(cx - startX, maxSlide()));
-    knobLeft = pos;
-    knob.style.left = pos + 'px';
-
-    // Slide tick sound — same as the phone's slider
-    if (typeof iPhoneSounds !== 'undefined' && iPhoneSounds.slideTick) {
-      try { iPhoneSounds.slideTick(); } catch(ex) {}
-    }
-
-    // Fade text as knob moves
-    const txt = track.querySelector('.slide-text');
-    if (txt) txt.style.opacity = 1 - (pos / maxSlide());
-  }
-
-  function handleEnd() {
-    if (!isDragging) return;
-    isDragging = false;
-    knob.classList.remove('dragging');
-
-    if (knobLeft > maxSlide() * 0.65) {
-      // ===== UNLOCK =====
-      knob.style.left = maxSlide() + 'px';
-      unlockCover();
-    } else {
-      // Snap back
-      knobLeft = padding;
-      knob.style.left = padding + 'px';
-      const txt = track.querySelector('.slide-text');
-      if (txt) txt.style.opacity = 1;
-    }
-  }
-
-  function unlockCover() {
-    // Play unlock sound
-    if (typeof iPhoneSounds !== 'undefined' && iPhoneSounds.unlock) {
-      try { iPhoneSounds.unlock(); } catch(e) {}
-    }
-
-    // Celebrate spin on phone
-    const flipper = document.querySelector('.phone-flipper');
-    if (flipper) {
-      if (typeof iPhoneSounds !== 'undefined' && iPhoneSounds.celebrateSpin) {
-        try { iPhoneSounds.celebrateSpin(); } catch(e) {}
-      }
-      flipper.classList.add('celebrate-spin');
-      var _spinTimeout1 = setTimeout(function() { flipper.classList.remove('celebrate-spin'); }, 1000);
-      flipper.addEventListener('animationend', function handler() {
-        clearTimeout(_spinTimeout1);
-        flipper.classList.remove('celebrate-spin');
-        flipper.removeEventListener('animationend', handler);
-      });
-    }
-
-    window.siteUnlocked = true;
-    document.dispatchEvent(new CustomEvent('coverUnlocked'));
-
-    // Fade out overlay
-    overlay.classList.add('unlocked');
-    document.body.classList.add('bg-swapped');
-    document.body.classList.add('cover-removed');
-
-    const bgInt = document.getElementById('bgInterior');
-    if (bgInt) bgInt.classList.add('visible');
-
-    // Remove from DOM after transition
-    setTimeout(function() {
-      overlay.remove();
-    }, 700);
-  }
-
-  // Event listeners — store references so we can remove them after unlock
-  swipeZone.addEventListener('mousedown', handleStart);
-  document.addEventListener('mousemove', handleMove);
-  document.addEventListener('mouseup', handleEnd);
-
-  swipeZone.addEventListener('touchstart', handleStart, { passive: false });
-  document.addEventListener('touchmove', handleMove, { passive: true });
-  document.addEventListener('touchend', handleEnd);
-
-  // Clean up document-level listeners after cover unlock to stop Safari jank
-  document.addEventListener('coverUnlocked', function _removeCoverListeners() {
-    document.removeEventListener('touchmove', handleMove);
-    document.removeEventListener('touchend', handleEnd);
-    document.removeEventListener('mousemove', handleMove);
-    document.removeEventListener('mouseup', handleEnd);
-    document.removeEventListener('coverUnlocked', _removeCoverListeners);
-  });
-});
-
-// ===== BACK TO COVER BUTTON =====
-document.getElementById('backToCoverBtn').addEventListener('click', function() {
-  // 0. Quick double-ping vibration on the phone
-  const pingPhone = document.querySelector('.phone');
-  if (pingPhone) {
-    pingPhone.classList.remove('phone-double-ping');
-    void pingPhone.offsetWidth;
-    pingPhone.classList.add('phone-double-ping');
-    pingPhone.addEventListener('animationend', function h() {
-      pingPhone.classList.remove('phone-double-ping');
-      pingPhone.removeEventListener('animationend', h);
-    });
-  }
-
-  // 1. Read exact slideTrack position BEFORE spin starts
-  //    Temporarily show lock screen to get accurate rect, then hide it back (all synchronous, no paint)
-  const ls0 = document.getElementById('lockScreen');
-  const slideTrack0 = document.getElementById('slideTrack');
-  let savedRect = null;
-  if (ls0 && slideTrack0) {
-    const prevTransform = ls0.style.transform;
-    const prevTransition = ls0.style.transition;
-    ls0.style.transition = 'none';
-    ls0.style.transform = 'translateY(0)';
-    savedRect = slideTrack0.getBoundingClientRect();
-    savedRect = { left: savedRect.left, top: savedRect.top, width: savedRect.width, height: savedRect.height };
-    ls0.style.transform = prevTransform;
-    ls0.style.transition = prevTransition;
-  }
-
-  // 2. Start rewind spin — phone shows home screen, clean look
-  const flipper = document.querySelector('.phone-flipper');
-  let spinDone = false;
-  if (flipper) {
-    if (typeof iPhoneSounds !== 'undefined' && iPhoneSounds.rewindSpin) {
-      try { iPhoneSounds.rewindSpin(); } catch(e) {}
-    }
-    flipper.classList.add('rewind-spin');
-    var _rewindTimeout = setTimeout(function() { flipper.classList.remove('rewind-spin'); spinDone = true; }, 2000);
-    flipper.addEventListener('animationend', function handler() {
-      clearTimeout(_rewindTimeout);
-      flipper.classList.remove('rewind-spin');
-      flipper.removeEventListener('animationend', handler);
-      spinDone = true;
-    });
-  } else {
-    spinDone = true;
-  }
-
-  // 3. Wait for spin to finish, then show cover overlay and reset phone state
-  function onSpinComplete() {
-    if (!spinDone) { requestAnimationFrame(onSpinComplete); return; }
-
-    // Create overlay at FULL OPACITY — covers the phone instantly
-    const overlay = document.createElement('div');
-    overlay.id = 'cover-overlay';
-    overlay.innerHTML = `
-      <div id="cover-notif-container">
-        <div class="cover-notif visible" id="coverNotif1">
-          <div class="cover-notif-icon"><img src="assets/icon-message.png" alt="Messages"></div>
-          <div class="cover-notif-content">
-            <div class="cover-notif-header">
-              <span class="cover-notif-sender">michi the cat</span>
-              <span class="cover-notif-time">now</span>
-            </div>
-            <div class="cover-notif-body">feed me. right now. this is not a drill</div>
-          </div>
-        </div>
-        <div class="cover-notif visible" id="coverNotif2">
-          <div class="cover-notif-icon"><img src="assets/icon-message.png" alt="Messages"></div>
-          <div class="cover-notif-content">
-            <div class="cover-notif-header">
-              <span class="cover-notif-sender">linkedin</span>
-              <span class="cover-notif-time">now</span>
-            </div>
-            <div class="cover-notif-body">you appeared in 12 searches this week</div>
-          </div>
-        </div>
-      </div>
-      <div id="cover-swipe-zone">
-        <div class="slide-track" id="coverSlideTrack">
-          <div class="slide-knob" id="coverKnob"></div>
-          <div class="slide-text-container"><div class="slide-text">slide to unlock</div></div>
-        </div>
-      </div>
-    `;
-    overlay.style.opacity = '1';
-    document.body.prepend(overlay);
-
-    // NOW reset phone state — safely hidden behind the opaque overlay
-    const ls = document.getElementById('lockScreen');
-    if (ls) {
-      ls.classList.remove('hidden');
-      ls.style.transition = 'none';
-      ls.style.transform = 'translateY(0)';
-      ls.style.opacity = '1';
-    }
-    const hs = document.getElementById('homeScreen');
-    if (hs) hs.classList.remove('visible');
-
-    // Reset body classes
-    document.body.classList.remove('bg-swapped', 'cover-removed');
-    const bgInt = document.getElementById('bgInterior');
-    if (bgInt) bgInt.classList.remove('visible');
-    window.siteUnlocked = false;
-
-    const swipeZone = document.getElementById('cover-swipe-zone');
-    const knob = document.getElementById('coverKnob');
-
-    // Position using a rect (savedRect or live slideTrack)
-    function positionFromRect(rect) {
-      // Position cover slider exactly on top of phone's slide track
-      swipeZone.style.left = rect.left + 'px';
-      swipeZone.style.top = rect.top + 'px';
-      swipeZone.style.width = rect.width + 'px';
-      swipeZone.style.height = rect.height + 'px';
-      swipeZone.style.transform = 'none';
-      return { left: rect.left, top: rect.top, width: rect.width, height: rect.height };
-    }
-
-    function applyPosition() {
-      const phoneSlideTrack = document.getElementById('slideTrack');
-      if (phoneSlideTrack) return positionFromRect(phoneSlideTrack.getBoundingClientRect());
-      const vw = window.innerWidth, vh = window.innerHeight;
-      const sliderW = Math.min(200, vw * 0.45), sliderH = 28;
-      swipeZone.style.left = ((vw - sliderW) / 2) + 'px';
-      swipeZone.style.top = (vh - sliderH - Math.max(60, vh * 0.12)) + 'px';
-      swipeZone.style.width = sliderW + 'px';
-      swipeZone.style.height = sliderH + 'px';
-      swipeZone.style.transform = 'none';
-      return { left: parseFloat(swipeZone.style.left), top: parseFloat(swipeZone.style.top), width: sliderW, height: sliderH };
-    }
-
-    // Position notifications above slider
-    const backNotifContainer = document.getElementById('cover-notif-container');
-    function positionBackNotifs() {
-      if (!backNotifContainer || !swipeZone) return;
-      const szLeft = parseFloat(swipeZone.style.left) || 0;
-      const szTop = parseFloat(swipeZone.style.top) || 0;
-      const szWidth = parseFloat(swipeZone.style.width) || 0;
-      backNotifContainer.style.left = szLeft + 'px';
-      backNotifContainer.style.width = szWidth + 'px';
-      const notifH = backNotifContainer.offsetHeight || 110;
-      backNotifContainer.style.top = (szTop - notifH - 8) + 'px';
-    }
-
-    // Spin is done — position using live slideTrack rect (accurate)
-    let sliderPos = applyPosition();
-    positionBackNotifs();
-
-    window.addEventListener('resize', () => { sliderPos = applyPosition(); positionBackNotifs(); });
-
-    // Attach slider drag logic
-    if (!swipeZone || !knob) return;
-  if (!swipeZone || !knob) return;
-  const track = knob.parentElement;
-  let startX = 0, knobLeft = 2, isDragging = false;
-  const padding = 2;
-  function maxSlide() { return sliderPos.width - knob.offsetWidth - (padding * 2); }
-
-  function handleStart(e) {
-    // Accept any touch/click within the swipe zone
-    if (typeof iPhoneSounds !== 'undefined' && iPhoneSounds._warmUp) { try { iPhoneSounds._warmUp(); } catch(ex) {} }
-    isDragging = true; knob.classList.add('dragging');
-    startX = (e.touches ? e.touches[0].clientX : e.clientX) - knobLeft;
-    e.preventDefault();
-  }
-  function handleMove(e) {
-    if (!isDragging) return;
-    // touch-action:none on #cover-swipe-zone handles scroll prevention
-    const cx = e.touches ? e.touches[0].clientX : e.clientX;
-    const pos = Math.max(padding, Math.min(cx - startX, maxSlide()));
-    knobLeft = pos; knob.style.left = pos + 'px';
-    if (typeof iPhoneSounds !== 'undefined' && iPhoneSounds.slideTick) { try { iPhoneSounds.slideTick(); } catch(ex) {} }
-    const txt = track.querySelector('.slide-text');
-    if (txt) txt.style.opacity = 1 - (pos / maxSlide());
-  }
-  function handleEnd() {
-    if (!isDragging) return;
-    isDragging = false; knob.classList.remove('dragging');
-    if (knobLeft > maxSlide() * 0.65) {
-      knob.style.left = maxSlide() + 'px';
-      // Unlock again
-      if (typeof iPhoneSounds !== 'undefined' && iPhoneSounds.unlock) { try { iPhoneSounds.unlock(); } catch(e) {} }
-      // Celebrate spin on phone
-      const fl = document.querySelector('.phone-flipper');
-      if (fl) {
-        if (typeof iPhoneSounds !== 'undefined' && iPhoneSounds.celebrateSpin) {
-          try { iPhoneSounds.celebrateSpin(); } catch(e) {}
-        }
-        fl.classList.add('celebrate-spin');
-        var _spinTimeout2 = setTimeout(function() { fl.classList.remove('celebrate-spin'); }, 1000);
-        fl.addEventListener('animationend', function handler() {
-          clearTimeout(_spinTimeout2);
-          fl.classList.remove('celebrate-spin');
-          fl.removeEventListener('animationend', handler);
-        });
-      }
-      window.siteUnlocked = true;
-      document.dispatchEvent(new CustomEvent('coverUnlocked'));
-      overlay.classList.add('unlocked');
-      document.body.classList.add('bg-swapped', 'cover-removed');
-      if (bgInt) bgInt.classList.add('visible');
-      setTimeout(() => overlay.remove(), 700);
-    } else {
-      knobLeft = padding; knob.style.left = padding + 'px';
-      const txt = track.querySelector('.slide-text');
-      if (txt) txt.style.opacity = 1;
-    }
-  }
-
-  swipeZone.addEventListener('mousedown', handleStart);
-  document.addEventListener('mousemove', handleMove);
-  document.addEventListener('mouseup', handleEnd);
-  swipeZone.addEventListener('touchstart', handleStart, { passive: false });
-  document.addEventListener('touchmove', handleMove, { passive: true });
-  document.addEventListener('touchend', handleEnd);
-
-  // Clean up after this cover is unlocked too
-  document.addEventListener('coverUnlocked', function _removeBackCoverListeners() {
-    document.removeEventListener('touchmove', handleMove);
-    document.removeEventListener('touchend', handleEnd);
-    document.removeEventListener('mousemove', handleMove);
-    document.removeEventListener('mouseup', handleEnd);
-    document.removeEventListener('coverUnlocked', _removeBackCoverListeners);
-  });
-  } // end onSpinComplete
-  onSpinComplete();
+  document.body.classList.add('bg-swapped');
+  document.body.classList.add('cover-removed');
+  var bg = document.getElementById('bgInterior');
+  if (bg) bg.classList.add('visible');
+  // Triggers the existing listener: skip lock screen -> home screen + position phone UI
+  document.dispatchEvent(new CustomEvent('coverUnlocked'));
 });
 </script>
 </body>
