@@ -422,7 +422,7 @@ const ICONS={
 const MENU_G=[
   {label:'WORK',items:[
     {id:'home',icon:'⌂',l:'HOME'},{id:'about',icon:'[i]',l:'ABOUT'},{id:'links',icon:'>>',l:'LINKS'},
-    {id:'inquiry',icon:'✉',l:'INQUIRY'},{id:'book',icon:'☎',l:'BOOK CALL'},
+    {id:'book',icon:'☎',l:'BOOK CALL'},
   ]},
   {label:'TOOLS',items:[
     {id:'calendar',icon:'▦',l:'CALENDAR'},{id:'reminders',icon:'☑',l:'REMINDERS'},
@@ -437,7 +437,7 @@ const MENU_G=[
   ]},
 ];
 [
-  [0,0,ICONS.home],[0,1,ICONS.about],[0,2,ICONS.links],[0,3,ICONS.inquiry],[0,4,ICONS.book],
+  [0,0,ICONS.home],[0,1,ICONS.about],[0,2,ICONS.links],[0,3,ICONS.book],
   [1,0,ICONS.calendar],[1,1,ICONS.reminders],
   [2,0,ICONS.snake],[2,1,ICONS.pet],[2,2,ICONS.radio],[2,3,ICONS.gallery],
   [3,0,ICONS.contacts],[3,1,ICONS.messages],[3,2,ICONS.calllog],[3,3,ICONS.ringselector],[3,4,ICONS.settings],
@@ -447,7 +447,7 @@ const T9MAP={'2':'abc','3':'def','4':'ghi','5':'jkl','6':'mno','7':'pqrs','8':'t
 const RINGTUNES={
   granvals:{name:'Gran Vals',notes:[[659,133],[587,133],[370,267],[415,267],[554,133],[494,133],[294,267],[330,267],[494,133],[440,133],[277,267],[330,267],[440,500],[659,133],[587,133],[370,267],[415,267],[554,133],[494,133],[294,267],[330,267],[494,133],[440,133],[330,267],[330,267],[440,500]]},
   espionage:{name:'Espionage',notes:[[880,100],[784,100],[698,100],[659,300],[0,100],[880,100],[784,100],[698,100],[659,300],[0,100],[523,100],[587,100],[659,100],[698,400]]},
-  nokia:{name:'Nokia Tune',notes:[[659,125],[622,125],[0,125],[392,500],[0,125],[392,500],[392,125],[523,500],[0,125],[523,500],[523,125],[659,500],[0,125],[659,500],[622,1000]]},
+  nokia:{name:'Retro Tune',notes:[[659,125],[622,125],[0,125],[392,500],[0,125],[392,500],[392,125],[523,500],[0,125],[523,500],[523,125],[659,500],[0,125],[659,500],[622,1000]]},
   march:{name:'Tech March',notes:[[523,180],[0,40],[523,180],[0,40],[523,180],[0,40],[415,280],[466,180],[0,40],[466,180],[0,40],[466,180],[0,40],[370,280],[523,180],[0,40],[784,180],[0,40],[659,180],[0,40],[523,380]]},
   simple:{name:'Simple Ring',notes:[[880,200],[0,80],[880,200],[0,80],[880,200],[0,80],[880,500],[0,200],[698,200],[0,80],[698,200],[0,80],[784,400]]},
 };
@@ -486,7 +486,6 @@ const HORO_READS=[
 const TODOS_D=[
   {text:'Hire Michelle for a new website',done:false,tag:'URGENT',cta:true},
   {text:'Book a discovery call today',done:false,tag:'TODAY',cta:true},
-  {text:'Visit welcometomywebsites.com',done:false,tag:'ASAP',cta:true},
   {text:'Check out the portfolio work',done:false,tag:''},
   {text:'Follow @mydigitalcrib on IG',done:false,tag:''},
   {text:'Connect on LinkedIn',done:false,tag:''},
@@ -606,7 +605,7 @@ const S={
   // form
   formF:0,formV:{name:'',email:'',brand:'',kind:'',timeline:'',budget:'',vision:''},formSent:false,
   linksIdx:0,
-  idleIdx:1,
+  idleIdx:0,
   lastInput:Date.now(),
   // misc
   msgPopupShown:false,signalT:null,batT:null,alarmCheckT:null,
@@ -781,8 +780,8 @@ function rBoot(){
   setApp(`
     <div class="cscreen">
       <pre style="font-size:.42em;line-height:1.25;color:var(--fg);margin-bottom:.18em;animation:fadeIn .6s ease-in;letter-spacing:.08em">${art}</pre>
-      <div class="boot-logo" style="animation:fadeIn .5s ease-in .3s both">NOKIA</div>
-      <div style="font-size:.6em;color:var(--mid);letter-spacing:.1em;animation:fadeIn .5s ease-in .5s both">Connecting people</div>
+      <div class="boot-logo" style="animation:fadeIn .5s ease-in .3s both">DOORS XD</div>
+      <div style="font-size:.6em;color:var(--mid);letter-spacing:.1em;animation:fadeIn .5s ease-in .5s both">connecting brands</div>
       <div class="boot-bar" style="animation:fadeIn .5s ease-in .6s both"><div class="boot-fill"></div></div>
     </div>`);
   startupSound();
@@ -823,9 +822,8 @@ function rIdle(){
         ? `<div class="idle-dial">${S.dialDigits}</div>`
         : `<div style="font-size:.57em;color:var(--mid);letter-spacing:.05em;text-align:center;margin:.08em 0">michelle salcedo · web designer</div>`}
       <div class="idle-acts">
-        <div class="idle-act${S.idleIdx===0?' ia-p':''}" onclick="S.idleIdx=0;rIdle()">✉ INQUIRY</div>
-        <div class="idle-act${S.idleIdx===1?' ia-p':''}" onclick="S.idleIdx=1;rIdle()">▶ MENU</div>
-        <div class="idle-act${S.idleIdx===2?' ia-p':''}" onclick="S.idleIdx=2;rIdle()">LINKS</div>
+        <div class="idle-act${S.idleIdx===0?' ia-p':''}" onclick="S.idleIdx=0;rIdle()">▶ MENU</div>
+        <div class="idle-act${S.idleIdx===1?' ia-p':''}" onclick="S.idleIdx=1;rIdle()">LINKS</div>
       </div>
     </div>`);
   clearTimeout(S._clockT);
@@ -905,7 +903,6 @@ function rLinks(){
   const links=[
     {l:'LinkedIn',  u:'https://www.linkedin.com/in/marketingwithcats/', s:'marketingwithcats'},
     {l:'Instagram', u:'https://www.instagram.com/mydigitalcrib/',       s:'mydigitalcrib'},
-    {l:'Website',   u:'https://www.welcometomywebsites.com',            s:'welcometomywebsites'},
   ];
   const rows=links.map((lk,i)=>`
     <div class="lrow${i===S.linksIdx?' s':''}" onclick="S.linksIdx=${i};selSound();openUrl('${lk.u}')">
@@ -1409,7 +1406,7 @@ function act(a){
     case 'calling': actCalling(a); break;
     case 'home': case 'about': case 'portfolio': actSimpleBack(a); break;
     case 'links':   actLinks(a);   break;
-    case 'inquiry': actInquiry(a); break;
+
     case 'book':    actBook(a);    break;
     case 'contacts':actContacts2(a);break;
     case 'messages':actMsgs(a);    break;
@@ -1449,15 +1446,14 @@ function actIdle(a){
   }
   // Navigation only — move focus, never open
   if(a==='left'){S.idleIdx=Math.max(0,S.idleIdx-1);navSound();rIdle();return;}
-  if(a==='right'){S.idleIdx=Math.min(2,S.idleIdx+1);navSound();rIdle();return;}
-  if(a==='down'){S.idleIdx=Math.min(2,S.idleIdx+1);navSound();rIdle();return;}
+  if(a==='right'){S.idleIdx=Math.min(1,S.idleIdx+1);navSound();rIdle();return;}
+  if(a==='down'){S.idleIdx=Math.min(1,S.idleIdx+1);navSound();rIdle();return;}
   // Soft keys — navigate only, same as left/right
   if(a==='leftsoft'){S.idleIdx=Math.max(0,S.idleIdx-1);navSound();rIdle();return;}
-  if(a==='rightsoft'){S.idleIdx=Math.min(2,S.idleIdx+1);navSound();rIdle();return;}
+  if(a==='rightsoft'){S.idleIdx=Math.min(1,S.idleIdx+1);navSound();rIdle();return;}
   // Confirm — open the currently highlighted idle item
   if(a==='ok'){
-    if(S.idleIdx===0){stopSnk();stopCam();clearSS();S.stack=[];pushGo('inquiry');}
-    else if(S.idleIdx===2){stopSnk();stopCam();clearSS();S.stack=[];pushGo('links');}
+    if(S.idleIdx===1){stopSnk();stopCam();clearSS();S.stack=[];pushGo('links');}
     else{S.menuGroup=0;S.menuIdx=0;S.stack=[];go('menu');}
     return;
   }
@@ -1484,9 +1480,9 @@ function actCalling(a){
 function actLinks(a){
   // Navigation — move selection only
   if(a==='up'||a==='left'){S.linksIdx=Math.max(0,S.linksIdx-1);navSound();rLinks();}
-  else if(a==='down'||a==='right'){S.linksIdx=Math.min(2,S.linksIdx+1);navSound();rLinks();}
+  else if(a==='down'||a==='right'){S.linksIdx=Math.min(1,S.linksIdx+1);navSound();rLinks();}
   // Soft keys follow screen labels: BACK / OPEN
-  else if(a==='rightsoft'||a==='ok'||a==='call'){selSound();const links=['https://www.linkedin.com/in/marketingwithcats/','https://www.instagram.com/mydigitalcrib/','https://www.welcometomywebsites.com'];openUrl(links[S.linksIdx]);}
+  else if(a==='rightsoft'||a==='ok'||a==='call'){selSound();const links=['https://www.linkedin.com/in/marketingwithcats/','https://www.instagram.com/mydigitalcrib/'];openUrl(links[S.linksIdx]);}
   else if(a==='leftsoft'||a==='back'||a==='end'){backSound();back();}
 }
 
@@ -1950,7 +1946,7 @@ function actSimpleBack(a){
 }
 function actMsgView(a){
   if(a==='back'||a==='leftsoft'){backSound();back();}
-  else if(a==='ok'||a==='rightsoft'){selSound();S.stack.push('messages');go('inquiry');}
+  else if(a==='ok'||a==='rightsoft'){selSound();S.stack.push('messages');pushGo('book');}
 }
 function actNotes(a){
   if(a==='up'){S.noteIdx=Math.max(0,S.noteIdx-1);navSound();rNotes();}

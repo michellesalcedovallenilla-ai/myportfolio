@@ -429,11 +429,11 @@
     <div class="xp-window">
       <div class="xp-titlebar">
         <span class="dot"></span>
-        <span class="name">pantalla — xp-desktop-explorer</span>
+        <span class="name">welcome to my portfolio</span>
         <button class="xp-tips" onclick="toggleTips(event, 'xp')">tips 💡</button>
         <button class="xp-close" onclick="closeXP()">cerrar ✕</button>
       </div>
-      <iframe id="xpFrame" title="xp-desktop-explorer" src="about:blank"></iframe>
+      <iframe id="xpFrame" title="welcome to my portfolio" src="about:blank"></iframe>
       <div class="tips-box" id="tipsXP"><div class="tips-title">💡 TIPS</div><ul></ul></div>
     </div>
     <div class="xp-tut" id="xpTut">
@@ -457,11 +457,11 @@
     <div class="xp-window nokia-window">
       <div class="xp-titlebar">
         <span class="dot" style="background:#8bac0f"></span>
-        <span class="name">telefono — nokia-project</span>
+        <span class="name">telefono — doorsxd mobile</span>
         <button class="xp-tips" onclick="toggleTips(event, 'nokia')">tips 💡</button>
         <button class="xp-close" onclick="closeNokia()">cerrar ✕</button>
       </div>
-      <iframe id="nokiaFrame" title="nokia-project" src="about:blank"></iframe>
+      <iframe id="nokiaFrame" title="doorsxd mobile" src="about:blank"></iframe>
       <div class="tips-box" id="tipsNK"><div class="tips-title">💡 TIPS</div><ul></ul></div>
     </div>
   </div>
@@ -786,7 +786,7 @@
     padding:10px 14px; font-family:'VT323', ui-monospace, monospace; color:#e8ecf8;
   }
   #xpOverlay.with-tut .xp-tut { display:flex; animation:dlgIn .2s ease-out; }
-  #xpOverlay.with-say .xp-tut { display:flex; animation:dlgIn .2s ease-out; }
+  #xpOverlay.with-say .xp-tut { display:flex; animation:dlgIn .2s ease-out; cursor:pointer; }
   .xp-tut-cat {
     width:58px; height:58px; object-fit:cover; border-radius:8px; flex:0 0 auto;
     image-rendering:pixelated; border:2px solid #3d4763; background:#0a0c12;
@@ -1236,6 +1236,7 @@
     xpSayHide();
     xpTutBack.style.display = '';
     xpTutSkip.style.display = '';
+    xpTutNext.style.display = '';
     xtStopPoll();
     xt = { i: 0, snap: null, advancing: false };
     /* add() de una clase ya presente re-dispara al MutationObserver en chromium:
@@ -1343,7 +1344,7 @@
     clearTimeout(xtFaceT);
     xpTutBack.style.display = 'none';
     xpTutSkip.style.display = 'none';
-    xpTutNext.textContent = 'got it 👍';
+    xpTutNext.style.display = 'none'; /* sin boton: click al panel o 9s y se va */
     if (!xpOv.classList.contains('with-say')) xpOv.classList.add('with-say');
     blip();
     clearTimeout(xpSayT);
@@ -1361,6 +1362,10 @@
     xpSayBind(xpFrameEl);
     xpSayBind(document.getElementById('el-pantalla'));
   }
+  /* sin boton "got it": tocar el panel lo cierra */
+  document.getElementById('xpTut').addEventListener('click', () => {
+    if (xpSayMode === true) { blip(); xpSayHide(); }
+  });
   xpFrameEl.addEventListener('load', xpSayAttach);
   const elPantallaFrame = document.getElementById('el-pantalla');
   if (elPantallaFrame) elPantallaFrame.addEventListener('load', xpSayAttach);
