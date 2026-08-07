@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Michelle's Pixel Room</title>
+<title>My Digital Crib</title>
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <style>
   :root {
     --c-sprite: #00ff9d;
@@ -1007,7 +1009,12 @@
     }
   }
 
-  function setStep(s) { step = s; render(); }
+  /* guarda el paso actual: si recargas, el tutorial SIGUE donde ibas (no reinicia) */
+  function setStep(s) {
+    step = s;
+    try { store.set('pr_step', s || ''); } catch (e) {}
+    render();
+  }
 
   /* empieza las misiones respetando el estado real de la escena */
   function startQuests() {
@@ -1019,6 +1026,7 @@
 
   function finishTutorial() {
     store.set('pr_tutorialDone', '1');
+    store.set('pr_step', '');
     step = null; render();
   }
 
@@ -1454,7 +1462,12 @@
   applySound(store.get('pr_sound') !== 'off');
   /* ?tutorial en la URL fuerza el tutorial aunque ya este completado */
   const forceTut = /[?&#]tutorial\b/.test(location.href);
-  if (forceTut || !store.get('pr_tutorialDone')) setStep('entry');
+  if (forceTut || !store.get('pr_tutorialDone')) {
+    /* reanudar donde quedo; los pasos "de transicion" vuelven al paso que los dispara */
+    const resumeMap = { xpTips: 'questScreen', phoneTips: 'questPhone' };
+    const saved = store.get('pr_step');
+    setStep(forceTut ? 'entry' : (resumeMap[saved] || saved || 'entry'));
+  }
 })();
 </script>
 </body>
