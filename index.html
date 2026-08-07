@@ -1221,8 +1221,8 @@
     xpTutCount.textContent = (xt.i + 1) + '/' + XT_STEPS.length;
     xpTutCount.classList.remove('done');
     xpTutText.textContent = XT_STEPS[xt.i].txt(t);
-    /* Michelle habla TODO el tiempo que el panel esta en pantalla */
-    xpTutCat.src = FACE_TALK + '?t=' + Date.now();
+    /* Michelle habla TODO el tiempo que el panel esta en pantalla (GIF en cache: instantaneo) */
+    xpTutCat.src = FACE_TALK;
     clearTimeout(xtFaceT);
     xpTutBack.disabled = xt.i === 0;
     xpTutSkip.textContent = t.xsSkip;
@@ -1345,7 +1345,7 @@
     xpTutCount.textContent = '';
     xpTutCount.classList.remove('done');
     xpTutText.textContent = say[lang] || say.en;
-    xpTutCat.src = FACE_TALK + '?t=' + Date.now(); /* habla sin parar mientras el panel este visible */
+    xpTutCat.src = FACE_TALK; /* habla sin parar mientras el panel este visible (cache, sin re-descarga) */
     clearTimeout(xtFaceT);
     xpTutBack.style.display = 'none';
     xpTutSkip.style.display = 'none';
