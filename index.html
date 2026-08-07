@@ -956,11 +956,11 @@
     twTimer = setInterval(() => {
       i += 2;
       dlgText.textContent = str.slice(0, i);
-      if (i >= str.length) { clearInterval(twTimer); typing = false; faceTalk(false); }
+      if (i >= str.length) { clearInterval(twTimer); typing = false; }
     }, 16);
   }
   dlgText.addEventListener('click', () => {
-    if (typing) { clearInterval(twTimer); typing = false; dlgText.textContent = twStr; faceTalk(false); }
+    if (typing) { clearInterval(twTimer); typing = false; dlgText.textContent = twStr; }
   });
 
   function mkBtn(label, cls, fn) {
@@ -976,7 +976,7 @@
     dlgName.textContent = t.name;
     dlgActions.innerHTML = '';
     clearHl();
-    if (!step) { dlg.classList.remove('show'); return; }
+    if (!step) { faceTalk(false); dlg.classList.remove('show'); return; }
     dlg.classList.add('show');
     if (step === 'entry') {
       typeText(t.entry);
@@ -991,11 +991,11 @@
     } else if (step === 'questScreen') {
       typeText(t.questScreen); highlight(pantalla);
     } else if (step === 'xpTips') {
-      dlg.classList.remove('show'); startXPCoach();
+      faceTalk(false); dlg.classList.remove('show'); startXPCoach();
     } else if (step === 'questPhone') {
       typeText(t.questPhone); highlight(telefono);
     } else if (step === 'phoneTips') {
-      dlg.classList.remove('show'); startNokiaCoach();
+      faceTalk(false); dlg.classList.remove('show'); startNokiaCoach();
     } else if (step === 'finale') {
       typeText(t.finale);
       dlgActions.append(mkBtn(t.finish, 'primary', () => finishTutorial()));
@@ -1216,10 +1216,9 @@
     xpTutCount.textContent = (xt.i + 1) + '/' + XT_STEPS.length;
     xpTutCount.classList.remove('done');
     xpTutText.textContent = XT_STEPS[xt.i].txt(t);
-    /* Michelle "dice" el paso: gif de habla un momento y vuelve a reposo */
+    /* Michelle habla TODO el tiempo que el panel esta en pantalla */
     xpTutCat.src = FACE_TALK + '?t=' + Date.now();
     clearTimeout(xtFaceT);
-    xtFaceT = setTimeout(() => { xpTutCat.src = FACE_IDLE; }, 1100);
     xpTutBack.disabled = xt.i === 0;
     xpTutSkip.textContent = t.xsSkip;
     xpTutNext.textContent = last ? t.xsGotIt : '▶';
@@ -1250,6 +1249,8 @@
     xt = null;
     xtStopPoll();
     xtClearHl();
+    clearTimeout(xtFaceT);
+    xpTutCat.src = FACE_IDLE;
     xpOv.classList.remove('with-tut');
     if (save) store.set('pr_tutXPDone', '1');
   }
@@ -1322,6 +1323,8 @@
   function xpSayHide() {
     xpSayMode = false;
     clearTimeout(xpSayT);
+    clearTimeout(xtFaceT);
+    if (!xt) xpTutCat.src = FACE_IDLE;
     xpOv.classList.remove('with-say');
   }
   function xpSayShow(detail) {
@@ -1336,9 +1339,8 @@
     xpTutCount.textContent = '';
     xpTutCount.classList.remove('done');
     xpTutText.textContent = say[lang] || say.en;
-    xpTutCat.src = FACE_TALK + '?t=' + Date.now();
+    xpTutCat.src = FACE_TALK + '?t=' + Date.now(); /* habla sin parar mientras el panel este visible */
     clearTimeout(xtFaceT);
-    xtFaceT = setTimeout(() => { if (!xt) xpTutCat.src = FACE_IDLE; }, 1400);
     xpTutBack.style.display = 'none';
     xpTutSkip.style.display = 'none';
     xpTutNext.textContent = 'got it 👍';
