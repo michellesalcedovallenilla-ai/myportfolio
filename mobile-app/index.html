@@ -87,7 +87,10 @@
     position: fixed;
     inset: 0;
     background: #141018;
+    background-image: url('assets/bg-night.png');
+    background-position: center;
     background-size: cover;
+    image-rendering: pixelated;
     z-index: 1;
     opacity: 0;
     pointer-events: none;
@@ -101,6 +104,14 @@
     opacity: 1;
     transform: scale(1.0);
   }
+  html.theme-light .bg-interior { background-image: url('assets/bg-day.png'); }
+
+  /* Light/Night cartridge toggle — outside the phone */
+  #themeToggle { position: fixed; top: max(10px, env(safe-area-inset-top)); left: 0; right: 0; z-index: 90; display: flex; justify-content: space-between; padding: 0 12px; pointer-events: none; }
+  #themeToggle img { width: 56px; height: auto; display: block; cursor: pointer; pointer-events: auto; image-rendering: pixelated; opacity: 0.45; filter: saturate(0.55) brightness(0.85); transition: opacity 0.2s ease, filter 0.2s ease, transform 0.15s ease; -webkit-tap-highlight-color: transparent; }
+  #themeToggle img.active { opacity: 1; filter: none; transform: scale(1.05); }
+  #themeToggle img:active { transform: scale(0.93); }
+  @media (max-height: 700px) { #themeToggle img { width: 46px; } }
 
   /* Warm filter + vignette + grain — all in one overlay */
   body::after {
@@ -135,8 +146,11 @@
     font-size: 13px;
     font-weight: 400;
     letter-spacing: 1px;
-    color: rgba(255,255,255,0.75);
-    text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+    color: rgba(255,255,255,0.85);
+    text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+    background: rgba(8,8,18,0.45);
+    padding: 3px 10px;
+    border-radius: 10px;
     user-select: none;
     animation: hintPulse 2.5s ease-in-out 3;
     transition: opacity 0.5s ease;
@@ -3197,12 +3211,14 @@
     transform: scale(0.9);
   }
 </style>
+<script>(function(){try{var t=localStorage.getItem('crib_theme');if(t!=='light'&&t!=='night'){var h=new Date().getHours();t=(h>=6&&h<19)?'light':'night';}if(t==='light')document.documentElement.classList.add('theme-light');}catch(e){}})();</script>
 </head>
 <body>
 
 <!-- Interior background -->
 <div class="bg-interior" id="bgInterior"></div>
 <div class="grain-overlay" id="grainOverlay"></div>
+<div id="themeToggle"><img id="themeBtnLight" src="assets/btn-light.png" alt="light mode"><img id="themeBtnNight" src="assets/btn-night.png" alt="night mode"></div>
 <script>
 // Generate static grain texture once via canvas — no GPU-heavy SVG filters
 (function() {
@@ -11916,6 +11932,22 @@ document.addEventListener('DOMContentLoaded', function() {
   if (bg) bg.classList.add('visible');
   // Triggers the existing listener: skip lock screen -> home screen + position phone UI
   document.dispatchEvent(new CustomEvent('coverUnlocked'));
+
+  // ===== LIGHT / NIGHT TOGGLE (page background, outside the phone) =====
+  function cribApplyTheme(t) {
+    document.documentElement.classList.toggle('theme-light', t === 'light');
+    try { localStorage.setItem('crib_theme', t); } catch(e) {}
+    var L = document.getElementById('themeBtnLight'), N = document.getElementById('themeBtnNight');
+    if (L) L.classList.toggle('active', t === 'light');
+    if (N) N.classList.toggle('active', t !== 'light');
+  }
+  function cribThemeSound() {
+    if (typeof iPhoneSounds !== 'undefined' && iPhoneSounds.slideTick) { try { iPhoneSounds.slideTick(); } catch(e) {} }
+  }
+  var L0 = document.getElementById('themeBtnLight'), N0 = document.getElementById('themeBtnNight');
+  if (L0) L0.addEventListener('click', function() { cribApplyTheme('light'); cribThemeSound(); });
+  if (N0) N0.addEventListener('click', function() { cribApplyTheme('night'); cribThemeSound(); });
+  cribApplyTheme(document.documentElement.classList.contains('theme-light') ? 'light' : 'night');
 });
 </script>
 </body>
