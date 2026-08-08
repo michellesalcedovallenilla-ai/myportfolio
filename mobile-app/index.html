@@ -155,6 +155,98 @@
   .boot-cloud { position: absolute; width: 6px; height: 6px; background: transparent; opacity: 0.5; animation: bootCloudDrift linear infinite; box-shadow: 12px 0px 0 0 #ffffff, 18px 0px 0 0 #ffffff, 24px 0px 0 0 #ffffff, 6px 6px 0 0 #ffffff, 12px 6px 0 0 #ffffff, 18px 6px 0 0 #ffffff, 24px 6px 0 0 #ffffff, 30px 6px 0 0 #ffffff, 0px 12px 0 0 #ffffff, 6px 12px 0 0 #ffffff, 12px 12px 0 0 #ffffff, 18px 12px 0 0 #ffffff, 24px 12px 0 0 #ffffff, 30px 12px 0 0 #ffffff, 36px 12px 0 0 #ffffff, 42px 12px 0 0 #ffffff, 0px 18px 0 0 #ffffff, 6px 18px 0 0 #ffffff, 12px 18px 0 0 #ffffff, 18px 18px 0 0 #ffffff, 24px 18px 0 0 #ffffff, 30px 18px 0 0 #ffffff, 36px 18px 0 0 #ffffff, 42px 18px 0 0 #ffffff; }
   @keyframes bootCloudDrift { from { transform: translateX(-25vw) scale(var(--cs, 2)); } to { transform: translateX(125vw) scale(var(--cs, 2)); } }
 
+  /* Real mobile boot: a tiny pixel workstation around the phone assembly. */
+  #bootLoader {
+    gap:0; padding:max(18px, env(safe-area-inset-top)) 16px max(18px, env(safe-area-inset-bottom));
+    overflow:hidden; background:#101a30;
+  }
+  #bootLoader::before {
+    content:''; position:absolute; inset:0; opacity:.62; pointer-events:none;
+    background:
+      linear-gradient(90deg,transparent 0 23px,rgba(139,166,219,.08) 24px),
+      linear-gradient(transparent 0 23px,rgba(139,166,219,.08) 24px),
+      linear-gradient(0deg,#162442 0 15%,transparent 15%);
+    background-size:24px 24px,24px 24px,100% 100%;
+  }
+  html.theme-light #bootLoader { background:#73b7df; }
+  html.theme-light #bootLoader::before {
+    opacity:.48;
+    background:
+      linear-gradient(90deg,transparent 0 23px,rgba(32,86,120,.12) 24px),
+      linear-gradient(transparent 0 23px,rgba(32,86,120,.12) 24px),
+      linear-gradient(0deg,#4c8d69 0 15%,transparent 15%);
+    background-size:24px 24px,24px 24px,100% 100%;
+  }
+  .boot-window {
+    position:relative; z-index:2; width:min(92vw,440px); padding:0 16px 18px;
+    color:#edf2ff; background:#1b2740; border:3px solid #66789f; border-radius:6px;
+    box-shadow:0 0 0 4px #080d19,9px 9px 0 rgba(4,8,18,.68);
+  }
+  .boot-window-bar {
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    min-height:34px; margin:0 -16px 13px; padding:6px 10px; color:#18233b;
+    background:#f0c64f; border-bottom:3px solid #080d19;
+    font-size:12px; font-weight:700;
+  }
+  .boot-window-led { width:9px; height:9px; background:#57cf66; box-shadow:0 0 0 2px #162039,0 0 9px #57cf66; }
+  .boot-console { display:grid; justify-items:center; }
+  .boot-mango-button {
+    position:relative; width:176px; height:150px; margin:0 0 3px; padding:0;
+    color:#f7e8b3; background:transparent; border:0; cursor:pointer;
+    font:400 14px/1 'VT323',ui-monospace,monospace;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .boot-mango-button:focus-visible { outline:3px solid #9fc2ff; outline-offset:3px; }
+  .boot-mango-button .boot-mango {
+    position:absolute; left:35px; top:13px; margin:0; transform-origin:0 0;
+    animation:bootMangoReady 1.15s steps(4,end) infinite; pointer-events:none;
+  }
+  .boot-mango-button.lucky .boot-mango { animation:bootMangoLucky .38s steps(3,end); }
+  .boot-tap-label {
+    position:absolute; left:50%; bottom:4px; transform:translateX(-50%); width:max-content;
+    padding:5px 9px; color:#162039; background:#ffd34d; border:2px solid #080d19;
+    box-shadow:2px 2px 0 #080d19;
+  }
+  .boot-mango-button:active .boot-tap-label { transform:translate(-50%,2px); box-shadow:none; }
+  .boot-title { margin:3px 0 2px; color:#fff6c9; font-size:28px; line-height:1; text-shadow:3px 3px 0 #080d19; }
+  .boot-subtitle { margin:0 0 15px; color:#f0c64f; font-size:14px; }
+  .boot-progress-head {
+    display:flex; justify-content:space-between; gap:12px; width:100%; margin-bottom:6px;
+    color:#c9d5ed; font-size:14px; line-height:1; text-align:left;
+  }
+  .boot-progress-head output { color:#79dd78; }
+  .boot-window .boot-bar {
+    width:100%; height:20px; padding:3px; border:3px solid #8493b4; border-radius:2px;
+    background:#080d19; box-shadow:3px 3px 0 #080d19;
+  }
+  .boot-window .boot-bar-fill {
+    width:100%; height:100%; transform:scaleX(.04); transform-origin:left center;
+    background:repeating-linear-gradient(90deg,#ff9f1a 0 12px,#ffd34d 12px 18px,#18243e 18px 21px);
+    animation:none; transition:transform .24s steps(8,end); will-change:transform;
+  }
+  .boot-luck { margin-top:12px; color:#93a4ca; font-size:13px; }
+  .boot-spark { position:absolute; z-index:4; left:50%; top:48%; width:5px; height:5px; background:#fff39a; pointer-events:none; animation:bootSpark .58s steps(5,end) forwards; }
+  @keyframes bootMangoReady {
+    0%,100% { transform:scale(3) translateY(0); }
+    50% { transform:scale(3) translateY(-2px); }
+  }
+  @keyframes bootMangoLucky {
+    33% { transform:scale(3) translateY(-8px) rotate(-4deg); }
+    66% { transform:scale(3) translateY(-4px) rotate(5deg); }
+  }
+  @keyframes bootSpark { to { opacity:0; transform:translate(var(--spark-x),var(--spark-y)) scale(0); } }
+  @media (max-height:620px) {
+    .boot-window { padding-bottom:12px; transform:scale(.9); }
+    .boot-mango-button { height:132px; }
+    .boot-mango-button .boot-mango { top:6px; }
+    .boot-title { font-size:24px; }
+    .boot-subtitle { margin-bottom:10px; }
+  }
+  @media (prefers-reduced-motion:reduce) {
+    #bootLoader * { animation-duration:.01ms !important; animation-iteration-count:1 !important; }
+    #bootLoader,.boot-window .boot-bar-fill { transition-duration:.01ms; }
+  }
+
 
   /* ===== BACKGROUND FX - theme-aware atmosphere outside the phone ===== */
   #bgFx {
@@ -3519,19 +3611,26 @@
 </head>
 <body>
 
-<!-- Boot loader — cute pixel "loading experience..." -->
-<div id="bootLoader">
+<!-- Real boot loader: remains until the phone shell and screen have painted. -->
+<div id="bootLoader" role="dialog" aria-modal="true" aria-labelledby="bootTitle" aria-describedby="bootStatus">
   <div class="boot-stars"></div>
   <div class="boot-stars2"></div>
   <div class="boot-cloud" style="top:14%;--cs:2;animation-duration:70s;animation-delay:-20s"></div>
   <div class="boot-cloud" style="top:72%;--cs:3;animation-duration:95s;animation-delay:-60s;opacity:.35"></div>
-  <div class="boot-heart" style="left:32%;bottom:18%;animation-delay:0s"></div>
-  <div class="boot-heart" style="left:58%;bottom:14%;animation-delay:1.4s"></div>
-  <div class="boot-heart" style="left:72%;bottom:22%;animation-delay:2.5s"></div>
-  <div class="boot-mango"></div>
-  <div class="boot-text">loading experience<span class="boot-dots"><span>.</span><span>.</span><span>.</span></span></div>
-  <div class="boot-bar"><div class="boot-bar-fill"></div></div>
-  <div class="boot-tip">teaching the mango to do tricks…</div>
+  <section class="boot-window">
+    <div class="boot-window-bar"><span>MANGOPHONE ASSEMBLY</span><span class="boot-window-led" aria-hidden="true"></span></div>
+    <div class="boot-console">
+      <button class="boot-mango-button" id="bootMangoButton" type="button" aria-label="Tap the mango for luck">
+        <span class="boot-mango" aria-hidden="true"></span>
+        <span class="boot-tap-label">TAP MANGO FOR LUCK</span>
+      </button>
+      <div class="boot-title" id="bootTitle">MY DIGITAL CRIB</div>
+      <div class="boot-subtitle">ASSEMBLING YOUR MANGOPHONE</div>
+      <div class="boot-progress-head"><span id="bootStatus" aria-live="polite">checking the outer mango</span><output id="bootPercent">04%</output></div>
+      <div class="boot-bar" id="bootTrack" role="progressbar" aria-label="Mangophone loading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="4"><div class="boot-bar-fill" id="bootBarFill"></div></div>
+      <div class="boot-luck" id="bootLuck" aria-live="polite">LUCK 00</div>
+    </div>
+  </section>
 </div>
 
 <!-- Theme-aware background life — drifts behind the phone -->
@@ -12927,7 +13026,7 @@ window.siteUnlocked = true;
       }
     } catch(e) {}
   }
-  // Boot completion — every step independent + guarded so one failure can't block the rest
+  // Prepare the phone underneath the loader. Readiness is handled separately below.
   function cribBoot() {
     try { document.body.classList.add('bg-swapped'); } catch(e) {}
     try { document.body.classList.add('cover-removed'); } catch(e) {}
@@ -12941,30 +13040,135 @@ window.siteUnlocked = true;
     } catch(e) {}
     try { document.dispatchEvent(new CustomEvent('coverUnlocked')); } catch(e) {}
     cribScale();
-    // Dismiss the "loading experience..." overlay once everything underneath is real
+  }
+
+  var bootFinished = false;
+  var bootLuckCount = 0;
+  function bootDelay(ms) { return new Promise(function(resolve) { setTimeout(resolve, ms); }); }
+  function bootNextPaint() {
+    return new Promise(function(resolve) {
+      requestAnimationFrame(function() { requestAnimationFrame(resolve); });
+    });
+  }
+  function bootSetProgress(value, message) {
+    var fill = document.getElementById('bootBarFill');
+    var track = document.getElementById('bootTrack');
+    var output = document.getElementById('bootPercent');
+    var status = document.getElementById('bootStatus');
+    var safeValue = Math.max(4, Math.min(100, Math.round(value)));
+    if (fill) fill.style.transform = 'scaleX(' + (safeValue / 100) + ')';
+    if (track) track.setAttribute('aria-valuenow', String(safeValue));
+    if (output) output.value = String(safeValue).padStart(2, '0') + '%';
+    if (status && message) status.textContent = message;
+  }
+  function bootPreload(src) {
+    return new Promise(function(resolve) {
+      var image = new Image();
+      var settled = false;
+      function done() {
+        if (settled) return;
+        settled = true;
+        if (typeof image.decode === 'function') {
+          image.decode().catch(function() {}).then(resolve);
+        } else {
+          resolve();
+        }
+      }
+      image.onload = done;
+      image.onerror = done;
+      image.src = src;
+      if (image.complete) done();
+    });
+  }
+  function bootNotifyParent() {
     try {
-      var bl = document.getElementById('bootLoader');
-      if (bl && !bl._hiding) {
-        bl._hiding = true;
-        setTimeout(function() {
-          bl.classList.add('done');
-          setTimeout(function() { if (bl.parentNode) bl.parentNode.removeChild(bl); }, 700);
-        }, 1500);
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type:'crib-mobile-ready' }, '*');
       }
     } catch(e) {}
   }
-  // Absolute failsafe — never trap anyone on the loader
-  setTimeout(function() {
-    var bl = document.getElementById('bootLoader');
-    if (bl) { bl.classList.add('done'); setTimeout(function() { if (bl.parentNode) bl.parentNode.removeChild(bl); }, 700); }
-  }, 8000);
-  // Run immediately (this script sits at the end of <body>, so the DOM exists),
-  // then again on DOMContentLoaded / load / short delays as fail-safes.
+  async function finishCribBoot(message) {
+    if (bootFinished) return;
+    bootFinished = true;
+    cribBoot();
+    cribScale();
+    await bootNextPaint();
+    bootSetProgress(100, message || 'mangophone ready');
+    bootNotifyParent();
+    await bootDelay(300);
+    var loader = document.getElementById('bootLoader');
+    if (loader) {
+      loader.classList.add('done');
+      setTimeout(function() { if (loader.parentNode) loader.parentNode.removeChild(loader); }, 650);
+    }
+  }
+  function bootBindLuck() {
+    var button = document.getElementById('bootMangoButton');
+    var label = document.getElementById('bootLuck');
+    if (!button) return;
+    button.addEventListener('click', function() {
+      bootLuckCount += 1;
+      if (label) label.textContent = 'LUCK ' + String(bootLuckCount).padStart(2, '0');
+      button.classList.remove('lucky');
+      void button.offsetWidth;
+      button.classList.add('lucky');
+      var paths = [['-72px','-42px'],['70px','-48px'],['-82px','28px'],['78px','34px']];
+      var path = paths[(bootLuckCount - 1) % paths.length];
+      var spark = document.createElement('span');
+      spark.className = 'boot-spark';
+      spark.style.setProperty('--spark-x', path[0]);
+      spark.style.setProperty('--spark-y', path[1]);
+      button.appendChild(spark);
+      setTimeout(function() { if (spark.parentNode) spark.parentNode.removeChild(spark); }, 650);
+    });
+  }
+  async function runCribBootExperience() {
+    var assets = [
+      'assets/mango-front.webp',
+      'assets/mango-back.webp',
+      document.documentElement.classList.contains('theme-light') ? 'assets/bg-day.png' : 'assets/bg-night.png',
+      'assets/wallpaper.jpg',
+      'assets/btn-light.png',
+      'assets/btn-night.png',
+      'assets/michelle-talk.gif'
+    ];
+    var loaded = 0;
+    var domReady = document.readyState === 'loading'
+      ? new Promise(function(resolve) { document.addEventListener('DOMContentLoaded', resolve, { once:true }); })
+      : Promise.resolve();
+    var fontReady = document.fonts && document.fonts.ready
+      ? Promise.race([document.fonts.ready.catch(function() {}), bootDelay(1800)])
+      : Promise.resolve();
+
+    bootSetProgress(8, 'checking the outer mango');
+    await Promise.all([
+      Promise.all(assets.map(function(src) {
+        return bootPreload(src).then(function() {
+          loaded += 1;
+          var message = loaded < 3 ? 'polishing the mango shell'
+            : loaded < 5 ? 'fitting the inner screen'
+            : 'placing the phone icons';
+          bootSetProgress(10 + (loaded / assets.length) * 76, message);
+        });
+      })),
+      domReady,
+      fontReady,
+      bootDelay(850)
+    ]);
+    cribBoot();
+    cribScale();
+    bootSetProgress(94, 'aligning every pixel');
+    await bootNextPaint();
+    await finishCribBoot('mangophone ready');
+  }
+
+  bootBindLuck();
   cribBoot();
   document.addEventListener('DOMContentLoaded', cribBoot);
-  window.addEventListener('load', cribBoot);
-  setTimeout(cribBoot, 600);
-  setTimeout(cribBoot, 1800);
+  runCribBootExperience().catch(function() { finishCribBoot('mangophone ready'); });
+  // Absolute fail-safe: a broken optional asset must never trap the visitor.
+  setTimeout(function() { finishCribBoot('opening the mangophone'); }, 15000);
+  window.addEventListener('load', cribScale);
   window.addEventListener('resize', cribScale);
   if (window.visualViewport) window.visualViewport.addEventListener('resize', cribScale);
   window.addEventListener('orientationchange', function() { setTimeout(cribScale, 250); });

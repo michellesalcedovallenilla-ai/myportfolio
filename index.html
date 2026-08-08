@@ -22,6 +22,103 @@
   }
   * { box-sizing: border-box; }
   html, body { margin:0; padding:0; height:100%; background:#0d0f12; overflow:hidden; }
+
+  /* ===== SHARED PIXEL BOOT ===== */
+  #siteBoot {
+    --boot-ink:#10182f; --boot-panel:#1d2943; --boot-line:#526184;
+    position:fixed; inset:0; z-index:10000; display:grid; place-items:center;
+    min-height:100%; padding:max(20px, env(safe-area-inset-top)) 18px max(20px, env(safe-area-inset-bottom));
+    overflow:hidden; color:#f5f0dc; background:#10182f;
+    font-family:'Courier New', ui-monospace, monospace;
+    transition:opacity .42s steps(6,end), visibility .42s;
+  }
+  #siteBoot::before {
+    content:''; position:absolute; inset:0; opacity:.66; pointer-events:none;
+    background:
+      linear-gradient(90deg, transparent 0 31px, rgba(111,139,190,.08) 32px),
+      linear-gradient(transparent 0 31px, rgba(111,139,190,.08) 32px),
+      radial-gradient(circle at 18% 21%, #fff8be 0 2px, transparent 3px),
+      radial-gradient(circle at 82% 16%, #9fc2ff 0 2px, transparent 3px),
+      radial-gradient(circle at 72% 69%, #fff8be 0 2px, transparent 3px),
+      radial-gradient(circle at 28% 78%, #9fc2ff 0 2px, transparent 3px);
+    background-size:32px 32px,32px 32px,100% 100%,100% 100%,100% 100%,100% 100%;
+    animation:siteBootSky 9s steps(9,end) infinite;
+  }
+  #siteBoot.done { opacity:0; visibility:hidden; pointer-events:none; }
+  .site-boot-panel {
+    position:relative; width:min(92vw, 430px); padding:18px 20px 20px;
+    background:var(--boot-panel); border:3px solid #7889ad; border-radius:6px;
+    box-shadow:0 0 0 4px #080d19, 10px 10px 0 rgba(5,8,18,.72);
+    text-align:center;
+  }
+  .site-boot-top {
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    margin:-6px 0 16px; color:#91a0c4; font-size:11px; font-weight:700;
+    letter-spacing:0; text-transform:uppercase;
+  }
+  .site-boot-led { width:10px; height:10px; flex:0 0 auto; background:#57cf66; box-shadow:0 0 0 2px #0a111f,0 0 10px #57cf66; }
+  .site-boot-device {
+    position:relative; width:172px; height:118px; margin:0 auto 20px;
+    background:#e6c27a; border:5px solid #10121b; border-radius:3px;
+    box-shadow:inset 0 0 0 4px #7e5f38,7px 7px 0 #090d18;
+  }
+  .site-boot-device::before {
+    content:''; position:absolute; inset:13px 18px 25px; background:#15243d;
+    border:4px solid #080b12; box-shadow:inset 0 0 0 3px #355074;
+  }
+  .site-boot-device::after {
+    content:''; position:absolute; left:50%; bottom:-20px; width:68px; height:17px;
+    transform:translateX(-50%); background:#9a7546; border:4px solid #10121b;
+    box-shadow:0 7px 0 #10121b;
+  }
+  .site-boot-sprite {
+    position:absolute; z-index:2; left:50%; top:50%; width:58px; height:58px;
+    transform:translate(-50%,-55%); object-fit:cover; image-rendering:pixelated;
+    border:3px solid #57cf66; border-radius:2px; background:#17321c;
+  }
+  html.is-mobile .site-boot-device { width:124px; height:160px; border-radius:22px 22px 16px 16px; background:#ffac1f; }
+  html.is-mobile .site-boot-device::before { inset:19px 13px 25px; }
+  html.is-mobile .site-boot-device::after { width:18px; height:18px; bottom:4px; border-radius:50%; background:#1b2333; box-shadow:none; }
+  html.is-mobile .site-boot-sprite { width:64px; height:64px; transform:translate(-50%,-63%); }
+  .site-boot-device.boost { animation:siteBootBoost .34s steps(3,end); }
+  .site-boot-title { margin:0; color:#fff8d5; font-size:clamp(24px,7vw,34px); line-height:1; letter-spacing:0; text-shadow:3px 3px 0 #0a0e1b; }
+  .site-boot-mode { margin:7px 0 18px; color:#ffd34d; font-size:13px; font-weight:700; letter-spacing:0; }
+  .site-boot-progress-head { display:flex; justify-content:space-between; gap:12px; margin-bottom:7px; color:#c8d2eb; font-size:12px; font-weight:700; text-align:left; }
+  .site-boot-progress-head output { color:#57cf66; }
+  .site-boot-track {
+    height:20px; padding:3px; overflow:hidden; background:#090e1b; border:3px solid #7383a7;
+    box-shadow:3px 3px 0 #080b14;
+  }
+  .site-boot-fill {
+    width:100%; height:100%; transform:scaleX(.04); transform-origin:left center;
+    background:repeating-linear-gradient(90deg,#58c96a 0 12px,#81e378 12px 18px,#16213a 18px 21px);
+    transition:transform .24s steps(8,end); will-change:transform;
+  }
+  .site-boot-actions { display:flex; align-items:center; justify-content:center; gap:12px; margin-top:18px; }
+  .site-boot-charm {
+    min-height:38px; padding:7px 13px; color:#15213a; background:#ffd34d;
+    border:3px solid #0a0d16; border-radius:3px; box-shadow:3px 3px 0 #080b14;
+    font:700 12px/1 'Courier New', ui-monospace, monospace; cursor:pointer;
+  }
+  .site-boot-charm:hover { background:#fff08b; }
+  .site-boot-charm:active { transform:translate(3px,3px); box-shadow:none; }
+  .site-boot-charm:focus-visible { outline:3px solid #9fc2ff; outline-offset:4px; }
+  .site-boot-luck { min-width:68px; color:#91a0c4; font-size:11px; font-weight:700; text-align:left; }
+  .site-boot-spark { position:absolute; z-index:4; width:5px; height:5px; background:#fff08b; pointer-events:none; animation:siteBootSpark .55s steps(5,end) forwards; }
+  @keyframes siteBootSky { 50% { opacity:.9; transform:translateY(4px); } }
+  @keyframes siteBootBoost { 33% { transform:translateY(-7px) rotate(-2deg); } 66% { transform:translateY(-3px) rotate(2deg); } }
+  @keyframes siteBootSpark { to { opacity:0; transform:translate(var(--spark-x), var(--spark-y)) scale(0); } }
+  @media (max-height:620px) {
+    .site-boot-panel { padding:13px 17px 15px; }
+    .site-boot-top { margin-bottom:8px; }
+    .site-boot-device { transform:scale(.78); margin:-10px auto -1px; }
+    .site-boot-mode { margin-bottom:10px; }
+    .site-boot-actions { margin-top:12px; }
+  }
+  @media (prefers-reduced-motion:reduce) {
+    #siteBoot::before,.site-boot-device.boost,.site-boot-spark { animation:none !important; }
+    #siteBoot,.site-boot-fill { transition-duration:.01ms; }
+  }
   .scene {
     position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
     aspect-ratio: 16/9; max-width:100vw; max-height:100vh; width:min(100vw, 177.78vh);
@@ -59,6 +156,12 @@
   /* PC apagada */
   .pantalla.off iframe { opacity:0; }
   .pantalla.off .pantalla-click { pointer-events:none; }
+  .pantalla.loading:not(.off)::after {
+    content:'BOOTING...'; position:absolute; inset:0; z-index:4; display:grid; place-items:center;
+    color:#9fe39a; background:#06100a; font:700 clamp(9px,1vw,14px) ui-monospace,monospace;
+    animation:monitorBootBlink .8s steps(2,end) infinite;
+  }
+  @keyframes monitorBootBlink { 50% { color:#284a2c; } }
 
   /* ---- interacciones ---- */
   #el-speaker, #el-keyboard, #el-cat, #el-lamp { cursor:pointer; }
@@ -295,7 +398,7 @@
 
   /* ---- modo mobile: solo la home mobile; la escena desktop queda oculta ---- */
   #mobileHome { display:none; }
-  html.is-mobile body > *:not(#mobileHome) { display:none !important; }
+  html.is-mobile body > *:not(#mobileHome):not(#siteBoot) { display:none !important; }
   html.is-mobile #mobileHome {
     display:flex; position:fixed; inset:0; z-index:400;
     background:#0d0d16; flex-direction:column; align-items:center; justify-content:center;
@@ -313,13 +416,31 @@
 </style>
 </head>
 <body>
+  <div id="siteBoot" role="dialog" aria-modal="true" aria-labelledby="siteBootTitle" aria-describedby="siteBootStatus">
+    <section class="site-boot-panel">
+      <div class="site-boot-top"><span>MICHELLE SALCEDO PORTFOLIO</span><span class="site-boot-led" aria-hidden="true"></span></div>
+      <div class="site-boot-device" id="siteBootDevice" aria-hidden="true">
+        <img class="site-boot-sprite" src="assets/favicon.png" alt="">
+      </div>
+      <div class="site-boot-title" id="siteBootTitle">MY DIGITAL CRIB</div>
+      <div class="site-boot-mode" id="siteBootMode">BOOTING THE ROOM</div>
+      <div class="site-boot-progress-head"><span id="siteBootStatus">warming up the pixels</span><output id="siteBootPercent">04%</output></div>
+      <div class="site-boot-track" id="siteBootTrack" role="progressbar" aria-label="Website loading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="4">
+        <div class="site-boot-fill" id="siteBootFill"></div>
+      </div>
+      <div class="site-boot-actions">
+        <button class="site-boot-charm" id="siteBootCharm" type="button">TAP FOR LUCK</button>
+        <span class="site-boot-luck" id="siteBootLuck" aria-live="polite">LUCK 00</span>
+      </div>
+    </section>
+  </div>
   <!-- home mobile: la version de telefono vive en mobile-app (desktop intacto) -->
   <div id="mobileHome">
     <img class="mh-face" src="assets/michelle.png" alt="Michelle">
     <div class="mh-title">MY DIGITAL CRIB</div>
     <div class="mh-sub" id="mhSub">mobile version in the works</div>
     <div class="mh-note" id="mhNote">meanwhile, the full pixel room lives on desktop</div>
-    <iframe id="mobileFrame" src="mobile-app/index.html" title="my digital crib — mobile"></iframe>
+    <iframe id="mobileFrame" src="about:blank" data-src="mobile-app/index.html" title="my digital crib — mobile"></iframe>
   </div>
   <div class="scene" id="scene">
     <img class="bg" src="assets/bg.png?v=2" alt="room">
@@ -364,7 +485,7 @@
     </div>
     <div class="el pantalla off" id="el-pantalla" data-name="pantalla"
          style="left:36.458%; top:16.667%; width:31.250%; height:40.278%;">
-      <iframe src="pantalla-app/index.html" title="pantalla"></iframe>
+      <iframe src="about:blank" data-src="pantalla-app/index.html" title="pantalla"></iframe>
       <div class="crt-lines"></div>
       <div class="crt-sweep"></div>
       <div class="pantalla-click" title="click para expandir" onclick="openXP()"></div>
@@ -503,6 +624,16 @@
   </div>
 
 <script>
+  function ensureDeskScreenLoaded() {
+    const panel = document.getElementById('el-pantalla');
+    const frame = panel && panel.querySelector('iframe');
+    if (!frame || frame.dataset.loaded) return frame;
+    frame.dataset.loaded = '1';
+    panel.classList.add('loading');
+    frame.addEventListener('load', () => panel.classList.remove('loading'), { once:true });
+    frame.src = frame.dataset.src || 'pantalla-app/index.html';
+    return frame;
+  }
   function openXP() {
     const f = document.getElementById('xpFrame');
     if (!f.dataset.loaded) { f.src = 'pantalla-app/index.html'; f.dataset.loaded = '1'; }
@@ -516,12 +647,6 @@
     if (!f.dataset.loaded) { f.src = 'nokia-app/index.html'; f.dataset.loaded = '1'; }
     document.getElementById('nokiaOverlay').classList.add('open');
   }
-  /* precargar el telefono en segundo plano: la primera apertura es instantanea (no en mobile) */
-  window.addEventListener('load', () => setTimeout(() => {
-    if (document.documentElement.classList.contains('is-mobile')) return;
-    const f = document.getElementById('nokiaFrame');
-    if (f && !f.dataset.loaded) { f.src = 'nokia-app/index.html'; f.dataset.loaded = '1'; }
-  }, 2500));
   function closeNokia() { document.getElementById('nokiaOverlay').classList.remove('open'); }
   document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeXP(); closeNokia(); } });
 
@@ -535,12 +660,18 @@
   document.addEventListener('keydown', e => { if (e.key.toLowerCase() === 'l') toggleLines(); });
 
   /* ---------- sonidos ---------- */
-  const sndKeyboard = new Audio('assets/sfx-keyboard.mp3');
-  const sndSpeaker  = new Audio('assets/gasolina.mp3');
+  function lazyAudio(src) {
+    const audio = new Audio();
+    audio.preload = 'none';
+    audio.src = src;
+    return audio;
+  }
+  const sndKeyboard = lazyAudio('assets/sfx-keyboard.mp3');
+  const sndSpeaker  = lazyAudio('assets/gasolina.mp3');
   sndSpeaker.loop = true;
-  const sndShutdown = new Audio('pantalla-app/sounds/xp-shutdown.mp3');
-  const sndStartup  = new Audio('pantalla-app/sounds/xp-startup.mp3');
-  const sndPurr     = new Audio('assets/purr.mp3');
+  const sndShutdown = lazyAudio('pantalla-app/sounds/xp-shutdown.mp3');
+  const sndStartup  = lazyAudio('pantalla-app/sounds/xp-startup.mp3');
+  const sndPurr     = lazyAudio('assets/purr.mp3');
 
   function playKeyboard() {
     sndKeyboard.currentTime = 0;
@@ -573,7 +704,7 @@
     const off = p.classList.toggle('off');
     b.classList.toggle('pressed', off);
     if (off) { closeXP(); sndShutdown.currentTime = 0; sndShutdown.play().catch(() => {}); }
-    else     { sndStartup.currentTime = 0;  sndStartup.play().catch(() => {}); }
+    else     { ensureDeskScreenLoaded(); sndStartup.currentTime = 0; sndStartup.play().catch(() => {}); }
   }
 
   /* ---------- gato: zzz + purr en cada toque ---------- */
@@ -584,7 +715,7 @@
   }
 
   /* ---------- poster: notificacion whatsapp ---------- */
-  const sndDing = new Audio('pantalla-app/sounds/xp-ding.mp3');
+  const sndDing = lazyAudio('pantalla-app/sounds/xp-ding.mp3');
   let notifTimer = null;
   function togglePosterNotif() {
     const n = document.getElementById('posterNotif');
@@ -603,7 +734,7 @@
   }
 
   /* ---------- guacamaya: canta (siempre desde el segundo 2) ---------- */
-  const sndGuacamaya = new Audio('assets/guacamaya.mp3');
+  const sndGuacamaya = lazyAudio('assets/guacamaya.mp3');
   sndGuacamaya.addEventListener('ended', () =>
     document.getElementById('el-guacamaya').classList.remove('playing'));
   function toggleGuacamaya() {
@@ -632,7 +763,7 @@
       };
     }
     function sendCursor(el) {
-      const pf = document.querySelector('#el-pantalla iframe');
+      const pf = ensureDeskScreenLoaded();
       if (!pf || !pf.contentWindow) return;
       const n = cursorNorm(el);
       pf.contentWindow.postMessage({ type: 'xp-cursor', x: n.x, y: n.y }, '*');
@@ -1514,6 +1645,124 @@
     const saved = store.get('pr_step');
     setStep(forceTut ? 'entry' : (resumeMap[saved] || saved || 'entry'));
   }
+})();
+</script>
+<script>
+(function startSiteBoot() {
+  const boot = document.getElementById('siteBoot');
+  const fill = document.getElementById('siteBootFill');
+  const track = document.getElementById('siteBootTrack');
+  const percent = document.getElementById('siteBootPercent');
+  const status = document.getElementById('siteBootStatus');
+  const mode = document.getElementById('siteBootMode');
+  const charm = document.getElementById('siteBootCharm');
+  const luck = document.getElementById('siteBootLuck');
+  const device = document.getElementById('siteBootDevice');
+  const isMobile = document.documentElement.classList.contains('is-mobile');
+  let luckCount = 0;
+  let finished = false;
+
+  if (!boot) return;
+  mode.textContent = isMobile ? 'ASSEMBLING THE MANGOPHONE' : 'BOOTING THE PIXEL ROOM';
+
+  function setProgress(value, message) {
+    const safeValue = Math.max(4, Math.min(100, Math.round(value)));
+    fill.style.transform = 'scaleX(' + (safeValue / 100) + ')';
+    track.setAttribute('aria-valuenow', String(safeValue));
+    percent.value = String(safeValue).padStart(2, '0') + '%';
+    if (message) status.textContent = message;
+  }
+
+  function delay(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+  function nextPaint() {
+    return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  }
+  function waitForImage(image) {
+    if (!image) return Promise.resolve();
+    if (image.complete) {
+      if (typeof image.decode === 'function') return image.decode().catch(() => {});
+      return Promise.resolve();
+    }
+    return new Promise(resolve => {
+      image.addEventListener('load', resolve, { once:true });
+      image.addEventListener('error', resolve, { once:true });
+    }).then(() => typeof image.decode === 'function' ? image.decode().catch(() => {}) : undefined);
+  }
+
+  charm.addEventListener('click', () => {
+    luckCount += 1;
+    luck.textContent = 'LUCK ' + String(luckCount).padStart(2, '0');
+    device.classList.remove('boost');
+    void device.offsetWidth;
+    device.classList.add('boost');
+    const paths = [['-72px','-48px'],['68px','-54px'],['-82px','28px'],['78px','32px']];
+    const path = paths[(luckCount - 1) % paths.length];
+    const spark = document.createElement('span');
+    spark.className = 'site-boot-spark';
+    spark.style.left = '50%';
+    spark.style.top = '42%';
+    spark.style.setProperty('--spark-x', path[0]);
+    spark.style.setProperty('--spark-y', path[1]);
+    device.appendChild(spark);
+    setTimeout(() => spark.remove(), 650);
+  });
+
+  async function waitForDesktop() {
+    const images = Array.from(document.querySelectorAll('#scene img, #siteBoot img'));
+    let ready = 0;
+    setProgress(12, 'dusting the desk');
+    await Promise.all(images.map(image => waitForImage(image).then(() => {
+      ready += 1;
+      setProgress(12 + (ready / Math.max(images.length, 1)) * 72,
+        ready < images.length ? 'placing room sprites' : 'switching on the lights');
+    })));
+  }
+
+  async function waitForMobile() {
+    const frame = document.getElementById('mobileFrame');
+    if (!frame) return;
+    setProgress(12, 'finding the mangophone');
+    let reportReady;
+    const childReady = new Promise(resolve => { reportReady = resolve; });
+    const onMessage = event => {
+      if (event.source !== frame.contentWindow) return;
+      if (!event.data || event.data.type !== 'crib-mobile-ready') return;
+      window.removeEventListener('message', onMessage);
+      setProgress(91, 'screen and mango aligned');
+      reportReady();
+    };
+    window.addEventListener('message', onMessage);
+    const frameLoaded = new Promise(resolve => frame.addEventListener('load', () => {
+      setProgress(48, 'placing the phone icons');
+      resolve();
+    }, { once:true }));
+    frame.src = frame.dataset.src || 'mobile-app/index.html';
+    await Promise.race([
+      Promise.all([frameLoaded, childReady]),
+      delay(12000).then(() => {
+        window.removeEventListener('message', onMessage);
+        setProgress(91, 'opening the screen');
+      })
+    ]);
+  }
+
+  async function finish() {
+    if (finished) return;
+    finished = true;
+    setProgress(100, 'welcome home');
+    await delay(320);
+    await nextPaint();
+    document.body.classList.add('site-ready');
+    boot.classList.add('done');
+    setTimeout(() => boot.remove(), 520);
+  }
+
+  Promise.all([
+    isMobile ? waitForMobile() : waitForDesktop(),
+    delay(700)
+  ]).then(finish).catch(finish);
+
+  setTimeout(finish, 15000);
 })();
 </script>
 </body>
