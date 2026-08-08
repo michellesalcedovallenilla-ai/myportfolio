@@ -113,6 +113,15 @@
   #themeToggle img:active { transform: scale(0.93); }
   @media (max-height: 700px) { #themeToggle img { width: 46px; } }
 
+  /* Quest tutorial bar — videogame-style walkthrough (mobile + tablet only) */
+  #questBar { display: none; position: fixed; left: 50%; bottom: max(10px, env(safe-area-inset-bottom)); transform: translateX(-50%) translateY(160%); width: calc(100% - 20px); max-width: 520px; z-index: 96; align-items: center; gap: 10px; padding: 10px 12px; background: linear-gradient(180deg, #232a3a 0%, #141a28 100%); border: 2px solid #3a4664; border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08); transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.15); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  #questBar.on { transform: translateX(-50%) translateY(0); }
+  @media (max-width: 1024px) { #questBar { display: flex; } }
+  #questBar img { width: 46px; height: 46px; border-radius: 8px; border: 2px solid #57a04a; object-fit: cover; flex-shrink: 0; background: #2a4a24; }
+  #questKicker { font-size: 10px; letter-spacing: 2px; color: #7d89a8; }
+  #questTitle { font-size: 14px; color: #ffd94a; letter-spacing: 1px; margin: 1px 0 2px; text-shadow: 0 1px 0 rgba(0,0,0,0.5); }
+  #questText { font-size: 15px; color: #e8ecf4; line-height: 1.2; }
+
   /* Warm filter + vignette + grain — all in one overlay */
   body::after {
     content: '';
@@ -1575,6 +1584,44 @@
   .ig-tab.active .ig-tab-label { color: #5890cc; }
   .ig-tab.active::before { content: ''; position: absolute; inset: 2px 4px; border-radius: 4px; background: rgba(80,130,200,0.12); z-index: -1; }
 
+  /* michisgram — profile header + photo grid */
+  .ig-profile { background: #fff; border-bottom: 1px solid #ddd; }
+  .ig-profile-top { display: flex; align-items: center; gap: 16px; padding: 12px 14px 6px; }
+  .ig-profile-avatar { width: 62px; height: 62px; border-radius: 50%; padding: 2px; background: conic-gradient(#feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5, #feda75); flex-shrink: 0; }
+  .ig-profile-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; border: 2px solid #fff; box-sizing: border-box; }
+  .ig-stats { display: flex; flex: 1; justify-content: space-around; }
+  .ig-stat { text-align: center; font-size: 11px; color: #555; }
+  .ig-stat strong { display: block; font-size: 15px; color: #111; }
+  .ig-profile-name { font-weight: 700; font-size: 13px; color: #111; padding: 4px 14px 0; }
+  .ig-bio { font-size: 12px; color: #333; line-height: 1.35; padding: 2px 14px 4px; }
+  .ig-bio span { color: #2a5db0; }
+  .ig-followed { font-size: 11px; color: #666; padding: 0 14px 8px; }
+  .ig-profile-btns { display: flex; gap: 6px; padding: 0 14px 10px; }
+  .ig-pbtn { flex: 1; text-align: center; font-size: 12px; font-weight: 600; color: #222; background: #efefef; border: 1px solid #d8d8d8; border-radius: 6px; padding: 5px 0; cursor: pointer; }
+  .ig-pbtn:active { background: #ddd; }
+  .ig-pbtn-add { flex: 0 0 34px; }
+  .ig-highlights { display: flex; gap: 12px; overflow-x: auto; padding: 2px 14px 10px; }
+  .ig-highlights::-webkit-scrollbar { display: none; }
+  .ig-highlight { flex-shrink: 0; width: 52px; text-align: center; }
+  .ig-highlight-ring { width: 46px; height: 46px; border-radius: 50%; border: 2px solid #c8c8c8; background: #f6f6f6; display: flex; align-items: center; justify-content: center; font-size: 17px; margin: 0 auto; }
+  .ig-highlight-label { font-size: 9px; color: #444; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ig-viewtabs { display: flex; border-top: 1px solid #e0e0e0; }
+  .ig-viewtab { flex: 1; text-align: center; padding: 7px 0; font-size: 14px; color: #999; border-bottom: 2px solid transparent; }
+  .ig-viewtab.active { color: #222; border-bottom-color: #222; }
+  .ig-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 2px 0 8px; background: #fff; }
+  .ig-cell { aspect-ratio: 1/1; overflow: hidden; background: #ddd; cursor: pointer; }
+  .ig-cell img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .ig-cell:active img { opacity: 0.7; }
+  .ig-lightbox { position: absolute; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 8; padding: 16px; }
+  .ig-lightbox.visible { display: flex; }
+  .ig-lb-card { background: #fff; border-radius: 8px; overflow: hidden; width: 100%; max-height: 100%; display: flex; flex-direction: column; }
+  .ig-lb-head { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-bottom: 1px solid #eee; flex-shrink: 0; }
+  .ig-lb-head .ig-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .ig-lb-media { flex: 1; min-height: 0; background: #111; display: flex; align-items: center; justify-content: center; }
+  .ig-lb-media img { width: 100%; max-height: 44vh; object-fit: contain; display: block; }
+  .ig-lb-likes { padding: 8px 10px 0; font-size: 12px; color: #111; flex-shrink: 0; }
+  .ig-lb-cap { padding: 3px 10px 10px; font-size: 12px; color: #222; flex-shrink: 0; }
+
   /* Camera */
   .cam-app { background: #1a1a1a !important; }
   .cam-app .app-header-bg { background: linear-gradient(180deg, #555 0%, #444 20%, #2a2a2a 55%, #1a1a1a 85%, #141414 100%); }
@@ -2705,6 +2752,25 @@
   .settings-item:active .settings-item-arrow { color: #fff; }
   .settings-item-arrow { color: #b0b0b0; font-size: 16px; }
   .settings-item-icon { width: 24px; height: 24px; border-radius: 5px; margin-right: 10px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #fff; flex-shrink: 0; box-shadow: 0 1px 2px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.2); }
+  /* iOS-style toggle switch */
+  .set-toggle { width: 46px; height: 27px; border-radius: 14px; background: #d8d4cc; border: 1px solid #b8b4ac; position: relative; transition: background 0.2s; flex-shrink: 0; box-shadow: inset 0 1px 3px rgba(0,0,0,0.15); }
+  .set-toggle::after { content: ''; position: absolute; top: 1px; left: 1px; width: 23px; height: 23px; border-radius: 50%; background: linear-gradient(180deg,#fff,#e8e8e8); box-shadow: 0 1px 3px rgba(0,0,0,0.3); transition: left 0.18s ease; }
+  .set-toggle.on { background: #34c759; border-color: #2aa84a; }
+  .set-toggle.on::after { left: 20px; }
+  .set-value { color: #8a857c; font-size: 13px; }
+  .set-slider { flex: 1; margin-left: 12px; -webkit-appearance: none; appearance: none; height: 6px; border-radius: 3px; background: linear-gradient(180deg,#b8b4ac,#ddd9d1); outline: none; box-shadow: inset 0 1px 2px rgba(0,0,0,0.12); }
+  .set-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 22px; height: 22px; border-radius: 50%; background: linear-gradient(180deg,#fff,#e0e0e0); box-shadow: 0 1px 3px rgba(0,0,0,0.35); border: 1px solid #b0aca4; cursor: pointer; }
+  .settings-detail { position: absolute; inset: 0; background: #c8c4bc; display: none; flex-direction: column; z-index: 6; }
+  .settings-detail.visible { display: flex; }
+  .settings-detail-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 6px 0 14px; }
+  .set-about-group { background: #fff; margin: 10px 8px; border-radius: 8px; border: 1px solid #a8a4a0; overflow: hidden; }
+  .set-about-row { display: flex; justify-content: space-between; gap: 10px; padding: 9px 12px; border-bottom: 1px solid #e0dcd4; font-size: 13px; color: #222; }
+  .set-about-row:last-child { border-bottom: none; }
+  .set-about-row span:last-child { color: #8a857c; text-align: right; }
+  .set-wallpaper-thumb { width: 34px; height: 50px; object-fit: cover; border-radius: 3px; border: 1px solid #a8a4a0; flex-shrink: 0; }
+  /* radio-state effects across every status bar */
+  body.wifi-off .wifi-icon, body.airplane-on .wifi-icon, body.airplane-on .signal-bars { display: none !important; }
+  body.airplane-on .lock-status-left::after { content: '✈ airplane'; color: #fff; font-size: 10px; letter-spacing: 1px; }
   .mail-list-item { padding: 10px 12px; border-bottom: 1px solid #e0e0e0; background: #fff; cursor: pointer; box-shadow: 0 1px 0 rgba(255,255,255,0.5); }
   .mail-list-item:active { background: linear-gradient(180deg, #5898e8 0%, #2060c0 100%); color: #fff; }
   .mail-list-item:active .mail-sender,
@@ -2869,6 +2935,11 @@
   /* Small tablet / large phone */
   @media (max-width: 768px) {
     :root { --phone-scale: 0.77; }
+  }
+
+  /* Phones — taller mango so the screen is easier to read */
+  @media (max-width: 600px) {
+    :root { --phone-stretch: 1.14; }
   }
 
   /* Mobile portrait */
@@ -3134,6 +3205,15 @@
 <div class="bg-interior" id="bgInterior"></div>
 <div class="grain-overlay" id="grainOverlay"></div>
 <div id="themeToggle"><img id="themeBtnLight" src="assets/btn-light.png" alt="light mode"><img id="themeBtnNight" src="assets/btn-night.png" alt="night mode"></div>
+<!-- Quest tutorial bar (mobile + tablet only) -->
+<div id="questBar">
+  <img id="questAvatar" src="assets/michelle-talk.gif" alt="michelle">
+  <div id="questTextWrap">
+    <div id="questKicker">MICHELLE SALCEDO PORTFOLIO</div>
+    <div id="questTitle">MAIN QUEST</div>
+    <div id="questText"></div>
+  </div>
+</div>
 <script>
 // Generate static grain texture once via canvas — no GPU-heavy SVG filters
 (function() {
@@ -3657,13 +3737,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const isMobile = vw <= 600;
     const isTablet = vw > 600 && vw <= 1024;
     // On mobile: leave room at sides for back btn, and below for flip hint
-    const wFactor = isMobile ? 0.985 : isTablet ? 0.93 : 0.95;
-    const hFactor = isMobile ? 0.94 : isTablet ? 0.90 : 0.97;
+    const wFactor = isMobile ? 0.995 : isTablet ? 0.95 : 0.95;
+    const hFactor = isMobile ? 0.96 : isTablet ? 0.92 : 0.97;
     const maxScale = isMobile ? 1.10 : isTablet ? 1.30 : 1.55;
     const scaleW = (vw * wFactor) / 452;
     const scaleH = (vh * hFactor) / 617;
     // Ensure enough space below centered phone for flip hint + back button
-    const uiBelow = isMobile ? 70 : isTablet ? 50 : 25;
+    const uiBelow = isMobile ? 56 : isTablet ? 46 : 25;
     const scaleUI = (vh - 2 * uiBelow) / 587;
     const scale = Math.min(scaleW, scaleH, maxScale, scaleUI);
     document.documentElement.style.setProperty('--phone-scale', scale.toFixed(3));
@@ -5414,12 +5494,12 @@ document.addEventListener('DOMContentLoaded', () => {
     {id:'calculator', label:'Calculator'}, {id:'compass', label:'Compass'}, {id:'cards', label:'Cards'}, {id:'clock', label:'Clock'}
   ];
   const page2Icons = [
-    {id:'videos', label:'Videos'}, {id:'photos', label:'Photos'}, {id:'numbers', label:'Numbers'}, {id:'keynote', label:'Keynote'},
+    {id:'videos', label:'Videos'}, {id:'photos', label:'Photos'}, {id:'numbers', label:'Numbers'},
     {id:'instagram', label:'michisgram'}, {id:'garageband', label:'Garageband'},
-    {id:'airport', label:'Airport'}, {id:'_empty', label:''}, {id:'_empty', label:''}, {id:'_empty', label:''}
+    {id:'airport', label:'Airport'}, {id:'_empty', label:''}, {id:'_empty', label:''}, {id:'_empty', label:''}, {id:'_empty', label:''}
   ];
   const dockIcons = [
-    {id:'phone', label:'Phone'}, {id:'safari', label:'Safari'}, {id:'mail', label:'Mail'}, {id:'settings', label:'Settings'}
+    {id:'phone', label:'Phone'}, {id:'safari', label:'sarifa'}, {id:'mail', label:'Mail'}, {id:'settings', label:'Settings'}
   ];
 
   function createIconCell(icon, forDock) {
@@ -5803,66 +5883,88 @@ document.addEventListener('DOMContentLoaded', () => {
       }, _msgAlertConfig.delayMs);
     };
 
-    // --- INSTAGRAM ---
+    // --- INSTAGRAM (michisgram) — profile + photo grid, like the real thing ---
     const igScreen = document.createElement('div'); igScreen.className = 'app-screen'; igScreen.id = 'app-instagram'; igScreen.style.background = '#f2f2f2';
-    function drawIgAvatar(canvas) { const ctx = canvas.getContext('2d'), s = canvas.width; ctx.fillStyle = '#8a7060'; ctx.fillRect(0,0,s,s); ctx.fillStyle = '#c0a888'; ctx.beginPath(); ctx.arc(s/2, s*0.4, s*0.25, 0, Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.ellipse(s/2, s*0.9, s*0.3, s*0.2, 0, 0, Math.PI*2); ctx.fill(); }
-    function drawIgPost(canvas, seed) {
-      const ctx = canvas.getContext('2d'), s = canvas.width;
-      ctx.fillStyle = seed===1?'#3a3028':'#2a2828'; ctx.fillRect(0,0,s,s);
-      if (seed===1) { ctx.fillStyle='#5a4838'; ctx.fillRect(0,s*0.6,s,s*0.4); ctx.fillStyle='#7a6a58'; ctx.beginPath(); ctx.arc(s*0.3,s*0.5,s*0.12,0,Math.PI*2); ctx.fill(); ctx.fillStyle='#6a5a48'; ctx.beginPath(); ctx.arc(s*0.5,s*0.45,s*0.14,0,Math.PI*2); ctx.fill(); ctx.fillStyle='#8a7a68'; ctx.beginPath(); ctx.arc(s*0.7,s*0.55,s*0.08,0,Math.PI*2); ctx.fill(); ctx.fillStyle='#5a4a38'; ctx.beginPath(); ctx.ellipse(s*0.65,s*0.65,s*0.12,s*0.06,0,0,Math.PI*2); ctx.fill(); }
-      else { ctx.fillStyle='#4a4040'; ctx.fillRect(0,s*0.65,s,s*0.35); ctx.fillStyle='#6a5a50'; ctx.beginPath(); ctx.arc(s*0.4,s*0.5,s*0.1,0,Math.PI*2); ctx.fill(); ctx.fillStyle='#7a6a60'; ctx.beginPath(); ctx.arc(s*0.6,s*0.48,s*0.12,0,Math.PI*2); ctx.fill(); }
-      const vg = ctx.createRadialGradient(s/2,s/2,s*0.2,s/2,s/2,s*0.7); vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,0.4)'); ctx.fillStyle=vg; ctx.fillRect(0,0,s,s);
-      for(let i=0;i<500;i++){ctx.fillStyle=`rgba(${Math.random()>0.5?255:0},${Math.random()>0.5?255:0},${Math.random()>0.5?255:0},${Math.random()*0.05})`;ctx.fillRect(Math.random()*s,Math.random()*s,1,1);}
-    }
+    const igPosts = [
+      { src:'assets/photos/01.jpg', likes:21, caption:'golden hour dump' },
+      { src:'assets/photos/02.jpg', likes:17, caption:'soft light, loud thoughts' },
+      { src:'assets/photos/03.jpg', likes:23, caption:'point and shoot diaries' },
+      { src:'assets/photos/04.jpg', likes:19, caption:'somewhere in maracay' },
+      { src:'assets/photos/05.jpg', likes:26, caption:'film-ish' },
+      { src:'assets/photos/06.jpg', likes:15, caption:'little things' },
+      { src:'assets/photos/07.jpg', likes:18, caption:'crt > everything' },
+      { src:'assets/photos/08.jpg', likes:22, caption:'afternoon static' },
+      { src:'assets/photos/09.jpg', likes:20, caption:'through the viewfinder' },
+      { src:'assets/photos/10.jpg', likes:25, caption:'pixel state of mind' },
+      { src:'assets/photos/11.jpg', likes:16, caption:'late walk frames' },
+      { src:'assets/photos/12.jpg', likes:24, caption:'end of the roll' }
+    ];
     igScreen.innerHTML = `
       <div class="app-status-bar">${statusBarHTML()}</div>
       <div class="ig-header"><div class="ig-header-bg"></div><div class="ig-header-title">michisgram</div>
         <div class="ig-header-refresh"><svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.95 7.95 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6" stroke-width="2"/><polyline points="18 2 22 6 18 10" stroke-width="2"/></svg></div></div>
-      <div class="ig-feed" id="igFeed"></div>
+      <div class="ig-feed" id="igFeed">
+        <div class="ig-profile">
+          <div class="ig-profile-top">
+            <div class="ig-profile-avatar"><img src="assets/michelle-talk.gif" alt="michisgram"></div>
+            <div class="ig-stats">
+              <div class="ig-stat"><strong>12</strong><span>posts</span></div>
+              <div class="ig-stat"><strong>795</strong><span>followers</span></div>
+              <div class="ig-stat"><strong>312</strong><span>following</span></div>
+            </div>
+          </div>
+          <div class="ig-profile-name">michisgram</div>
+          <div class="ig-bio">hi, thanks for stopping by :)<br>web designer · influencer marketing · ai workflows<br>photography portfolio here at <span>@pastflash</span><br><span>www.mydigitalcrib.com</span></div>
+          <div class="ig-followed">Followed by <strong>gabriela.jps</strong>, <strong>sinairlvodo</strong> + 51 more</div>
+          <div class="ig-profile-btns"><div class="ig-pbtn">Following ⌄</div><div class="ig-pbtn">Message</div><div class="ig-pbtn ig-pbtn-add">＋</div></div>
+          <div class="ig-highlights">
+            <div class="ig-highlight"><div class="ig-highlight-ring">🤝</div><div class="ig-highlight-label">collabs</div></div>
+            <div class="ig-highlight"><div class="ig-highlight-ring">💵</div><div class="ig-highlight-label">our rates</div></div>
+            <div class="ig-highlight"><div class="ig-highlight-ring">📅</div><div class="ig-highlight-label">agenda</div></div>
+            <div class="ig-highlight"><div class="ig-highlight-ring">📱</div><div class="ig-highlight-label">get social</div></div>
+            <div class="ig-highlight"><div class="ig-highlight-ring">☕</div><div class="ig-highlight-label">virtual coffee</div></div>
+            <div class="ig-highlight"><div class="ig-highlight-ring">🎧</div><div class="ig-highlight-label">our playlist</div></div>
+          </div>
+          <div class="ig-viewtabs">
+            <div class="ig-viewtab active">▦</div><div class="ig-viewtab">▶</div><div class="ig-viewtab">👤</div>
+          </div>
+        </div>
+        <div class="ig-grid" id="igGrid"></div>
+      </div>
       <div class="ig-tabbar"><div class="ig-tabbar-bg"></div>
         <div class="ig-tab"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/></svg><div class="ig-tab-label">Feed</div></div>
         <div class="ig-tab"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><div class="ig-tab-label">Popular</div></div>
         <div class="ig-tab"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg><div class="ig-tab-label">Share</div></div>
         <div class="ig-tab"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><div class="ig-tab-label">News</div></div>
         <div class="ig-tab active"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><div class="ig-tab-label">Profile</div></div>
+      </div>
+      <div class="ig-lightbox" id="igLightbox">
+        <div class="ig-lb-card">
+          <div class="ig-lb-head"><div class="ig-avatar"><img src="assets/michelle-talk.gif" alt=""></div><div class="ig-username">michisgram</div></div>
+          <div class="ig-lb-media"><img id="igLbImg" alt=""></div>
+          <div class="ig-lb-likes"><strong id="igLbLikes"></strong></div>
+          <div class="ig-lb-cap"><strong>michisgram</strong> <span id="igLbCap"></span></div>
+        </div>
       </div>`;
     appContainer.appendChild(igScreen);
-    const igFeed = igScreen.querySelector('#igFeed');
-    const igPosts = [
-      { type:'image', src:'assets/photos/ig-mydigitalcrib.jpg', likes:34, caption:'hi, thanks for stopping by :)' },
-      { type:'image', src:'assets/photos/ig-pastflash.jpg', likes:29, caption:'photography portfolio @pastflash' },
-      { type:'image', src:'assets/photos/01.jpg', likes:21, caption:'golden hour dump' },
-      { type:'image', src:'assets/photos/02.jpg', likes:17, caption:'soft light, loud thoughts' },
-      { type:'image', src:'assets/photos/03.jpg', likes:23, caption:'point and shoot diaries' },
-      { type:'image', src:'assets/photos/04.jpg', likes:19, caption:'somewhere in maracay' },
-      { type:'image', src:'assets/photos/05.jpg', likes:26, caption:'film-ish' },
-      { type:'image', src:'assets/photos/06.jpg', likes:15, caption:'little things' },
-      { type:'image', src:'assets/photos/07.jpg', likes:18, caption:'crt > everything' },
-      { type:'image', src:'assets/photos/08.jpg', likes:22, caption:'afternoon static' },
-      { type:'image', src:'assets/photos/09.jpg', likes:20, caption:'through the viewfinder' },
-      { type:'image', src:'assets/photos/10.jpg', likes:25, caption:'pixel state of mind' },
-      { type:'image', src:'assets/photos/11.jpg', likes:16, caption:'late walk frames' },
-      { type:'image', src:'assets/photos/12.jpg', likes:24, caption:'end of the roll' }
-    ];
-    igPosts.forEach((p, i) => {
-      const post = document.createElement('div'); post.className = 'ig-post';
-      const mediaHTML = p.type === 'video'
-        ? `<div class="ig-post-image"><video src="${p.src}" style="width:100%;height:100%;object-fit:cover;display:block;" playsinline webkit-playsinline muted loop preload="none"></video></div>`
-        : `<div class="ig-post-image"><img src="${p.src}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;"></div>`;
-      const captionHTML = p.caption ? `<div class="ig-caption"><strong>michisgram</strong> ${p.caption}</div>` : '';
-      const igAvatarSrc = 'assets/michelle-talk.gif';
-      post.innerHTML = `<div class="ig-post-header"><div class="ig-avatar"><img src="${igAvatarSrc}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;"></div><div class="ig-username">michisgram</div></div>
-        ${mediaHTML}
-        <div class="ig-post-actions"><div class="ig-action-btn"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span class="ig-action-label">Like</span></div>
-          <div class="ig-action-btn"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg><span class="ig-action-label">Comment</span></div></div>
-        <div class="ig-likes"><strong>${p.likes} likes</strong></div>${captionHTML}`;
-      igFeed.appendChild(post);
-      // Auto-play video when visible
-      const vid = post.querySelector('video');
-      if (vid) { vid.addEventListener('click', () => { vid.muted ? (vid.muted=false, vid.play()) : (vid.muted=true); }); }
+    const igGrid = igScreen.querySelector('#igGrid');
+    igPosts.forEach((p) => {
+      const cell = document.createElement('div'); cell.className = 'ig-cell';
+      cell.innerHTML = `<img src="${p.src}" loading="lazy" alt="">`;
+      cell.addEventListener('click', () => {
+        iPhoneSounds.tap();
+        igScreen.querySelector('#igLbImg').src = p.src;
+        igScreen.querySelector('#igLbLikes').textContent = p.likes + ' likes';
+        igScreen.querySelector('#igLbCap').textContent = p.caption;
+        igScreen.querySelector('#igLightbox').classList.add('visible');
+      });
+      igGrid.appendChild(cell);
     });
-    igScreen._initIg = () => { igScreen.querySelectorAll('video').forEach(v => v.play().catch(()=>{})); };
-    igScreen._cleanupIg = () => { igScreen.querySelectorAll('video').forEach(v => { v.pause(); v.currentTime = 0; }); };
+    igScreen.querySelector('#igLightbox').addEventListener('click', (e) => {
+      if (e.target.id === 'igLightbox') { iPhoneSounds.tap(); igScreen.querySelector('#igLightbox').classList.remove('visible'); }
+    });
+    igScreen._initIg = () => {};
+    igScreen._cleanupIg = () => { igScreen.querySelector('#igLightbox').classList.remove('visible'); };
     apps.instagram = igScreen;
 
     // --- CAMERA ---
@@ -6974,11 +7076,83 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- SETTINGS ---
     const settingsScreen = document.createElement('div'); settingsScreen.className = 'app-screen app-grey'; settingsScreen.id = 'app-settings';
-    const settingsItems=[{icon:'✈️',bg:'#ff9500',t:'Airplane Mode'},{icon:'📶',bg:'#3478f6',t:'Wi-Fi'},{icon:'📱',bg:'#34c759',t:'Notifications'},{icon:'🔊',bg:'#ff3b30',t:'Sounds'},{icon:'🔆',bg:'#5856d6',t:'Brightness'},{icon:'🖼',bg:'#30b0c7',t:'Wallpaper'},{icon:'🔒',bg:'#888',t:'General'},{icon:'📧',bg:'#3478f6',t:'Mail, Contacts, Calendars'}];
+    const cribSettings = { airplane:false, wifi:true, sounds:true, brightness:1 };
+    try { Object.assign(cribSettings, JSON.parse(localStorage.getItem('crib_settings') || '{}')); } catch(e) {}
+    function cribSaveSettings() { try { localStorage.setItem('crib_settings', JSON.stringify(cribSettings)); } catch(e) {} }
+    // Wrap the sound engine once so the Sounds toggle actually mutes every blip
+    if (!iPhoneSounds._muteWrapped) {
+      iPhoneSounds._muteWrapped = true;
+      Object.keys(iPhoneSounds).forEach(k => {
+        if (k.charAt(0) === '_') return;
+        const fn = iPhoneSounds[k];
+        if (typeof fn === 'function') iPhoneSounds[k] = function() { if (cribSettings.sounds) return fn.apply(this, arguments); };
+      });
+    }
+    function cribApplySettings() {
+      document.body.classList.toggle('airplane-on', cribSettings.airplane);
+      document.body.classList.toggle('wifi-off', !cribSettings.wifi);
+      const fl = document.querySelector('.phone-flipper');
+      if (fl) fl.style.filter = 'brightness(' + cribSettings.brightness + ')';
+    }
     settingsScreen.innerHTML = `<div class="app-status-bar">${statusBarHTML()}</div><div class="app-header"><div class="app-header-bg"></div><div class="app-header-back" data-close="1">Home</div><div class="app-header-title">Settings</div></div>
-      <div class="app-body"><div class="settings-list"><div class="settings-group" id="settingsGroup"></div></div></div>`;
+      <div class="app-body"><div class="settings-list" id="settingsList">
+        <div class="settings-group">
+          <div class="settings-item" data-set="airplane"><div style="display:flex;align-items:center"><div class="settings-item-icon" style="background:#ff9500">✈️</div>Airplane Mode</div><div class="set-toggle" id="setTgAirplane"></div></div>
+          <div class="settings-item" data-set="wifi"><div style="display:flex;align-items:center"><div class="settings-item-icon" style="background:#3478f6">📶</div>Wi-Fi</div><div class="set-toggle" id="setTgWifi"></div></div>
+          <div class="settings-item" data-set="sounds"><div style="display:flex;align-items:center"><div class="settings-item-icon" style="background:#ff3b30">🔊</div>Sounds</div><div class="set-toggle" id="setTgSounds"></div></div>
+        </div>
+        <div class="settings-group">
+          <div class="settings-item" data-set="theme"><div style="display:flex;align-items:center"><div class="settings-item-icon" style="background:#5856d6">🌗</div>Theme</div><div class="set-value" id="setThemeVal">night</div></div>
+          <div class="settings-item" data-set="brightness" style="cursor:default"><div style="display:flex;align-items:center;flex-shrink:0"><div class="settings-item-icon" style="background:#30b0c7">🔆</div>Brightness</div><input type="range" class="set-slider" id="setBrightness" min="40" max="110" value="100"></div>
+        </div>
+        <div class="settings-group">
+          <div class="settings-item" data-set="wallpaper"><div style="display:flex;align-items:center"><div class="settings-item-icon" style="background:#34c759">🖼</div>Wallpaper</div><img class="set-wallpaper-thumb" src="assets/wallpaper.jpg" alt="wallpaper"></div>
+          <div class="settings-item" data-set="about"><div style="display:flex;align-items:center"><div class="settings-item-icon" style="background:#888">🥭</div>About this mangophone</div><div class="settings-item-arrow">›</div></div>
+        </div>
+      </div></div>
+      <div class="settings-detail" id="settingsAbout">
+        <div class="app-header"><div class="app-header-bg"></div><div class="app-header-back" id="settingsAboutBack">‹ Settings</div><div class="app-header-title">About</div></div>
+        <div class="settings-detail-body">
+          <div class="set-about-group">
+            <div class="set-about-row"><span>Name</span><span>mangophone</span></div>
+            <div class="set-about-row"><span>Model</span><span>MANGO 3GS · edición michi</span></div>
+            <div class="set-about-row"><span>Version</span><span>michiOS 1.0.4</span></div>
+            <div class="set-about-row"><span>Owner</span><span>michelle salcedo</span></div>
+            <div class="set-about-row"><span>Capacity</span><span>128 GB of vibes</span></div>
+            <div class="set-about-row"><span>Serial</span><span>EPA-2026-PA NA</span></div>
+          </div>
+          <div class="set-about-group">
+            <div class="set-about-row"><span>Status</span><span>lost & found — be nice with it, pana</span></div>
+          </div>
+        </div>
+      </div>`;
     appContainer.appendChild(settingsScreen);
-    const sg=settingsScreen.querySelector('#settingsGroup'); settingsItems.forEach(s=>{const item=document.createElement('div');item.className='settings-item';item.innerHTML=`<div style="display:flex;align-items:center"><div class="settings-item-icon" style="background:${s.bg}">${s.icon}</div>${s.t}</div><div class="settings-item-arrow">›</div>`;sg.appendChild(item);}); apps.settings=settingsScreen;
+    function cribSyncSettingsUI() {
+      settingsScreen.querySelector('#setTgAirplane').classList.toggle('on', cribSettings.airplane);
+      settingsScreen.querySelector('#setTgWifi').classList.toggle('on', cribSettings.wifi);
+      settingsScreen.querySelector('#setTgSounds').classList.toggle('on', cribSettings.sounds);
+      settingsScreen.querySelector('#setBrightness').value = Math.round(cribSettings.brightness * 100);
+      settingsScreen.querySelector('#setThemeVal').textContent = document.documentElement.classList.contains('theme-light') ? 'light' : 'night';
+    }
+    settingsScreen.querySelector('[data-set="airplane"]').addEventListener('click', () => { iPhoneSounds.tap(); cribSettings.airplane = !cribSettings.airplane; cribSaveSettings(); cribApplySettings(); cribSyncSettingsUI(); });
+    settingsScreen.querySelector('[data-set="wifi"]').addEventListener('click', () => { iPhoneSounds.tap(); cribSettings.wifi = !cribSettings.wifi; cribSaveSettings(); cribApplySettings(); cribSyncSettingsUI(); });
+    settingsScreen.querySelector('[data-set="sounds"]').addEventListener('click', () => { cribSettings.sounds = !cribSettings.sounds; cribSaveSettings(); cribSyncSettingsUI(); iPhoneSounds.tap(); });
+    settingsScreen.querySelector('[data-set="theme"]').addEventListener('click', () => {
+      iPhoneSounds.slideTick();
+      const next = document.documentElement.classList.contains('theme-light') ? 'night' : 'light';
+      if (typeof window.cribApplyTheme === 'function') window.cribApplyTheme(next);
+      cribSyncSettingsUI();
+    });
+    settingsScreen.querySelector('#setBrightness').addEventListener('input', (e) => {
+      cribSettings.brightness = Math.max(0.4, Math.min(1.1, e.target.value / 100));
+      cribSaveSettings(); cribApplySettings();
+    });
+    settingsScreen.querySelector('[data-set="about"]').addEventListener('click', () => { iPhoneSounds.tap(); settingsScreen.querySelector('#settingsAbout').classList.add('visible'); });
+    settingsScreen.querySelector('#settingsAboutBack').addEventListener('click', () => { iPhoneSounds.tap(); settingsScreen.querySelector('#settingsAbout').classList.remove('visible'); });
+    settingsScreen._initSettings = () => { cribSyncSettingsUI(); };
+    cribApplySettings();
+    cribSyncSettingsUI();
+    apps.settings=settingsScreen;
 
     // --- PHONE ---
     const phoneScreen = document.createElement('div'); phoneScreen.className = 'app-screen app-green'; phoneScreen.id = 'app-phone';
@@ -6994,7 +7168,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- SAFARI ---
     const safariScreen = document.createElement('div'); safariScreen.className = 'app-screen app-blue'; safariScreen.id = 'app-safari';
-    safariScreen.innerHTML = `<div class="app-status-bar">${statusBarHTML()}</div><div class="app-header"><div class="app-header-bg"></div><div class="app-header-back" data-close="1">Home</div><div class="app-header-title">Safari</div></div>
+    safariScreen.innerHTML = `<div class="app-status-bar">${statusBarHTML()}</div><div class="app-header"><div class="app-header-bg"></div><div class="app-header-back" data-close="1">Home</div><div class="app-header-title">sarifa</div></div>
       <div class="app-body"><div class="safari-url-bar">www.google.com</div><div class="safari-content"><div style="font-size:48px;margin-bottom:12px">🌐</div><div>Cannot connect to the Internet</div><div style="font-size:11px;color:#aaa;margin-top:8px">mydigitalcrib wifi not found</div></div></div>`;
     appContainer.appendChild(safariScreen); apps.safari=safariScreen;
 
@@ -9101,7 +9275,7 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
     };
 
     const phAlbums = [
-      {key:'cameraroll',name:'Camera Roll',count:12}
+      {key:'cameraroll',name:'@pastflash',count:12}
     ];
 
     let phCurrentAlbum = null;
@@ -9299,31 +9473,11 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
     // ===== NUMBERS APP =====
     (function buildNumbersApp(){
       const numData = [
-        { title:'content calendar — july', sub:'7 rows · work', cols:['day','post','platform','status'], rows:[
-          ['mon','pool from above','ig reels','filmed'],['tue','pastflash 07','ig feed','scheduled'],
-          ['wed','emma content','stories','always'],['thu','solara teaser','tiktok','editing'],
-          ['fri','y2k playlist post','ig feed','draft'],['sat','shoot day','—','do not disturb'],
-          ['sun','rest','none','lying']
-        ], numCols:[], statusCols:[3] },
-        { title:'client payments', sub:'6 rows · money', cols:['client','amount','status'], rows:[
-          ['solara pools','800','paid'],['inbeat collab','650','invoiced'],
-          ['brainlabs','400','waiting'],['print sales','120','paid'],
-          ['mom (art debt)','0','forgiven'],['coffee fund','45','gone']
-        ], numCols:[1], statusCols:[2] },
         { title:'playlist tracker', sub:'6 rows · research', cols:['playlist','tracks','vibe','status'], rows:[
           ['2000s rock songs','20','immaculate','done'],['y2k pop throwbacks','20','unhinged','done'],
           ['sad girl autumn','0','pending','avoiding'],['gym playlist','3','ambitious','stalled'],
           ['cumbia para mamá','14','essential','growing'],['focus beats','1','ironic','loop']
         ], numCols:[1], statusCols:[3] },
-        { title:'shot list — solara', sub:'6 rows · shoot', cols:['shot','location','light','status'], rows:[
-          ['pool from above','rooftop','harsh noon','got it'],['cannonball splash','deep end','golden hour','got it'],
-          ['night underwater glow','pool lights','blue hour','scheduled'],['dog in floatie','shallow end','any','negotiating'],
-          ['wet pavement detail','deck','after splash','got it'],['family chaos wide','whole yard','sunset','scheduled']
-        ], numCols:[], statusCols:[3] },
-        { title:'people i need to email', sub:'5 rows · guilt', cols:['name','reason','urgency'], rows:[
-          ['argenis','final edits','high'],['sunny','july calendar sign-off','medium'],
-          ['inbeat','invoice question','high'],['brainlabs','usage rights','medium'],['mom','proof of life','critical']
-        ], numCols:[], statusCols:[2] },
         { title:'expenses i regret', sub:'5 rows · regret', cols:['thing','cost','comment'], rows:[
           ['prop disco ball','32','worth it'],['third memory card','28','necessary actually'],
           ['taxi with the gear','19','deserved'],['vintage filter pack','12','i have eyes'],['coffee number three','5','weak moment']
@@ -11437,6 +11591,8 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
     if (appId === 'airport' || appId === 'gamecenter' || appId === 'garageband' || appId === 'compass') { showIos3Alert(screen); }
     if (appId === 'facetime' && screen._initFacetime) { screen._initFacetime(); }
     if (appId === 'instagram' && screen._initIg) { screen._initIg(); }
+    if (appId === 'settings' && screen._initSettings) { screen._initSettings(); }
+    if (window.cribQuestApp) { try { window.cribQuestApp(appId); } catch(e) {} }
   }
 
   function closeApp() {
@@ -11756,6 +11912,81 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
     lockScreen.style.opacity = '';
   });
 
+  // ===== QUEST TUTORIAL — walkthrough for mobile + tablet =====
+  // "i lost my mangophone and someone found it" — the visitor is the finder.
+  (function cribQuests() {
+    const bar = document.getElementById('questBar');
+    if (!bar) return;
+    const qTitle = bar.querySelector('#questTitle');
+    const qText = bar.querySelector('#questText');
+    let qTimer = null, introStep = 0, introDone = false;
+    const questSeen = {};
+    const INTRO = [
+      ['MAIN QUEST', 'you found my mangophone! i\'m michelle — se me perdió esta vaina and you picked it up. chévere.'],
+      ['MAIN QUEST', 'drag the mango to flip it over — the back is real. tap the round button to go home, like the old days.'],
+      ['SIDE QUEST', 'now pásale: open any app and i\'ll tell you su cuento. tap this bar anytime to skip.']
+    ];
+    const APP_QUESTS = {
+      messages:  ['MESSAGES', 'my texts — mom asking if i ate, dad being dad, emma the cat demanding dinner. answer if you dare, pana.'],
+      camera:    ['CAMERA', 'the camera — take a pic, try the filters. nostalgia comes built-in, obvio.'],
+      map:       ['MAPS', 'maps of maracay, mi tierra — the pins are the important spots. la arepera is non-negotiable.'],
+      music:     ['MUSIC', 'my music — 28 songs that raised me. dale play, the covers are pixel art too.'],
+      photobooth:['PHOTOBOOTH', 'photobooth — strips like the mall ones back home. échate unas fotos.'],
+      youtube:   ['MYTUBE', 'mytube — the 2000s rock hall of fame. volume up, chamo.'],
+      weather:   ['WEATHER', 'weather — buenos aires, maracay y new york. my three personalities, in degrees.'],
+      voicememo: ['VOICE MEMO', 'voice memo — only one note lives here: "just in case :)". dale play.'],
+      pages:     ['PAGES', 'pages — my one sheet and my resume. the resume downloads itself, bien formal.'],
+      notes:     ['NOTES', 'notes — resume, contact info, y el mercado. harina pan is life.'],
+      calculator:['CALCULATOR', 'calculator — for tips, taxes, y las cuentas que nunca cuadran.'],
+      compass:   ['COMPASS', 'compass — points north. sometimes. lo importante es la vibra.'],
+      cards:     ['CARDS', 'cards — little letters i made. read them, son bonitas de verdad.'],
+      clock:     ['CLOCK', 'clock — world clock for my timezones. jet lag simulator incluido.'],
+      videos:    ['VIDEOS', 'videos — the moving pictures live here. pocas pero buenas.'],
+      photos:    ['PHOTOS', 'photos — the camera roll, aka pastflash greatest hits.'],
+      numbers:   ['NUMBERS', 'numbers — spreadsheets with feelings. los gastos de los que me arrepiento y más.'],
+      instagram: ['MICHISGRAM', 'michisgram — my feed, my rules. the grid is the portfolio, pana.'],
+      garageband:['GARAGEBAND', 'garageband — for the hits i never finished. algún día, algún día.'],
+      airport:   ['AIRPORT', 'airport — boarding passes y viajes. maracay ↔ buenos aires energy.'],
+      phone:     ['PHONE', 'the phone app — dial someone. call your mom, ella lo va a agradecer.'],
+      safari:    ['SARIFA', 'sarifa — my personal internet. currently offline, como mi paciencia.'],
+      mail:      ['MAIL', 'mail — clients, mom, and linkedin being linkedin. la bandeja nunca miente.'],
+      settings:  ['SETTINGS', 'settings — toggles that actually work. pruébalos, no muerden.']
+    };
+    function qShow(title, text, sticky) {
+      qTitle.textContent = title;
+      qText.textContent = text;
+      bar.classList.add('on');
+      if (qTimer) { clearTimeout(qTimer); qTimer = null; }
+      if (!sticky) qTimer = setTimeout(qHide, 9000);
+      try { iPhoneSounds.slideTick(); } catch(e) {}
+    }
+    function qHide() {
+      bar.classList.remove('on');
+      if (qTimer) { clearTimeout(qTimer); qTimer = null; }
+    }
+    bar.addEventListener('click', () => {
+      try { iPhoneSounds.tap(); } catch(e) {}
+      if (!introDone) {
+        introStep++;
+        if (introStep >= INTRO.length) { introDone = true; qHide(); }
+        else qShow(INTRO[introStep][0], INTRO[introStep][1], true);
+      } else {
+        qHide();
+      }
+    });
+    document.addEventListener('coverUnlocked', () => {
+      if (introDone) return;
+      setTimeout(() => { if (!introDone) qShow(INTRO[0][0], INTRO[0][1], true); }, 900);
+    });
+    window.cribQuestApp = function(appId) {
+      if (!introDone || questSeen[appId]) return;
+      const q = APP_QUESTS[appId];
+      if (!q) return;
+      questSeen[appId] = true;
+      setTimeout(() => qShow(q[0], q[1], false), 650);
+    };
+  })();
+
   // ===== POSITION BACK BUTTON & FLIP HINT RELATIVE TO PHONE =====
   function positionPhoneUI() {
     const phoneEl = document.querySelector('.phone-scene');
@@ -11818,10 +12049,10 @@ window.siteUnlocked = true;
     try {
       var vw = window.innerWidth, vh = window.innerHeight;
       var isMobile = vw <= 600, isTablet = vw > 600 && vw <= 1024;
-      var wFactor = isMobile ? 0.985 : isTablet ? 0.93 : 0.95;
-      var hFactor = isMobile ? 0.94 : isTablet ? 0.90 : 0.97;
+      var wFactor = isMobile ? 0.995 : isTablet ? 0.95 : 0.95;
+      var hFactor = isMobile ? 0.96 : isTablet ? 0.92 : 0.97;
       var maxScale = isMobile ? 1.10 : isTablet ? 1.30 : 1.55;
-      var uiBelow = isMobile ? 70 : isTablet ? 50 : 25;
+      var uiBelow = isMobile ? 56 : isTablet ? 46 : 25;
       var scale = Math.min((vw * wFactor) / 452, (vh * hFactor) / 617, maxScale, (vh - 2 * uiBelow) / 587);
       document.documentElement.style.setProperty('--phone-scale', scale.toFixed(3));
       var ps = document.querySelector('.phone-scene');
@@ -11875,6 +12106,7 @@ window.siteUnlocked = true;
   function cribThemeSound() {
     if (typeof iPhoneSounds !== 'undefined' && iPhoneSounds.slideTick) { try { iPhoneSounds.slideTick(); } catch(e) {} }
   }
+  window.cribApplyTheme = cribApplyTheme;
   var L0 = document.getElementById('themeBtnLight'), N0 = document.getElementById('themeBtnNight');
   if (L0) L0.addEventListener('click', function() { cribApplyTheme('light'); cribThemeSound(); });
   if (N0) N0.addEventListener('click', function() { cribApplyTheme('night'); cribThemeSound(); });
