@@ -209,7 +209,19 @@
   }
   .boot-mango-button:active .boot-tap-label { transform:translate(-50%,2px); box-shadow:none; }
   .boot-title { margin:3px 0 2px; color:#fff6c9; font-size:28px; line-height:1; text-shadow:3px 3px 0 #080d19; }
-  .boot-subtitle { margin:0 0 15px; color:#f0c64f; font-size:14px; }
+  .boot-subtitle { margin:0 0 10px; color:#f0c64f; font-size:14px; }
+  .boot-language { width:100%; margin:0 0 13px; text-align:center; }
+  .boot-language-question { margin:0 0 7px; color:#d7e0f3; font-size:14px; line-height:1.1; }
+  .boot-language-options { display:flex; justify-content:center; gap:8px; }
+  .boot-language-button {
+    min-width:104px; min-height:34px; padding:6px 10px; color:#eef3ff; background:#293956;
+    border:3px solid #7182a8; border-radius:3px; box-shadow:3px 3px 0 #080d19;
+    font:400 15px/1 'VT323',ui-monospace,monospace; cursor:pointer;
+  }
+  .boot-language-button:hover { color:#162039; background:#9fc2ff; }
+  .boot-language-button.selected { color:#162039; background:#ffd34d; border-color:#fff09a; }
+  .boot-language-button:active { transform:translate(3px,3px); box-shadow:none; }
+  .boot-language-button:focus-visible { outline:3px solid #9fc2ff; outline-offset:3px; }
   .boot-progress-head {
     display:flex; justify-content:space-between; gap:12px; width:100%; margin-bottom:6px;
     color:#c9d5ed; font-size:14px; line-height:1; text-align:left;
@@ -240,7 +252,10 @@
     .boot-mango-button { height:132px; }
     .boot-mango-button .boot-mango { top:6px; }
     .boot-title { font-size:24px; }
-    .boot-subtitle { margin-bottom:10px; }
+    .boot-subtitle { margin-bottom:6px; }
+    .boot-language { margin-bottom:8px; }
+    .boot-language-question { margin-bottom:4px; font-size:13px; }
+    .boot-language-button { min-height:30px; padding:4px 9px; }
   }
   @media (prefers-reduced-motion:reduce) {
     #bootLoader * { animation-duration:.01ms !important; animation-iteration-count:1 !important; }
@@ -3608,6 +3623,7 @@
 <link rel="preload" as="image" href="assets/bg-night.png">
 <link rel="preload" as="image" href="assets/bg-day.png">
 <script>(function(){try{var t=localStorage.getItem('crib_theme');if(t!=='light'&&t!=='night'){var h=new Date().getHours();t=(h>=6&&h<19)?'light':'night';}if(t==='light')document.documentElement.classList.add('theme-light');}catch(e){}})();</script>
+<script>(function(){var l='en';try{l=localStorage.getItem('pr_lang')==='es'?'es':'en';}catch(e){}window.cribLanguage=l;document.documentElement.lang=l;})();</script>
 </head>
 <body>
 
@@ -3625,7 +3641,14 @@
         <span class="boot-tap-label">TAP MANGO FOR LUCK</span>
       </button>
       <div class="boot-title" id="bootTitle">MY DIGITAL CRIB</div>
-      <div class="boot-subtitle">ASSEMBLING YOUR MANGOPHONE</div>
+      <div class="boot-subtitle" id="bootSubtitle">ASSEMBLING YOUR MANGOPHONE</div>
+      <div class="boot-language">
+        <p class="boot-language-question">WANNA CONTINUE IN ENGLISH OR SPANISH?</p>
+        <div class="boot-language-options" role="group" aria-label="Choose language">
+          <button class="boot-language-button" type="button" data-mobile-lang="en" aria-pressed="false">ENGLISH</button>
+          <button class="boot-language-button" type="button" data-mobile-lang="es" aria-pressed="false">ESPAÑOL</button>
+        </div>
+      </div>
       <div class="boot-progress-head"><span id="bootStatus" aria-live="polite">checking the outer mango</span><output id="bootPercent">04%</output></div>
       <div class="boot-bar" id="bootTrack" role="progressbar" aria-label="Mangophone loading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="4"><div class="boot-bar-fill" id="bootBarFill"></div></div>
       <div class="boot-luck" id="bootLuck" aria-live="polite">LUCK 00</div>
@@ -12791,42 +12814,88 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
     let qTimer = null, introStep = 0, introDone = false;
     let guideStage = 0; // 0 = open my portfolio, 1 = open the resume, 2 = free roam
     let guideRestoreTimer = null;
-    const INTRO = [
-      ['MAIN QUEST', 'you found my mangophone! i\'m michelle — web designer, creative director, and former owner of this phone.  👆 tap this bar to continue'],
-      ['MAIN QUEST', 'quick controls: drag the mango sideways to flip it — go ahead, it likes that. the round button takes you home.'],
-      ['SIDE QUEST', 'every app has a story and i\'ll narrate as you explore. think of me as your tour guide. tip your tour guide.']
-    ];
-    const GUIDE = [
-      ['MAIN QUEST', 'first stop: open my portfolio in the bottom dock. my websites and resume live in there. go on, i\'ll wait.'],
-      ['MAIN QUEST', 'great taste. now tap the resume result to preview both pages and download the PDF.'],
-      ['SIDE QUEST', 'resume unlocked. open the full PDF or download a copy; the rest of the phone is now legally snoopable. enjoy!']
-    ];
-    const APP_QUESTS = {
-      messages:  ['MESSAGES', 'my texts — mom checking if i ate, dad discovering emojis, emma the cat demanding her third dinner. feel free to answer for me, they\'ve stopped listening.'],
-      camera:    ['CAMERA', 'the camera — take a pic, try the filters. everything looks better in pixels, including me.'],
-      map:       ['MAPS', 'maps of maracay, my hometown in venezuela — the pins are the important spots. yes, the arepa place has its own pin. obviously.'],
-      music:     ['MUSIC', 'my music — 28 songs that raised me. press play. my taste is immaculate and i will not be taking questions.'],
-      photobooth:['PHOTOBOOTH', 'photobooth — four poses, zero shame. the strip comes out pixelated, like all good memories.'],
-      youtube:   ['MYTUBE', 'mytube — my watch history, unfiltered. yes, that\'s a 3-hour video essay about a show i\'ve never seen.'],
-      weather:   ['WEATHER', 'weather — current forecast: tropical, with a 100% chance of me complaining about anywhere colder.'],
-      voicememo: ['VOICE MEMO', 'voice memos — exactly one lives here. it\'s called "just in case :)" and yes, it\'s for you. press play.'],
-      pages:     ['PAGES', 'pages — my resume lives here. tap it, download it, hire me. in that order, ideally.'],
-      notes:     ['NOTES', 'notes — resume, contact info, and the grocery list. harina pan is a whole personality and i\'m at peace with it.'],
-      calculator:['CALCULATOR', 'calculator — for invoices, rates, and splitting the check with mathematical justice.'],
-      compass:   ['COMPASS', 'compass — always points north, which is more direction than i have before coffee.'],
-      cards:     ['CARDS', 'cards — little letters i made. go on, read one. they\'re sweeter than my morning coffee.'],
-      clock:     ['CLOCK', 'clock — world clock for my timezones. jet lag is a lifestyle.'],
-      videos:    ['VIDEOS', 'videos — the moving pictures live here. few but iconic.'],
-      photos:    ['PHOTOS', 'photos — the camera roll, aka pastflash greatest hits. no bad angles, only bad lighting.'],
-      numbers:   ['NUMBERS', 'numbers — spreadsheets with feelings: the playlist tracker and expenses i regret.'],
-      instagram: ['MICHISGRAM', 'michisgram — my feed, my rules. the grid is the portfolio. the likes are hypothetical.'],
-      garageband:['GARAGEBAND', 'garageband — where my unfinished hits live. one day the album. one day.'],
-      airport:   ['AIRPORT', 'airport — boarding passes and travel plans. maracay to everywhere.'],
-      phone:     ['PHONE', 'the phone app — dial someone. call your mom. this is a sign.'],
-      safari:    ['MY PORTFOLIO', 'welcome to my portfolio. every link is real client work, and the full resume is ready to preview or download.'],
-      mail:      ['MAIL', 'mail — the important one is from me. the button inside actually works. try it. i dare you. (please.)'],
-      settings:  ['SETTINGS', 'settings — toggles that actually work. try the wallpaper picker, i made extras just for you.']
+    const QUEST_COPY = {
+      en: {
+        intro: [
+          ['MAIN QUEST', 'you found my mangophone! i\'m michelle — web designer, creative director, and former owner of this phone.  👆 tap this bar to continue'],
+          ['MAIN QUEST', 'quick controls: drag the mango sideways to flip it — go ahead, it likes that. the round button takes you home.'],
+          ['SIDE QUEST', 'every app has a story and i\'ll narrate as you explore. think of me as your tour guide. tip your tour guide.']
+        ],
+        guide: [
+          ['MAIN QUEST', 'first stop: open my portfolio in the bottom dock. my websites and resume live in there. go on, i\'ll wait.'],
+          ['MAIN QUEST', 'great taste. now tap the resume result to preview both pages and download the PDF.'],
+          ['SIDE QUEST', 'resume unlocked. open the full PDF or download a copy; the rest of the phone is now legally snoopable. enjoy!']
+        ],
+        apps: {
+          messages:['MESSAGES', 'my texts — mom checking if i ate, dad discovering emojis, emma the cat demanding her third dinner. feel free to answer for me, they\'ve stopped listening.'],
+          camera:['CAMERA', 'the camera — take a pic, try the filters. everything looks better in pixels, including me.'],
+          map:['MAPS', 'maps of maracay, my hometown in venezuela — the pins are the important spots. yes, the arepa place has its own pin. obviously.'],
+          music:['MUSIC', 'my music — 28 songs that raised me. press play. my taste is immaculate and i will not be taking questions.'],
+          photobooth:['PHOTOBOOTH', 'photobooth — four poses, zero shame. the strip comes out pixelated, like all good memories.'],
+          youtube:['MYTUBE', 'mytube — my watch history, unfiltered. yes, that\'s a 3-hour video essay about a show i\'ve never seen.'],
+          weather:['WEATHER', 'weather — current forecast: tropical, with a 100% chance of me complaining about anywhere colder.'],
+          voicememo:['VOICE MEMO', 'voice memos — exactly one lives here. it\'s called "just in case :)" and yes, it\'s for you. press play.'],
+          pages:['PAGES', 'pages — my resume lives here. tap it, download it, hire me. in that order, ideally.'],
+          notes:['NOTES', 'notes — resume, contact info, and the grocery list. harina pan is a whole personality and i\'m at peace with it.'],
+          calculator:['CALCULATOR', 'calculator — for invoices, rates, and splitting the check with mathematical justice.'],
+          compass:['COMPASS', 'compass — always points north, which is more direction than i have before coffee.'],
+          cards:['CARDS', 'cards — little letters i made. go on, read one. they\'re sweeter than my morning coffee.'],
+          clock:['CLOCK', 'clock — world clock for my timezones. jet lag is a lifestyle.'],
+          videos:['VIDEOS', 'videos — the moving pictures live here. few but iconic.'],
+          photos:['PHOTOS', 'photos — the camera roll, aka pastflash greatest hits. no bad angles, only bad lighting.'],
+          numbers:['NUMBERS', 'numbers — spreadsheets with feelings: the playlist tracker and expenses i regret.'],
+          instagram:['MICHISGRAM', 'michisgram — my feed, my rules. the grid is the portfolio. the likes are hypothetical.'],
+          garageband:['GARAGEBAND', 'garageband — where my unfinished hits live. one day the album. one day.'],
+          airport:['AIRPORT', 'airport — boarding passes and travel plans. maracay to everywhere.'],
+          phone:['PHONE', 'the phone app — dial someone. call your mom. this is a sign.'],
+          safari:['MY PORTFOLIO', 'welcome to my portfolio. every link is real client work, and the full resume is ready to preview or download.'],
+          mail:['MAIL', 'mail — the important one is from me. the button inside actually works. try it. i dare you. (please.)'],
+          settings:['SETTINGS', 'settings — toggles that actually work. try the wallpaper picker, i made extras just for you.']
+        }
+      },
+      es: {
+        intro: [
+          ['MISIÓN PRINCIPAL', '¡encontraste mi mangophone! soy michelle — diseñadora web, directora creativa y antigua dueña de este teléfono. 👆 toca esta barra para continuar'],
+          ['MISIÓN PRINCIPAL', 'controles rápidos: arrastra el mango hacia un lado para voltearlo. el botón redondo te lleva al inicio.'],
+          ['MISIÓN SECUNDARIA', 'cada app tiene una historia y yo te la cuento mientras exploras. piensa en mí como tu guía turística.']
+        ],
+        guide: [
+          ['MISIÓN PRINCIPAL', 'primera parada: abre mi portfolio en el dock inferior. mis websites y mi resume viven ahí. dale, yo espero.'],
+          ['MISIÓN PRINCIPAL', 'buen gusto. ahora toca el resultado del resume para ver las dos páginas y descargar el PDF.'],
+          ['MISIÓN SECUNDARIA', 'resume desbloqueado. abre el PDF completo o descarga una copia; el resto del teléfono ya se puede curiosear legalmente. ¡disfruta!']
+        ],
+        apps: {
+          messages:['MENSAJES', 'mis mensajes — mamá preguntando si comí, papá descubriendo los emojis y emma exigiendo su tercera cena. puedes responder por mí.'],
+          camera:['CÁMARA', 'la cámara — toma una foto y prueba los filtros. todo se ve mejor en píxeles, incluyéndome.'],
+          map:['MAPAS', 'mapas de maracay, mi ciudad natal en venezuela. los pins marcan los lugares importantes. sí, el sitio de arepas tiene su propio pin.'],
+          music:['MÚSICA', 'mi música — 28 canciones que me criaron. dale play. mi gusto es impecable y no aceptaré preguntas.'],
+          photobooth:['PHOTOBOOTH', 'photobooth — cuatro poses y cero vergüenza. la tira sale pixelada, como todos los buenos recuerdos.'],
+          youtube:['MYTUBE', 'mytube — mi historial sin filtros. sí, hay un video ensayo de tres horas sobre una serie que nunca vi.'],
+          weather:['CLIMA', 'clima — pronóstico actual: tropical, con 100% de probabilidad de quejarme de cualquier lugar más frío.'],
+          voicememo:['NOTA DE VOZ', 'notas de voz — aquí vive exactamente una. se llama "por si acaso :)" y sí, es para ti. dale play.'],
+          pages:['PAGES', 'pages — aquí vive mi resume. tócalo, descárgalo y contrátame. idealmente en ese orden.'],
+          notes:['NOTAS', 'notas — resume, contacto y lista del mercado. la harina pan es una personalidad completa y estoy en paz con eso.'],
+          calculator:['CALCULADORA', 'calculadora — para facturas, tarifas y dividir la cuenta con justicia matemática.'],
+          compass:['BRÚJULA', 'brújula — siempre apunta al norte, más dirección de la que tengo antes del café.'],
+          cards:['TARJETAS', 'tarjetas — cartitas que hice. anda, lee una. son más dulces que mi café de la mañana.'],
+          clock:['RELOJ', 'reloj — horas del mundo para mis zonas horarias. el jet lag es un estilo de vida.'],
+          videos:['VIDEOS', 'videos — aquí viven las imágenes en movimiento. pocas pero icónicas.'],
+          photos:['FOTOS', 'fotos — el camera roll, también conocido como los grandes éxitos de pastflash. no hay malos ángulos, sólo mala luz.'],
+          numbers:['NUMBERS', 'numbers — hojas de cálculo con sentimientos: playlists y gastos de los que me arrepiento.'],
+          instagram:['MICHISGRAM', 'michisgram — mi feed, mis reglas. el grid es el portfolio. los likes son hipotéticos.'],
+          garageband:['GARAGEBAND', 'garageband — donde viven mis hits sin terminar. algún día sale el álbum. algún día.'],
+          airport:['AEROPUERTO', 'aeropuerto — pases de abordar y planes de viaje. de maracay para el mundo.'],
+          phone:['TELÉFONO', 'la app de teléfono — llama a alguien. llama a tu mamá. esta es una señal.'],
+          safari:['MI PORTFOLIO', 'bienvenido a mi portfolio. cada link es trabajo real para clientes y el resume completo está listo para ver o descargar.'],
+          mail:['MAIL', 'mail — el importante es el mío. el botón de adentro funciona de verdad. pruébalo. te reto. por favor.'],
+          settings:['AJUSTES', 'ajustes — controles que sí funcionan. prueba los wallpapers; hice extras sólo para ti.']
+        }
+      }
     };
+    let questLanguage = window.cribLanguage === 'es' ? 'es' : 'en';
+    let INTRO = QUEST_COPY[questLanguage].intro;
+    let GUIDE = QUEST_COPY[questLanguage].guide;
+    let APP_QUESTS = QUEST_COPY[questLanguage].apps;
     function qShow(title, text, sticky) {
       qTitle.textContent = title;
       qText.textContent = text;
@@ -12845,6 +12914,21 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
       bar.classList.remove('pulse');
       if (qTimer) { clearTimeout(qTimer); qTimer = null; }
     }
+    function applyQuestLanguage(nextLanguage) {
+      questLanguage = nextLanguage === 'es' ? 'es' : 'en';
+      INTRO = QUEST_COPY[questLanguage].intro;
+      GUIDE = QUEST_COPY[questLanguage].guide;
+      APP_QUESTS = QUEST_COPY[questLanguage].apps;
+      if (!bar.classList.contains('on')) return;
+      if (!introDone) {
+        qShow(INTRO[Math.min(introStep, INTRO.length - 1)][0], INTRO[Math.min(introStep, INTRO.length - 1)][1], true);
+      } else if (guideStage < GUIDE.length) {
+        qShow(GUIDE[Math.min(guideStage, GUIDE.length - 1)][0], GUIDE[Math.min(guideStage, GUIDE.length - 1)][1], guideStage < 2);
+      }
+    }
+    document.addEventListener('cribLanguageChanged', function(event) {
+      applyQuestLanguage(event.detail && event.detail.language);
+    });
     function scheduleGuideRestore() {
       if (guideRestoreTimer) { clearTimeout(guideRestoreTimer); guideRestoreTimer = null; }
       if (guideStage >= 2) return;
@@ -13044,6 +13128,28 @@ window.siteUnlocked = true;
 
   var bootFinished = false;
   var bootLuckCount = 0;
+  var bootLanguageSelected = null;
+  var bootLanguageResolved = false;
+  var resolveBootLanguage;
+  var bootLanguageChoice = new Promise(function(resolve) { resolveBootLanguage = resolve; });
+  var BOOT_COPY = {
+    en: {
+      subtitle:'ASSEMBLING YOUR MANGOPHONE', check:'checking the outer mango', polish:'polishing the mango shell',
+      fit:'fitting the inner screen', icons:'placing the phone icons', align:'aligning every pixel',
+      choose:'choose your language to enter', languageSet:'language selected, finishing setup',
+      ready:'mangophone ready', opening:'opening the mangophone', tap:'TAP MANGO FOR LUCK', luck:'LUCK'
+    },
+    es: {
+      subtitle:'ARMANDO TU MANGOPHONE', check:'revisando el mango exterior', polish:'puliendo el mango',
+      fit:'ajustando la pantalla interna', icons:'colocando los iconos', align:'alineando cada pixel',
+      choose:'elige tu idioma para entrar', languageSet:'idioma elegido, terminando todo',
+      ready:'mangophone listo', opening:'abriendo el mangophone', tap:'TOCA EL MANGO PARA SUERTE', luck:'SUERTE'
+    }
+  };
+  function bootCopy(key) {
+    var language = bootLanguageSelected || window.cribLanguage || 'en';
+    return BOOT_COPY[language][key];
+  }
   function bootDelay(ms) { return new Promise(function(resolve) { setTimeout(resolve, ms); }); }
   function bootNextPaint() {
     return new Promise(function(resolve) {
@@ -13087,13 +13193,61 @@ window.siteUnlocked = true;
       }
     } catch(e) {}
   }
+  function bootRefreshLanguageLabels() {
+    var subtitle = document.getElementById('bootSubtitle');
+    var tapLabel = document.querySelector('.boot-tap-label');
+    var luckLabel = document.getElementById('bootLuck');
+    if (subtitle) subtitle.textContent = bootCopy('subtitle');
+    if (tapLabel) tapLabel.textContent = bootCopy('tap');
+    if (luckLabel) luckLabel.textContent = bootCopy('luck') + ' ' + String(bootLuckCount).padStart(2, '0');
+  }
+  function bootApplyLanguage(nextLanguage) {
+    var normalized = nextLanguage === 'es' ? 'es' : 'en';
+    if (bootLanguageSelected === normalized) return;
+    bootLanguageSelected = normalized;
+    window.cribLanguage = normalized;
+    document.documentElement.lang = normalized;
+    try { localStorage.setItem('pr_lang', normalized); } catch(e) {}
+    var buttons = document.querySelectorAll('[data-mobile-lang]');
+    for (var i = 0; i < buttons.length; i++) {
+      var selected = buttons[i].getAttribute('data-mobile-lang') === normalized;
+      buttons[i].classList.toggle('selected', selected);
+      buttons[i].setAttribute('aria-pressed', selected ? 'true' : 'false');
+    }
+    var progressTrack = document.getElementById('bootTrack');
+    var currentProgress = progressTrack ? Number(progressTrack.getAttribute('aria-valuenow')) || 8 : 8;
+    bootRefreshLanguageLabels();
+    bootSetProgress(currentProgress, bootCopy('languageSet'));
+    try { document.dispatchEvent(new CustomEvent('cribLanguageChanged', { detail:{ language:normalized } })); } catch(e) {}
+    if (!bootLanguageResolved) {
+      bootLanguageResolved = true;
+      resolveBootLanguage(normalized);
+    }
+  }
+  function bootBindLanguage() {
+    var buttons = document.querySelectorAll('[data-mobile-lang]');
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].addEventListener('click', function() { bootApplyLanguage(this.getAttribute('data-mobile-lang')); });
+    }
+    bootRefreshLanguageLabels();
+    window.addEventListener('message', function(event) {
+      if (window.parent === window || event.source !== window.parent) return;
+      if (!event.data || event.data.type !== 'crib-language') return;
+      bootApplyLanguage(event.data.language);
+    });
+    if (window.parent !== window) {
+      var saved = 'en';
+      try { saved = localStorage.getItem('pr_lang') === 'es' ? 'es' : 'en'; } catch(e) {}
+      bootApplyLanguage(saved);
+    }
+  }
   async function finishCribBoot(message) {
     if (bootFinished) return;
     bootFinished = true;
     cribBoot();
     cribScale();
     await bootNextPaint();
-    bootSetProgress(100, message || 'mangophone ready');
+    bootSetProgress(100, message || bootCopy('ready'));
     bootNotifyParent();
     await bootDelay(300);
     var loader = document.getElementById('bootLoader');
@@ -13108,7 +13262,7 @@ window.siteUnlocked = true;
     if (!button) return;
     button.addEventListener('click', function() {
       bootLuckCount += 1;
-      if (label) label.textContent = 'LUCK ' + String(bootLuckCount).padStart(2, '0');
+      if (label) label.textContent = bootCopy('luck') + ' ' + String(bootLuckCount).padStart(2, '0');
       button.classList.remove('lucky');
       void button.offsetWidth;
       button.classList.add('lucky');
@@ -13140,14 +13294,14 @@ window.siteUnlocked = true;
       ? Promise.race([document.fonts.ready.catch(function() {}), bootDelay(1800)])
       : Promise.resolve();
 
-    bootSetProgress(8, 'checking the outer mango');
-    await Promise.all([
+    bootSetProgress(8, bootCopy('check'));
+    var readiness = Promise.all([
       Promise.all(assets.map(function(src) {
         return bootPreload(src).then(function() {
           loaded += 1;
-          var message = loaded < 3 ? 'polishing the mango shell'
-            : loaded < 5 ? 'fitting the inner screen'
-            : 'placing the phone icons';
+          var message = loaded < 3 ? bootCopy('polish')
+            : loaded < 5 ? bootCopy('fit')
+            : bootCopy('icons');
           bootSetProgress(10 + (loaded / assets.length) * 76, message);
         });
       })),
@@ -13155,19 +13309,23 @@ window.siteUnlocked = true;
       fontReady,
       bootDelay(850)
     ]);
+    await Promise.race([readiness, bootDelay(15000)]);
     cribBoot();
     cribScale();
-    bootSetProgress(94, 'aligning every pixel');
+    bootSetProgress(94, bootLanguageResolved ? bootCopy('align') : bootCopy('choose'));
+    await bootLanguageChoice;
+    bootSetProgress(96, bootCopy('align'));
     await bootNextPaint();
-    await finishCribBoot('mangophone ready');
+    await finishCribBoot(bootCopy('ready'));
   }
 
+  bootBindLanguage();
   bootBindLuck();
   cribBoot();
   document.addEventListener('DOMContentLoaded', cribBoot);
-  runCribBootExperience().catch(function() { finishCribBoot('mangophone ready'); });
-  // Absolute fail-safe: a broken optional asset must never trap the visitor.
-  setTimeout(function() { finishCribBoot('opening the mangophone'); }, 15000);
+  runCribBootExperience().catch(function() {
+    bootLanguageChoice.then(function() { finishCribBoot(bootCopy('opening')); });
+  });
   window.addEventListener('load', cribScale);
   window.addEventListener('resize', cribScale);
   if (window.visualViewport) window.visualViewport.addEventListener('resize', cribScale);

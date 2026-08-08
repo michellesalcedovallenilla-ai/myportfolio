@@ -82,7 +82,19 @@
   html.is-mobile .site-boot-sprite { width:64px; height:64px; transform:translate(-50%,-63%); }
   .site-boot-device.boost { animation:siteBootBoost .34s steps(3,end); }
   .site-boot-title { margin:0; color:#fff8d5; font-size:clamp(24px,7vw,34px); line-height:1; letter-spacing:0; text-shadow:3px 3px 0 #0a0e1b; }
-  .site-boot-mode { margin:7px 0 18px; color:#ffd34d; font-size:13px; font-weight:700; letter-spacing:0; }
+  .site-boot-mode { margin:7px 0 12px; color:#ffd34d; font-size:13px; font-weight:700; letter-spacing:0; }
+  .site-boot-language { margin:0 0 16px; }
+  .site-boot-question { margin:0 0 8px; color:#d7def0; font-size:11px; font-weight:700; line-height:1.35; }
+  .site-boot-lang-options { display:flex; justify-content:center; gap:9px; }
+  .site-boot-lang {
+    min-width:104px; min-height:36px; padding:7px 10px; color:#eef3ff; background:#273653;
+    border:3px solid #7181a5; border-radius:3px; box-shadow:3px 3px 0 #080b14;
+    font:700 12px/1 'Courier New',ui-monospace,monospace; cursor:pointer;
+  }
+  .site-boot-lang:hover { color:#10182f; background:#9fc2ff; }
+  .site-boot-lang.selected { color:#15213a; background:#ffd34d; border-color:#fff08b; }
+  .site-boot-lang:active { transform:translate(3px,3px); box-shadow:none; }
+  .site-boot-lang:focus-visible { outline:3px solid #9fc2ff; outline-offset:3px; }
   .site-boot-progress-head { display:flex; justify-content:space-between; gap:12px; margin-bottom:7px; color:#c8d2eb; font-size:12px; font-weight:700; text-align:left; }
   .site-boot-progress-head output { color:#57cf66; }
   .site-boot-track {
@@ -112,7 +124,10 @@
     .site-boot-panel { padding:13px 17px 15px; }
     .site-boot-top { margin-bottom:8px; }
     .site-boot-device { transform:scale(.78); margin:-10px auto -1px; }
-    .site-boot-mode { margin-bottom:10px; }
+    .site-boot-mode { margin-bottom:7px; }
+    .site-boot-language { margin-bottom:10px; }
+    .site-boot-question { margin-bottom:5px; }
+    .site-boot-lang { min-height:32px; padding:5px 9px; }
     .site-boot-actions { margin-top:12px; }
   }
   @media (prefers-reduced-motion:reduce) {
@@ -424,6 +439,13 @@
       </div>
       <div class="site-boot-title" id="siteBootTitle">MY DIGITAL CRIB</div>
       <div class="site-boot-mode" id="siteBootMode">BOOTING THE ROOM</div>
+      <div class="site-boot-language">
+        <p class="site-boot-question">WANNA CONTINUE IN ENGLISH OR SPANISH?</p>
+        <div class="site-boot-lang-options" role="group" aria-label="Choose language">
+          <button class="site-boot-lang" type="button" data-boot-lang="en" aria-pressed="false">ENGLISH</button>
+          <button class="site-boot-lang" type="button" data-boot-lang="es" aria-pressed="false">ESPAÑOL</button>
+        </div>
+      </div>
       <div class="site-boot-progress-head"><span id="siteBootStatus">warming up the pixels</span><output id="siteBootPercent">04%</output></div>
       <div class="site-boot-track" id="siteBootTrack" role="progressbar" aria-label="Website loading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="4">
         <div class="site-boot-fill" id="siteBootFill"></div>
@@ -1091,6 +1113,23 @@
   let step = null;
   let twTimer = null, twStr = '', typing = false;
 
+  function setSiteLanguage(nextLang) {
+    lang = nextLang === 'es' ? 'es' : 'en';
+    store.set('pr_lang', lang);
+    document.documentElement.lang = lang;
+    const mobileCopy = {
+      en: ['mobile version in the works', 'meanwhile, the full pixel room lives on desktop'],
+      es: ['version mobile en construccion', 'mientras, el pixel room completo vive en desktop']
+    }[lang];
+    const mobileSub = document.getElementById('mhSub');
+    const mobileNote = document.getElementById('mhNote');
+    if (mobileSub) mobileSub.textContent = mobileCopy[0];
+    if (mobileNote) mobileNote.textContent = mobileCopy[1];
+    if (step) render();
+    return lang;
+  }
+  window.cribSetLanguage = setSiteLanguage;
+
   /* resaltado: caja de glow + flecha, creada dentro de la escena */
   const hl = document.createElement('div');
   hl.className = 'quest-hl';
@@ -1156,7 +1195,7 @@
       dlgActions.append(
         mkBtn(t.sound, 'primary', () => { applySound(true); blip(); startQuests(); }),
         mkBtn(t.quiet, '', () => { applySound(false); startQuests(); }),
-        mkBtn('EN / ES', '', () => { lang = lang === 'en' ? 'es' : 'en'; store.set('pr_lang', lang); render(); }),
+        mkBtn('EN / ES', '', () => setSiteLanguage(lang === 'en' ? 'es' : 'en')),
         mkBtn(t.skip, '', () => finishTutorial())
       );
     } else if (step === 'questPC') {
@@ -1658,12 +1697,41 @@
   const charm = document.getElementById('siteBootCharm');
   const luck = document.getElementById('siteBootLuck');
   const device = document.getElementById('siteBootDevice');
+  const languageButtons = Array.from(document.querySelectorAll('[data-boot-lang]'));
   const isMobile = document.documentElement.classList.contains('is-mobile');
   let luckCount = 0;
   let finished = false;
+  let contentReady = false;
+  let selectedLanguage = null;
+  let languageResolved = false;
+  let resolveLanguage;
+  const languageChoice = new Promise(resolve => { resolveLanguage = resolve; });
+
+  const COPY = {
+    en: {
+      modeMobile:'ASSEMBLING THE MANGOPHONE', modeDesktop:'BOOTING THE PIXEL ROOM',
+      warm:'warming up the pixels', dust:'dusting the desk', sprites:'placing room sprites',
+      lights:'switching on the lights', findPhone:'finding the mangophone', icons:'placing the phone icons',
+      aligned:'screen and mango aligned', opening:'opening the screen', choose:'choose your language to enter',
+      languageSet:'language selected, finishing setup', welcome:'welcome home', charm:'TAP FOR LUCK', luck:'LUCK'
+    },
+    es: {
+      modeMobile:'ARMANDO EL MANGOPHONE', modeDesktop:'ENCENDIENDO EL CUARTO PIXEL',
+      warm:'calentando los pixeles', dust:'limpiando el escritorio', sprites:'colocando los objetos',
+      lights:'prendiendo las luces', findPhone:'buscando el mangophone', icons:'colocando los iconos',
+      aligned:'pantalla y mango alineados', opening:'abriendo la pantalla', choose:'elige tu idioma para entrar',
+      languageSet:'idioma elegido, terminando todo', welcome:'todo listo, bienvenida', charm:'TOCA PARA SUERTE', luck:'SUERTE'
+    }
+  };
 
   if (!boot) return;
-  mode.textContent = isMobile ? 'ASSEMBLING THE MANGOPHONE' : 'BOOTING THE PIXEL ROOM';
+  function copy(key) { return COPY[selectedLanguage || 'en'][key]; }
+  function refreshLanguageCopy() {
+    mode.textContent = isMobile ? copy('modeMobile') : copy('modeDesktop');
+    charm.textContent = copy('charm');
+    luck.textContent = copy('luck') + ' ' + String(luckCount).padStart(2, '0');
+  }
+  refreshLanguageCopy();
 
   function setProgress(value, message) {
     const safeValue = Math.max(4, Math.min(100, Math.round(value)));
@@ -1689,9 +1757,37 @@
     }).then(() => typeof image.decode === 'function' ? image.decode().catch(() => {}) : undefined);
   }
 
+  function selectLanguage(nextLanguage) {
+    const normalizedLanguage = nextLanguage === 'es' ? 'es' : 'en';
+    if (selectedLanguage === normalizedLanguage) return;
+    selectedLanguage = normalizedLanguage;
+    languageButtons.forEach(button => {
+      const selected = button.dataset.bootLang === selectedLanguage;
+      button.classList.toggle('selected', selected);
+      button.setAttribute('aria-pressed', selected ? 'true' : 'false');
+    });
+    try { localStorage.setItem('pr_lang', selectedLanguage); } catch (error) {}
+    document.documentElement.lang = selectedLanguage;
+    if (typeof window.cribSetLanguage === 'function') window.cribSetLanguage(selectedLanguage);
+    const mobileFrame = document.getElementById('mobileFrame');
+    try {
+      if (mobileFrame && mobileFrame.contentWindow) {
+        mobileFrame.contentWindow.postMessage({ type:'crib-language', language:selectedLanguage }, '*');
+      }
+    } catch (error) {}
+    refreshLanguageCopy();
+    setProgress(contentReady ? 96 : Number(track.getAttribute('aria-valuenow')) || 12,
+      contentReady ? copy('opening') : copy('languageSet'));
+    if (!languageResolved) {
+      languageResolved = true;
+      resolveLanguage(selectedLanguage);
+    }
+  }
+  languageButtons.forEach(button => button.addEventListener('click', () => selectLanguage(button.dataset.bootLang)));
+
   charm.addEventListener('click', () => {
     luckCount += 1;
-    luck.textContent = 'LUCK ' + String(luckCount).padStart(2, '0');
+    luck.textContent = copy('luck') + ' ' + String(luckCount).padStart(2, '0');
     device.classList.remove('boost');
     void device.offsetWidth;
     device.classList.add('boost');
@@ -1710,30 +1806,30 @@
   async function waitForDesktop() {
     const images = Array.from(document.querySelectorAll('#scene img, #siteBoot img'));
     let ready = 0;
-    setProgress(12, 'dusting the desk');
+    setProgress(12, copy('dust'));
     await Promise.all(images.map(image => waitForImage(image).then(() => {
       ready += 1;
       setProgress(12 + (ready / Math.max(images.length, 1)) * 72,
-        ready < images.length ? 'placing room sprites' : 'switching on the lights');
+        ready < images.length ? copy('sprites') : copy('lights'));
     })));
   }
 
   async function waitForMobile() {
     const frame = document.getElementById('mobileFrame');
     if (!frame) return;
-    setProgress(12, 'finding the mangophone');
+    setProgress(12, copy('findPhone'));
     let reportReady;
     const childReady = new Promise(resolve => { reportReady = resolve; });
     const onMessage = event => {
       if (event.source !== frame.contentWindow) return;
       if (!event.data || event.data.type !== 'crib-mobile-ready') return;
       window.removeEventListener('message', onMessage);
-      setProgress(91, 'screen and mango aligned');
+      setProgress(91, copy('aligned'));
       reportReady();
     };
     window.addEventListener('message', onMessage);
     const frameLoaded = new Promise(resolve => frame.addEventListener('load', () => {
-      setProgress(48, 'placing the phone icons');
+      setProgress(48, copy('icons'));
       resolve();
     }, { once:true }));
     frame.src = frame.dataset.src || 'mobile-app/index.html';
@@ -1741,7 +1837,7 @@
       Promise.all([frameLoaded, childReady]),
       delay(12000).then(() => {
         window.removeEventListener('message', onMessage);
-        setProgress(91, 'opening the screen');
+        setProgress(91, copy('opening'));
       })
     ]);
   }
@@ -1749,7 +1845,7 @@
   async function finish() {
     if (finished) return;
     finished = true;
-    setProgress(100, 'welcome home');
+    setProgress(100, copy('welcome'));
     await delay(320);
     await nextPaint();
     document.body.classList.add('site-ready');
@@ -1757,12 +1853,15 @@
     setTimeout(() => boot.remove(), 520);
   }
 
-  Promise.all([
+  const loading = Promise.race([
     isMobile ? waitForMobile() : waitForDesktop(),
-    delay(700)
-  ]).then(finish).catch(finish);
+    delay(15000)
+  ]).catch(() => {}).then(() => {
+    contentReady = true;
+    setProgress(96, selectedLanguage ? copy('opening') : copy('choose'));
+  });
 
-  setTimeout(finish, 15000);
+  Promise.all([loading, delay(700), languageChoice]).then(finish);
 })();
 </script>
 </body>
