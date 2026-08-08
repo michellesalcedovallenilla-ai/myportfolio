@@ -6069,7 +6069,7 @@ document.addEventListener('DOMContentLoaded', () => {
     cell.dataset.app = icon.id;
     const delBadge = document.createElement('div'); delBadge.className = 'delete-badge'; delBadge.textContent = '×'; cell.appendChild(delBadge);
     const wrap = document.createElement('div'); wrap.className = 'icon-wrap';
-    const img = document.createElement('img'); img.className = 'icon-canvas icon-img'; img.src = 'assets/icons/' + icon.id + '.png?v=20260808'; img.alt = icon.label; img.draggable = false;
+    const img = document.createElement('img'); img.className = 'icon-canvas icon-img'; img.src = 'assets/icons/' + icon.id + '.png?v=20260808-fit'; img.alt = icon.label; img.draggable = false;
     wrap.appendChild(img); cell.appendChild(wrap);
     const label = document.createElement('div'); label.className = 'icon-label'; label.textContent = icon.label; cell.appendChild(label);
     if (forDock) {
