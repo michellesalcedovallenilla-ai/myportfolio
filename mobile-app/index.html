@@ -5409,14 +5409,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // ===== BUILD ICON GRIDS =====
   const page1Icons = [
     {id:'messages', label:'Messages'}, {id:'camera', label:'Camera'}, {id:'map', label:'Map'}, {id:'music', label:'Music'},
-    {id:'photobooth', label:'Photobooth'}, {id:'youtube', label:'Youtube'}, {id:'weather', label:'Weather'}, {id:'voicememo', label:'Voice Memo'},
+    {id:'photobooth', label:'Photobooth'}, {id:'youtube', label:'mytube'}, {id:'weather', label:'Weather'}, {id:'voicememo', label:'Voice Memo'},
     {id:'pages', label:'Pages'}, {id:'notes', label:'Notes'},
     {id:'calculator', label:'Calculator'}, {id:'compass', label:'Compass'}, {id:'cards', label:'Cards'}, {id:'clock', label:'Clock'}
   ];
   const page2Icons = [
     {id:'videos', label:'Videos'}, {id:'photos', label:'Photos'}, {id:'numbers', label:'Numbers'}, {id:'keynote', label:'Keynote'},
-    {id:'imovie', label:'iMovie'}, {id:'instagram', label:'Instagram'}, {id:'garageband', label:'Garageband'},
-    {id:'airport', label:'Airport'}, {id:'_empty', label:''}, {id:'_empty', label:''}
+    {id:'instagram', label:'michisgram'}, {id:'garageband', label:'Garageband'},
+    {id:'airport', label:'Airport'}, {id:'_empty', label:''}, {id:'_empty', label:''}, {id:'_empty', label:''}
   ];
   const dockIcons = [
     {id:'phone', label:'Phone'}, {id:'safari', label:'Safari'}, {id:'mail', label:'Mail'}, {id:'settings', label:'Settings'}
@@ -5450,6 +5450,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- NOTES ---
     const notesData = [
+      {title:'resume', body:'michelle salcedo\ninfluencer marketing strategist · campaign systems · web designer · ai specialist\nbuenos aires, argentina\n\nexperience:\nbrainlabs — influencer marketing specialist (2025–2026 · nyc/ba)\ninbeat agency — collaborations manager (2024–2025 · remote)\nmy digital crib — web designer & creative director (2021–now)\nindure mgmt — account manager (2023–2024)\nduke renders — executive assistant (2022–2023)\nalphapromed — bids sourcer assistant (2021–2022)\nphotographer & creative director @pastflash (2018–2020)\n\nskills: influencer marketing, creator sourcing & outreach, campaign ops, web design, creative direction, ai tools & automation, project management\n\ncerts: google ai professional (2026) · ibm ai agents (2026) · meltwater influencer marketing I + II (2025)\n\nlanguages: english C1 · spanish native'},
+      {title:'contact', body:'youfoundmichelle@gmail.com\n+1 (646) 423-2594\nmydigitalcrib.com\nlinkedin.com/in/marketingwithcats\nig: @mydigitalcrib\nphotography: @pastflash'},
       {title:'webfolio ideas', body:'pixel room 2.0\nmore cats\nsecret nokia games\nspam folder page???\nchiguire easter egg'},
       {title:'content calendar', body:'mon: post pastflash 03\nwed: playlist story\nfri: update my digital crib\nsun: touch grass (no)'},
       {title:'groceries + stuff', body:'harina pan\nqueso de mano\npolarcitas\ncat food (MUCHO)\ncafe\npapelon'},
@@ -5501,8 +5503,8 @@ document.addEventListener('DOMContentLoaded', () => {
        msgs:[{f:'emma the cat',t:'meow'},{f:'michelle',t:'you literally just ate'},{f:'emma the cat',t:'meow.'},{f:'michelle',t:'no'},{f:'emma the cat',t:'MEOW'},{f:'michelle',t:'...fine. third dinner it is'}]},
       {name:'mom', color:'#c0a050', preview:'te mando arepas?', time:'Yesterday', unread:false,
        msgs:[{f:'mom',t:'ya comiste?'},{f:'michelle',t:'si mamá'},{f:'mom',t:'no te creo. te mando arepas?'},{f:'michelle',t:'siempre. mándame arepas'}]},
-      {name:'dad', color:'#4a6fa5', preview:'llámame cuando puedas, michi', time:'Sunday', unread:false,
-       msgs:[{f:'dad',t:'michi, cómo estás?'},{f:'michelle',t:'bien papá, trabajando mucho'},{f:'dad',t:'y eso de las redes sociales va bien?'},{f:'michelle',t:'papá, es marketing de influencers'},{f:'dad',t:'eso mismo. los influyentes'},{f:'michelle',t:'jajaja sí papá'},{f:'dad',t:'tu mamá dice que no comes bien'},{f:'michelle',t:'ustedes se ponen de acuerdo?'},{f:'dad',t:'llámame cuando puedas, michi'}]},
+      {name:'dad', color:'#4a6fa5', preview:'jajaja sí papá', time:'Sunday', unread:false,
+       msgs:[{f:'dad',t:'michi, cómo estás?'},{f:'michelle',t:'bien papá, trabajando mucho'},{f:'dad',t:'y eso de las redes sociales va bien?'},{f:'michelle',t:'papá, es marketing de influencers'},{f:'dad',t:'eso mismo. los influyentes'},{f:'michelle',t:'jajaja sí papá'}]},
       {name:'unknown number', color:'#777', preview:'kindly send $50 itunes gift card', time:'Tuesday', unread:false,
        msgs:[{f:'unknown number',t:'CONGRATULATIONS!! You have been selected to receive $5,000,000 USD'},{f:'michelle',t:'omg finally'},{f:'unknown number',t:'kindly send $50 itunes gift card to claim'},{f:'michelle',t:'seems legit'}]}
     ];
@@ -5814,7 +5816,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     igScreen.innerHTML = `
       <div class="app-status-bar">${statusBarHTML()}</div>
-      <div class="ig-header"><div class="ig-header-bg"></div><div class="ig-header-title">Instagram</div>
+      <div class="ig-header"><div class="ig-header-bg"></div><div class="ig-header-title">michisgram</div>
         <div class="ig-header-refresh"><svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.95 7.95 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6" stroke-width="2"/><polyline points="18 2 22 6 18 10" stroke-width="2"/></svg></div></div>
       <div class="ig-feed" id="igFeed"></div>
       <div class="ig-tabbar"><div class="ig-tabbar-bg"></div>
@@ -5827,19 +5829,29 @@ document.addEventListener('DOMContentLoaded', () => {
     appContainer.appendChild(igScreen);
     const igFeed = igScreen.querySelector('#igFeed');
     const igPosts = [
-      { type:'image', src:'assets/photos/03.jpg', likes:21, caption:'golden hour dump' },
+      { type:'image', src:'assets/photos/ig-mydigitalcrib.jpg', likes:34, caption:'hi, thanks for stopping by :)' },
+      { type:'image', src:'assets/photos/ig-pastflash.jpg', likes:29, caption:'photography portfolio @pastflash' },
+      { type:'image', src:'assets/photos/01.jpg', likes:21, caption:'golden hour dump' },
+      { type:'image', src:'assets/photos/02.jpg', likes:17, caption:'soft light, loud thoughts' },
+      { type:'image', src:'assets/photos/03.jpg', likes:23, caption:'point and shoot diaries' },
+      { type:'image', src:'assets/photos/04.jpg', likes:19, caption:'somewhere in maracay' },
+      { type:'image', src:'assets/photos/05.jpg', likes:26, caption:'film-ish' },
+      { type:'image', src:'assets/photos/06.jpg', likes:15, caption:'little things' },
       { type:'image', src:'assets/photos/07.jpg', likes:18, caption:'crt > everything' },
+      { type:'image', src:'assets/photos/08.jpg', likes:22, caption:'afternoon static' },
+      { type:'image', src:'assets/photos/09.jpg', likes:20, caption:'through the viewfinder' },
       { type:'image', src:'assets/photos/10.jpg', likes:25, caption:'pixel state of mind' },
-      { type:'image', src:'assets/pets/chiguire.png', likes:31, caption:'el chiguire internacional' }
+      { type:'image', src:'assets/photos/11.jpg', likes:16, caption:'late walk frames' },
+      { type:'image', src:'assets/photos/12.jpg', likes:24, caption:'end of the roll' }
     ];
     igPosts.forEach((p, i) => {
       const post = document.createElement('div'); post.className = 'ig-post';
       const mediaHTML = p.type === 'video'
         ? `<div class="ig-post-image"><video src="${p.src}" style="width:100%;height:100%;object-fit:cover;display:block;" playsinline webkit-playsinline muted loop preload="none"></video></div>`
         : `<div class="ig-post-image"><img src="${p.src}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;"></div>`;
-      const captionHTML = p.caption ? `<div class="ig-caption"><strong>mydigitalcrib</strong> ${p.caption}</div>` : '';
-      const igAvatarSrc = 'assets/michelle.png';
-      post.innerHTML = `<div class="ig-post-header"><div class="ig-avatar"><img src="${igAvatarSrc}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;"></div><div class="ig-username">mydigitalcrib</div></div>
+      const captionHTML = p.caption ? `<div class="ig-caption"><strong>michisgram</strong> ${p.caption}</div>` : '';
+      const igAvatarSrc = 'assets/michelle-talk.gif';
+      post.innerHTML = `<div class="ig-post-header"><div class="ig-avatar"><img src="${igAvatarSrc}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;"></div><div class="ig-username">michisgram</div></div>
         ${mediaHTML}
         <div class="ig-post-actions"><div class="ig-action-btn"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span class="ig-action-label">Like</span></div>
           <div class="ig-action-btn"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg><span class="ig-action-label">Comment</span></div></div>
@@ -6589,7 +6601,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const ytScreen = document.createElement('div'); ytScreen.className = 'app-screen yt-app'; ytScreen.id = 'app-youtube';
     ytScreen.innerHTML = `
       <div class="app-status-bar">${statusBarHTML()}</div>
-      <div class="app-header"><div class="app-header-bg"></div><div class="app-header-back" id="ytBackBtn" data-close="1">Home</div><div class="app-header-title">YouTube</div></div>
+      <div class="app-header"><div class="app-header-bg"></div><div class="app-header-back" id="ytBackBtn" data-close="1">Home</div><div class="app-header-title">mytube</div></div>
       <div class="yt-section active" id="ytFeatured"></div>
       <div class="yt-section" id="ytLocal"></div>
       <div class="yt-section" id="ytFavorites"></div>
@@ -7028,12 +7040,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // State
     let vmMemos = [
-      { title: 'content ideas 2am', dur: 43, date: 'Jun 14, 2024', blob: null },
-      { title: 'campaign pitch voice note', dur: 72, date: 'Jun 11, 2024', blob: null },
-      { title: 'song lyrics?? maybe', dur: 128, date: 'Jun 8, 2024', blob: null },
-      { title: 'Recording 003', dur: 16, date: 'May 30, 2024', blob: null },
-      { title: 'emma yelling at birds', dur: 94, date: 'May 22, 2024', blob: null },
-      { title: 'client call notes', dur: 203, date: 'May 15, 2024', blob: null }
+      { title: 'just in case :)', dur: 30, date: 'Aug 8, 2026', blob: null, src: 'assets/voicememo/just-in-case.mp3' }
     ];
     let vmRecording = false, vmMediaRec = null, vmStream = null, vmAnalyser = null;
     let vmTimerInt = null, vmRecSec = 0, vmAnimFrame = null;
@@ -7311,9 +7318,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      if (memo.blob) {
-        // Real recorded memo - play it
-        const url = URL.createObjectURL(memo.blob);
+      if (memo.blob || memo.src) {
+        // Real audio memo (recorded blob or bundled file) - play it
+        const url = memo.src ? memo.src : URL.createObjectURL(memo.blob);
         vmPlayingAudio = new Audio(url);
         vmPlayingAudio.play().catch(() => {});
         playBtn.textContent = '⏸';
@@ -7360,14 +7367,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const seekTime = pct * dur;
       vmScreen.querySelector('#vmPbFill').style.transform = 'scaleX(' + pct + ')';
       vmScreen.querySelector('#vmPbTime').textContent = fmtVmTime(seekTime);
-      if (vmPlayingAudio && memo.blob) {
+      if (vmPlayingAudio && (memo.blob || memo.src)) {
         vmPlayingAudio.currentTime = seekTime;
       }
     });
 
     vmScreen.querySelector('#vmPbBack').addEventListener('click', () => {
       const memo = vmMemos[vmPbIdx];
-      if (vmPlayingAudio && memo && memo.blob) vmPlayingAudio.currentTime = 0;
+      if (vmPlayingAudio && memo && (memo.blob || memo.src)) vmPlayingAudio.currentTime = 0;
       vmScreen.querySelector('#vmPbFill').style.transform = 'scaleX(0)';
       vmScreen.querySelector('#vmPbTime').textContent = '00:00';
     });
@@ -7419,6 +7426,7 @@ document.addEventListener('DOMContentLoaded', () => {
     pgScreen.style.cssText = 'display:flex;flex-direction:column;';
 
     const pgDocs = [
+      { id: 'resume', title: 'resume', meta: 'pdf · tap to download', body: '' },
       { id: 'crib-onesheet', title: 'my digital crib — one sheet', meta: 'edited today · 1 page', body: `MY DIGITAL CRIB
 michelle salcedo — portfolio
 
@@ -7554,8 +7562,49 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
     }
 
     pgDocList.querySelectorAll('.pg-doc-row').forEach(row => {
-      row.addEventListener('click', () => { pgOpenDoc(row.dataset.pgdoc); });
+      row.addEventListener('click', () => {
+        if (row.dataset.pgdoc === 'resume') { pgAskResumeDownload(); return; }
+        pgOpenDoc(row.dataset.pgdoc);
+      });
     });
+
+    // Resume doc — ask before downloading the PDF
+    function pgAskResumeDownload() {
+      iPhoneSounds.tap();
+      const overlay = document.createElement('div');
+      overlay.className = 'ios4-alert-overlay';
+      overlay.innerHTML =
+        '<div class="ios4-alert-box">' +
+          '<div class="ios4-alert-body">' +
+            '<div class="ios4-alert-title">resume</div>' +
+            '<div class="ios4-alert-msg">do you want to download my resume :)?</div>' +
+          '</div>' +
+          '<div class="ios4-alert-btns">' +
+            '<div class="ios4-alert-btn" id="pgResumeNo">no</div>' +
+            '<div class="ios4-alert-btn" id="pgResumeYes">yes</div>' +
+          '</div>' +
+        '</div>';
+      function pgCloseAlert() {
+        overlay.style.opacity = '0';
+        overlay.style.transition = 'opacity 0.15s ease';
+        setTimeout(function() { overlay.remove(); }, 150);
+      }
+      overlay.querySelector('#pgResumeNo').addEventListener('click', function() {
+        iPhoneSounds.tap();
+        pgCloseAlert();
+      });
+      overlay.querySelector('#pgResumeYes').addEventListener('click', function() {
+        iPhoneSounds.tap();
+        const a = document.createElement('a');
+        a.href = 'assets/michelle-salcedo-resume.pdf';
+        a.download = 'Michelle Salcedo - Resume.pdf';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        pgCloseAlert();
+      });
+      pgScreen.appendChild(overlay);
+    }
 
     pgBackBtn.addEventListener('click', pgCloseDoc);
 
@@ -11758,17 +11807,62 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
 }); // end DOMContentLoaded
 </script>
 
-<!-- ========== BOOT — no cover: straight to the phone ========== -->
+<!-- ========== BOOT — no cover: straight to the phone (hardened, self-contained) ========== -->
 <script>
 // No cover overlay — phone is visible and interactive from the start
 window.siteUnlocked = true;
-document.addEventListener('DOMContentLoaded', function() {
-  document.body.classList.add('bg-swapped');
-  document.body.classList.add('cover-removed');
-  var bg = document.getElementById('bgInterior');
-  if (bg) bg.classList.add('visible');
-  // Triggers the existing listener: skip lock screen -> home screen + position phone UI
-  document.dispatchEvent(new CustomEvent('coverUnlocked'));
+(function() {
+  // Standalone phone scaler — mirrors updatePhoneScale() in the main script so the
+  // phone is sized correctly even if the main script stalls on a real device.
+  function cribScale() {
+    try {
+      var vw = window.innerWidth, vh = window.innerHeight;
+      var isMobile = vw <= 600, isTablet = vw > 600 && vw <= 1024;
+      var wFactor = isMobile ? 0.985 : isTablet ? 0.93 : 0.95;
+      var hFactor = isMobile ? 0.94 : isTablet ? 0.90 : 0.97;
+      var maxScale = isMobile ? 1.10 : isTablet ? 1.30 : 1.55;
+      var uiBelow = isMobile ? 70 : isTablet ? 50 : 25;
+      var scale = Math.min((vw * wFactor) / 452, (vh * hFactor) / 617, maxScale, (vh - 2 * uiBelow) / 587);
+      document.documentElement.style.setProperty('--phone-scale', scale.toFixed(3));
+      var ps = document.querySelector('.phone-scene');
+      var mobileUp = isMobile ? 20 : 0;
+      if (ps && scale < 1) {
+        var comp = 293.5 * (1 - scale);
+        ps.style.marginTop = -(comp + mobileUp) + 'px';
+        ps.style.marginBottom = -(comp - mobileUp) + 'px';
+      } else if (ps && isMobile) {
+        ps.style.marginTop = -mobileUp + 'px';
+        ps.style.marginBottom = mobileUp + 'px';
+      } else if (ps) {
+        ps.style.marginTop = '';
+        ps.style.marginBottom = '';
+      }
+    } catch(e) {}
+  }
+  // Boot completion — every step independent + guarded so one failure can't block the rest
+  function cribBoot() {
+    try { document.body.classList.add('bg-swapped'); } catch(e) {}
+    try { document.body.classList.add('cover-removed'); } catch(e) {}
+    try { var bg = document.getElementById('bgInterior'); if (bg) bg.classList.add('visible'); } catch(e) {}
+    // Fail-safe: skip the lock screen even if the main script's listener never registered
+    try {
+      var ls = document.getElementById('lockScreen');
+      if (ls) { ls.style.transition = 'none'; ls.style.transform = 'translateY(-100%)'; ls.style.opacity = '0'; ls.classList.add('hidden'); }
+      var hs = document.getElementById('homeScreen');
+      if (hs) hs.classList.add('visible');
+    } catch(e) {}
+    try { document.dispatchEvent(new CustomEvent('coverUnlocked')); } catch(e) {}
+    cribScale();
+  }
+  // Run immediately (this script sits at the end of <body>, so the DOM exists),
+  // then again on DOMContentLoaded / load / short delays as fail-safes.
+  cribBoot();
+  document.addEventListener('DOMContentLoaded', cribBoot);
+  window.addEventListener('load', cribBoot);
+  setTimeout(cribBoot, 600);
+  setTimeout(cribBoot, 1800);
+  window.addEventListener('resize', cribScale);
+  window.addEventListener('orientationchange', function() { setTimeout(cribScale, 250); });
 
   // ===== LIGHT / NIGHT TOGGLE (page background, outside the phone) =====
   function cribApplyTheme(t) {
@@ -11785,7 +11879,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (L0) L0.addEventListener('click', function() { cribApplyTheme('light'); cribThemeSound(); });
   if (N0) N0.addEventListener('click', function() { cribApplyTheme('night'); cribThemeSound(); });
   cribApplyTheme(document.documentElement.classList.contains('theme-light') ? 'light' : 'night');
-});
+})();
 </script>
 </body>
 </html>
