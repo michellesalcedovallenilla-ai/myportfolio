@@ -1665,6 +1665,55 @@
   .ig-lb-media img { width: 100%; max-height: 44vh; object-fit: contain; display: block; }
   .ig-lb-likes { padding: 8px 10px 0; font-size: 12px; color: #111; flex-shrink: 0; }
   .ig-lb-cap { padding: 3px 10px 10px; font-size: 12px; color: #222; flex-shrink: 0; }
+  .ig-view { display: none; }
+  .ig-view.active { display: block; }
+  .ig-toast { position: absolute; left: 50%; bottom: 64px; transform: translateX(-50%) translateY(20px); background: rgba(20,20,26,0.92); color: #fff; font-size: 12px; padding: 8px 14px; border-radius: 16px; opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; z-index: 12; max-width: 86%; text-align: center; }
+  .ig-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .ig-feed-card { background: #fff; border-bottom: 1px solid #e0e0e0; padding-bottom: 8px; margin-bottom: 6px; }
+  .ig-fc-head { display: flex; align-items: center; gap: 8px; padding: 8px 10px; }
+  .ig-fc-avatar { width: 26px; height: 26px; border-radius: 50%; overflow: hidden; border: 1px solid #ddd; }
+  .ig-fc-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .ig-fc-name { font-size: 12px; font-weight: 700; color: #111; }
+  .ig-fc-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; cursor: pointer; }
+  .ig-fc-actions { display: flex; gap: 14px; padding: 6px 10px 2px; font-size: 16px; color: #222; }
+  .ig-like-btn { cursor: pointer; transition: transform .15s; user-select: none; }
+  .ig-like-btn.liked { color: #e0245e; }
+  .ig-like-btn.pop { transform: scale(1.4); }
+  .ig-fc-likes { padding: 2px 10px 0; font-size: 12px; color: #111; }
+  .ig-fc-cap { padding: 2px 10px 0; font-size: 12px; color: #222; }
+  .ig-news-item { display: flex; align-items: center; gap: 10px; background: #fff; padding: 10px 12px; border-bottom: 1px solid #eee; font-size: 12px; color: #222; cursor: pointer; }
+  .ig-news-emoji { font-size: 18px; }
+  .ig-news-time { margin-left: auto; font-size: 10px; color: #999; flex-shrink: 0; }
+  .ig-hlview { position: absolute; inset: 0; background: #111; z-index: 10; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 26px; text-align: center; cursor: pointer; }
+  .ig-hlview.visible { display: flex; }
+  .ig-hl-emoji { font-size: 52px; margin-bottom: 14px; }
+  .ig-hl-title { color: #ffd94a; font-size: 17px; margin-bottom: 8px; }
+  .ig-hl-text { color: #eee; font-size: 14px; line-height: 1.5; }
+  .ig-hl-close { color: #777; font-size: 11px; margin-top: 22px; letter-spacing: 1px; }
+  .ig-dm { position: absolute; inset: 0; background: #fff; z-index: 10; display: none; flex-direction: column; }
+  .ig-dm.visible { display: flex; }
+  .ig-dm-head { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid #e0e0e0; background: linear-gradient(180deg,#f9f9f9,#efefef); }
+  .ig-dm-back { color: #3478f6; font-size: 13px; cursor: pointer; }
+  .ig-dm-title { font-size: 13px; font-weight: 700; color: #111; }
+  .ig-dm-msgs { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 6px; background: #fff; -webkit-overflow-scrolling: touch; }
+  .ig-dm-b { max-width: 78%; padding: 7px 11px; border-radius: 14px; font-size: 12px; line-height: 1.35; }
+  .ig-dm-b.them { background: #e9e9eb; color: #111; align-self: flex-start; border-bottom-left-radius: 4px; }
+  .ig-dm-b.me { background: #3478f6; color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+  .ig-dm-inputbar { display: flex; gap: 6px; padding: 8px; border-top: 1px solid #e0e0e0; }
+  .ig-dm-inputbar input { flex: 1; border: 1px solid #d0d0d0; border-radius: 14px; padding: 6px 10px; font-family: inherit; font-size: 12px; outline: none; }
+  .ig-dm-send { color: #3478f6; font-size: 13px; font-weight: 700; align-self: center; cursor: pointer; padding: 0 4px; }
+  .ig-reel { position: relative; background: #000; margin-bottom: 6px; cursor: pointer; }
+  .ig-reel img { width: 100%; aspect-ratio: 3/4; object-fit: cover; opacity: 0.9; display: block; }
+  .ig-reel-play { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 44px; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.6); }
+  .ig-reel-views { position: absolute; left: 10px; bottom: 8px; color: #fff; font-size: 11px; text-shadow: 0 1px 3px #000; }
+  .ig-tagged-cell { position: relative; }
+  .ig-tagged-chip { position: absolute; left: 4px; top: 4px; background: rgba(0,0,0,0.55); color: #fff; font-size: 8px; padding: 2px 5px; border-radius: 3px; }
+  .ig-section-head { background: #fff; padding: 10px 14px 6px; font-size: 13px; font-weight: 700; color: #111; border-bottom: 1px solid #eee; }
+  .ig-lb-actions { display: flex; align-items: center; gap: 14px; padding: 8px 10px 0; font-size: 17px; color: #222; flex-shrink: 0; }
+  .ig-lb-close { position: absolute; top: 10px; right: 12px; color: #fff; font-size: 20px; z-index: 11; cursor: pointer; text-shadow: 0 1px 3px #000; }
+  .ig-header-refresh.spinning svg { animation: igSpin 0.6s ease; }
+  @keyframes igSpin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+  .ig-tab, .ig-viewtab, .ig-highlight { cursor: pointer; }
 
   /* Camera */
   .cam-app { background: #1a1a1a !important; }
@@ -3005,7 +3054,7 @@
 
   /* Phones — taller mango so the screen is easier to read */
   @media (max-width: 600px) {
-    :root { --phone-stretch: 1.05; }
+    :root { --phone-stretch: 1.12; }
   }
 
   /* Mobile portrait */
@@ -3855,7 +3904,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let zoneBottom = isMobile ? Math.max(120, Math.round(vh * 0.22)) : (isTablet ? 46 : 25);
     if (isMobile || isTablet) {
       const qb = document.getElementById('questBar');
-      if (qb && qb.offsetHeight) zoneBottom = qb.offsetHeight + (isMobile ? 24 : 40);
+      if (qb && qb.offsetHeight) zoneBottom = qb.offsetHeight + (isMobile ? 18 : 40);
     }
     const scaleUI = (isMobile || isTablet) ? (vh - zoneTop - zoneBottom) / (587 * stretch) : (vh - 2 * zoneBottom) / 587;
     const scale = Math.min(scaleW, scaleH, maxScale, scaleUI);
@@ -3876,6 +3925,23 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (phoneScene) {
       phoneScene.style.marginTop = '';
       phoneScene.style.marginBottom = '';
+    }
+    // Self-correct centering: the flex column above (header etc.) offsets the
+    // math, so nudge the scene until the phone's visual center matches the
+    // zone center exactly. Converges in one pass; stable on re-runs.
+    if (isMobile || isTablet) {
+      const flipper = document.querySelector('.phone-flipper');
+      if (flipper) {
+        const fr = flipper.getBoundingClientRect();
+        if (fr.height > 0) {
+          const zoneCenter = (zoneTop + (vh - zoneBottom)) / 2;
+          const delta = zoneCenter - (fr.top + fr.bottom) / 2;
+          if (Math.abs(delta) > 1) {
+            phoneScene.style.marginTop = ((parseFloat(phoneScene.style.marginTop) || 0) + delta) + 'px';
+            phoneScene.style.marginBottom = ((parseFloat(phoneScene.style.marginBottom) || 0) - delta) + 'px';
+          }
+        }
+      }
     }
   }
   updatePhoneScale();
@@ -5974,7 +6040,7 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         const t = {name:'michelle (desktop)', color:'#3478f6', preview:'its crazyyyy', time:'now', unread:true,
           msgs:[{f:'michelle (desktop)',t:'you should check this website again but in desktop, its crazyyyy'},
-                {f:'michelle (desktop)',t:'same website, bigger screen. go go go 🖥✨'}]};
+                {f:'michelle (desktop)',t:'it is a COMPLETELY different website over there. windows xp chaos. go go go 🖥✨'}]};
         msgThreads.push(t);
         const i = msgThreads.length - 1;
         const item = document.createElement('div'); item.className = 'msg-thread-item';
@@ -6057,69 +6123,269 @@ document.addEventListener('DOMContentLoaded', () => {
     igScreen.innerHTML = `
       <div class="app-status-bar">${statusBarHTML()}</div>
       <div class="ig-header"><div class="ig-header-bg"></div><div class="ig-header-title">michisgram</div>
-        <div class="ig-header-refresh"><svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.95 7.95 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6" stroke-width="2"/><polyline points="18 2 22 6 18 10" stroke-width="2"/></svg></div></div>
+        <div class="ig-header-refresh" id="igRefresh"><svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.95 7.95 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6" stroke-width="2"/><polyline points="18 2 22 6 18 10" stroke-width="2"/></svg></div></div>
       <div class="ig-feed" id="igFeed">
-        <div class="ig-profile">
-          <div class="ig-profile-top">
-            <div class="ig-profile-avatar"><img src="assets/michelle-talk.gif" alt="michisgram"></div>
-            <div class="ig-stats">
-              <div class="ig-stat"><strong>12</strong><span>posts</span></div>
-              <div class="ig-stat"><strong>795</strong><span>followers</span></div>
-              <div class="ig-stat"><strong>312</strong><span>following</span></div>
+        <div class="ig-view active" id="igViewProfile">
+          <div class="ig-profile">
+            <div class="ig-profile-top">
+              <div class="ig-profile-avatar"><img src="assets/michelle-talk.gif" alt="michisgram"></div>
+              <div class="ig-stats">
+                <div class="ig-stat"><strong>12</strong><span>posts</span></div>
+                <div class="ig-stat"><strong id="igFollowerCount">795</strong><span>followers</span></div>
+                <div class="ig-stat"><strong>312</strong><span>following</span></div>
+              </div>
+            </div>
+            <div class="ig-profile-name">michisgram</div>
+            <div class="ig-bio">hi, thanks for stopping by :)<br>web designer · influencer marketing · ai workflows<br>photography portfolio here at <span>@pastflash</span><br><span>www.mydigitalcrib.com</span></div>
+            <div class="ig-followed">Followed by <strong>gabriela.jps</strong>, <strong>sinairlvodo</strong> + 51 more</div>
+            <div class="ig-profile-btns"><div class="ig-pbtn" id="igBtnFollow">Following ⌄</div><div class="ig-pbtn" id="igBtnMsg">Message</div><div class="ig-pbtn ig-pbtn-add" id="igBtnAdd">＋</div></div>
+            <div class="ig-highlights">
+              <div class="ig-highlight" data-hl="collabs"><div class="ig-highlight-ring">🤝</div><div class="ig-highlight-label">collabs</div></div>
+              <div class="ig-highlight" data-hl="rates"><div class="ig-highlight-ring">💵</div><div class="ig-highlight-label">our rates</div></div>
+              <div class="ig-highlight" data-hl="agenda"><div class="ig-highlight-ring">📅</div><div class="ig-highlight-label">agenda</div></div>
+              <div class="ig-highlight" data-hl="social"><div class="ig-highlight-ring">📱</div><div class="ig-highlight-label">get social</div></div>
+              <div class="ig-highlight" data-hl="coffee"><div class="ig-highlight-ring">☕</div><div class="ig-highlight-label">virtual coffee</div></div>
+              <div class="ig-highlight" data-hl="playlist"><div class="ig-highlight-ring">🎧</div><div class="ig-highlight-label">our playlist</div></div>
+            </div>
+            <div class="ig-viewtabs">
+              <div class="ig-viewtab active" data-vt="grid">▦</div><div class="ig-viewtab" data-vt="reels">▶</div><div class="ig-viewtab" data-vt="tagged">👤</div>
             </div>
           </div>
-          <div class="ig-profile-name">michisgram</div>
-          <div class="ig-bio">hi, thanks for stopping by :)<br>web designer · influencer marketing · ai workflows<br>photography portfolio here at <span>@pastflash</span><br><span>www.mydigitalcrib.com</span></div>
-          <div class="ig-followed">Followed by <strong>gabriela.jps</strong>, <strong>sinairlvodo</strong> + 51 more</div>
-          <div class="ig-profile-btns"><div class="ig-pbtn">Following ⌄</div><div class="ig-pbtn">Message</div><div class="ig-pbtn ig-pbtn-add">＋</div></div>
-          <div class="ig-highlights">
-            <div class="ig-highlight"><div class="ig-highlight-ring">🤝</div><div class="ig-highlight-label">collabs</div></div>
-            <div class="ig-highlight"><div class="ig-highlight-ring">💵</div><div class="ig-highlight-label">our rates</div></div>
-            <div class="ig-highlight"><div class="ig-highlight-ring">📅</div><div class="ig-highlight-label">agenda</div></div>
-            <div class="ig-highlight"><div class="ig-highlight-ring">📱</div><div class="ig-highlight-label">get social</div></div>
-            <div class="ig-highlight"><div class="ig-highlight-ring">☕</div><div class="ig-highlight-label">virtual coffee</div></div>
-            <div class="ig-highlight"><div class="ig-highlight-ring">🎧</div><div class="ig-highlight-label">our playlist</div></div>
-          </div>
-          <div class="ig-viewtabs">
-            <div class="ig-viewtab active">▦</div><div class="ig-viewtab">▶</div><div class="ig-viewtab">👤</div>
-          </div>
+          <div class="ig-grid" id="igGrid"></div>
+          <div id="igReels" style="display:none"></div>
+          <div class="ig-grid" id="igTagged" style="display:none"></div>
         </div>
-        <div class="ig-grid" id="igGrid"></div>
+        <div class="ig-view" id="igViewFeed"></div>
+        <div class="ig-view" id="igViewPopular"><div class="ig-section-head">most liked — the people have spoken 🔥</div><div class="ig-grid" id="igPopularGrid"></div></div>
+        <div class="ig-view" id="igViewNews"></div>
       </div>
       <div class="ig-tabbar"><div class="ig-tabbar-bg"></div>
-        <div class="ig-tab"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/></svg><div class="ig-tab-label">Feed</div></div>
-        <div class="ig-tab"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><div class="ig-tab-label">Popular</div></div>
-        <div class="ig-tab"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg><div class="ig-tab-label">Share</div></div>
-        <div class="ig-tab"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><div class="ig-tab-label">News</div></div>
-        <div class="ig-tab active"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><div class="ig-tab-label">Profile</div></div>
+        <div class="ig-tab" data-view="igViewFeed"><svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/></svg><div class="ig-tab-label">Feed</div></div>
+        <div class="ig-tab" data-view="igViewPopular"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><div class="ig-tab-label">Popular</div></div>
+        <div class="ig-tab" data-view="_share"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg><div class="ig-tab-label">Share</div></div>
+        <div class="ig-tab" data-view="igViewNews"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><div class="ig-tab-label">News</div></div>
+        <div class="ig-tab active" data-view="igViewProfile"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><div class="ig-tab-label">Profile</div></div>
       </div>
       <div class="ig-lightbox" id="igLightbox">
+        <div class="ig-lb-close" id="igLbClose">✕</div>
         <div class="ig-lb-card">
           <div class="ig-lb-head"><div class="ig-avatar"><img src="assets/michelle-talk.gif" alt=""></div><div class="ig-username">michisgram</div></div>
           <div class="ig-lb-media"><img id="igLbImg" alt=""></div>
+          <div class="ig-lb-actions"><span class="ig-like-btn" id="igLbLike">♥</span><span id="igLbComment" style="cursor:pointer">💬</span><span id="igLbShare" style="cursor:pointer">✈</span></div>
           <div class="ig-lb-likes"><strong id="igLbLikes"></strong></div>
           <div class="ig-lb-cap"><strong>michisgram</strong> <span id="igLbCap"></span></div>
         </div>
-      </div>`;
+      </div>
+      <div class="ig-hlview" id="igHlView">
+        <div class="ig-hl-emoji" id="igHlEmoji"></div>
+        <div class="ig-hl-title" id="igHlTitle"></div>
+        <div class="ig-hl-text" id="igHlText"></div>
+        <div class="ig-hl-close">tap anywhere to close</div>
+      </div>
+      <div class="ig-dm" id="igDm">
+        <div class="ig-dm-head"><div class="ig-dm-back" id="igDmBack">‹ michisgram</div><div class="ig-dm-title">michisgram 💌</div></div>
+        <div class="ig-dm-msgs" id="igDmMsgs"></div>
+        <div class="ig-dm-inputbar"><input id="igDmInput" placeholder="say something nice…"><div class="ig-dm-send" id="igDmSend">Send</div></div>
+      </div>
+      <div class="ig-toast" id="igToast"></div>`;
     appContainer.appendChild(igScreen);
-    const igGrid = igScreen.querySelector('#igGrid');
-    igPosts.forEach((p) => {
-      const cell = document.createElement('div'); cell.className = 'ig-cell';
+
+    // ===== michisgram brain — every button actually works =====
+    const igState = { following: true, followers: 795, liked: {}, lbPost: null };
+    function igToast(msg) {
+      const t = igScreen.querySelector('#igToast');
+      t.textContent = msg; t.classList.add('show');
+      if (t._tm) clearTimeout(t._tm);
+      t._tm = setTimeout(() => t.classList.remove('show'), 2400);
+    }
+    function igOpenLb(p) {
+      igState.lbPost = p;
+      igScreen.querySelector('#igLbImg').src = p.src;
+      const liked = !!igState.liked[p.src];
+      igScreen.querySelector('#igLbLikes').textContent = (p.likes + (liked ? 1 : 0)) + ' likes';
+      igScreen.querySelector('#igLbCap').textContent = p.caption;
+      const lb = igScreen.querySelector('#igLbLike');
+      lb.classList.toggle('liked', liked);
+      igScreen.querySelector('#igLightbox').classList.add('visible');
+    }
+    function igLikeToggle(btn, p, likesEl) {
+      const liked = !igState.liked[p.src];
+      igState.liked[p.src] = liked;
+      btn.classList.toggle('liked', liked);
+      btn.classList.add('pop'); setTimeout(() => btn.classList.remove('pop'), 180);
+      if (liked) iPhoneSounds.chime(); else iPhoneSounds.tap();
+      if (likesEl) likesEl.textContent = (p.likes + (liked ? 1 : 0)) + ' likes';
+      if (liked) igToast('liked. you have impeccable taste ♥');
+    }
+    function igMakeCell(p, extraCls) {
+      const cell = document.createElement('div'); cell.className = 'ig-cell' + (extraCls ? ' ' + extraCls : '');
       cell.innerHTML = `<img src="${p.src}" loading="lazy" alt="">`;
-      cell.addEventListener('click', () => {
-        iPhoneSounds.tap();
-        igScreen.querySelector('#igLbImg').src = p.src;
-        igScreen.querySelector('#igLbLikes').textContent = p.likes + ' likes';
-        igScreen.querySelector('#igLbCap').textContent = p.caption;
-        igScreen.querySelector('#igLightbox').classList.add('visible');
-      });
-      igGrid.appendChild(cell);
+      cell.addEventListener('click', () => { iPhoneSounds.tap(); igOpenLb(p); });
+      return cell;
+    }
+    // profile grid
+    const igGrid = igScreen.querySelector('#igGrid');
+    igPosts.forEach(p => igGrid.appendChild(igMakeCell(p)));
+    // popular grid — sorted by likes
+    const igPopGrid = igScreen.querySelector('#igPopularGrid');
+    [...igPosts].sort((a, b) => b.likes - a.likes).forEach(p => igPopGrid.appendChild(igMakeCell(p)));
+    // tagged grid — with little chips
+    const igTagged = igScreen.querySelector('#igTagged');
+    const taggers = ['emma.thecat', 'gabriela.jps', 'dad', 'sinairlvodo', 'mom', 'unknown number'];
+    igPosts.slice(0, 6).forEach((p, idx) => {
+      const cell = igMakeCell(p, 'ig-tagged-cell');
+      const chip = document.createElement('div'); chip.className = 'ig-tagged-chip'; chip.textContent = '📌 ' + taggers[idx];
+      cell.appendChild(chip); igTagged.appendChild(cell);
     });
+    // reels — very exclusive content
+    const igReels = igScreen.querySelector('#igReels');
+    [[igPosts[1], '1.2M'], [igPosts[6], '847K'], [igPosts[9], '2.4M']].forEach(([p, views]) => {
+      const r = document.createElement('div'); r.className = 'ig-reel';
+      r.innerHTML = `<img src="${p.src}" alt=""><div class="ig-reel-play">▶</div><div class="ig-reel-views">▶ ${views} views</div>`;
+      r.addEventListener('click', () => { iPhoneSounds.tap(); igToast('this reel is so exclusive it hasn\'t been filmed yet 🎬'); });
+      igReels.appendChild(r);
+    });
+    // feed view — full cards with working likes
+    const igFeedView = igScreen.querySelector('#igViewFeed');
+    igPosts.forEach(p => {
+      const card = document.createElement('div'); card.className = 'ig-feed-card';
+      card.innerHTML = `<div class="ig-fc-head"><div class="ig-fc-avatar"><img src="assets/michelle-talk.gif" alt=""></div><div class="ig-fc-name">michisgram</div></div>
+        <img class="ig-fc-img" src="${p.src}" loading="lazy" alt="">
+        <div class="ig-fc-actions"><span class="ig-like-btn">♥</span><span class="ig-fc-comment" style="cursor:pointer">💬</span><span class="ig-fc-share" style="cursor:pointer">✈</span></div>
+        <div class="ig-fc-likes"><strong>${p.likes} likes</strong></div>
+        <div class="ig-fc-cap"><strong>michisgram</strong> ${p.caption}</div>`;
+      card.querySelector('.ig-fc-img').addEventListener('click', () => { iPhoneSounds.tap(); igOpenLb(p); });
+      card.querySelector('.ig-like-btn').addEventListener('click', (e) => igLikeToggle(e.target, p, card.querySelector('.ig-fc-likes strong')));
+      card.querySelector('.ig-fc-comment').addEventListener('click', () => { iPhoneSounds.tap(); igToast('comments are off — the paparazzi were getting weird 📸'); });
+      card.querySelector('.ig-fc-share').addEventListener('click', () => { iPhoneSounds.tap(); igToast('shared with your 3 closest group chats ✈ (not really, but imagine)'); });
+      igFeedView.appendChild(card);
+    });
+    // news view — very important activity
+    const igNews = [
+      ['🐱', '<strong>emma the cat</strong> liked your photo. 4 times. she has no thumbs.', '2m'],
+      ['👨', '<strong>dad</strong> commented: "eso mismo. los influyentes"', '14m'],
+      ['💃', '<strong>gabriela.jps</strong> started following you', '32m'],
+      ['✨', '<strong>sinairlvodo</strong> liked 4 of your photos in a row. a fan.', '1h'],
+      ['👩', '<strong>mom</strong> sent your post to the family group chat', '3h'],
+      ['📈', 'your post <strong>"crt > everything"</strong> is doing numbers', '5h'],
+      ['🥭', '<strong>mangophone</strong> was found. investigation ongoing.', '1d']
+    ];
+    const igNewsView = igScreen.querySelector('#igViewNews');
+    igNews.forEach(([emoji, txt, time]) => {
+      const n = document.createElement('div'); n.className = 'ig-news-item';
+      n.innerHTML = `<div class="ig-news-emoji">${emoji}</div><div>${txt}</div><div class="ig-news-time">${time}</div>`;
+      n.addEventListener('click', () => { iPhoneSounds.tap(); igToast('it\'s true. all of it.'); });
+      igNewsView.appendChild(n);
+    });
+    // tabbar navigation
+    igScreen.querySelectorAll('.ig-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        iPhoneSounds.tap();
+        const v = tab.getAttribute('data-view');
+        if (v === '_share') { igToast('share the love: screenshot + tag @mydigitalcrib 📸'); return; }
+        igScreen.querySelectorAll('.ig-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        igScreen.querySelectorAll('.ig-view').forEach(vw => vw.classList.remove('active'));
+        igScreen.querySelector('#' + v).classList.add('active');
+        igScreen.querySelector('#igFeed').scrollTop = 0;
+      });
+    });
+    // viewtabs: grid / reels / tagged
+    igScreen.querySelectorAll('.ig-viewtab').forEach(vt => {
+      vt.addEventListener('click', () => {
+        iPhoneSounds.tap();
+        igScreen.querySelectorAll('.ig-viewtab').forEach(t => t.classList.remove('active'));
+        vt.classList.add('active');
+        const which = vt.getAttribute('data-vt');
+        igScreen.querySelector('#igGrid').style.display = which === 'grid' ? '' : 'none';
+        igScreen.querySelector('#igReels').style.display = which === 'reels' ? '' : 'none';
+        igScreen.querySelector('#igTagged').style.display = which === 'tagged' ? 'grid' : 'none';
+      });
+    });
+    // follow button
+    igScreen.querySelector('#igBtnFollow').addEventListener('click', () => {
+      igState.following = !igState.following;
+      igState.followers += igState.following ? 1 : -1;
+      igScreen.querySelector('#igBtnFollow').textContent = igState.following ? 'Following ⌄' : 'Follow';
+      igScreen.querySelector('#igFollowerCount').textContent = igState.followers;
+      iPhoneSounds.tap();
+      igToast(igState.following ? 'you\'re in. welcome to the crib 🫶' : 'unfollowed?? the audacity. (kidding — come back)');
+    });
+    // add button
+    igScreen.querySelector('#igBtnAdd').addEventListener('click', () => { iPhoneSounds.tap(); igToast('you already follow me. commitment noted. 🫶'); });
+    // message button → working dms
+    const igDmReplies = [
+      'noted. screenshotting this forever.',
+      'you have great taste in dms.',
+      'i\'d write more but emma is stepping on the keyboard',
+      'love that for us. for work stuff, the mail app is faster 💌',
+      'reading this twice. once for me, once for the group chat.'
+    ];
+    let igDmReplyIdx = 0;
+    function igDmBubble(text, me) {
+      const b = document.createElement('div'); b.className = 'ig-dm-b ' + (me ? 'me' : 'them'); b.textContent = text;
+      const list = igScreen.querySelector('#igDmMsgs'); list.appendChild(b); list.scrollTop = list.scrollHeight;
+    }
+    igScreen.querySelector('#igBtnMsg').addEventListener('click', () => {
+      iPhoneSounds.tap();
+      const list = igScreen.querySelector('#igDmMsgs');
+      if (!list._seeded) {
+        list._seeded = true;
+        igDmBubble('hey! you found my michisgram 🥭', false);
+        igDmBubble('for commissions & collabs the mail app is faster — but i read everything here too', false);
+      }
+      igScreen.querySelector('#igDm').classList.add('visible');
+    });
+    igScreen.querySelector('#igDmBack').addEventListener('click', () => { iPhoneSounds.tap(); igScreen.querySelector('#igDm').classList.remove('visible'); });
+    function igDmSendNow() {
+      const inp = igScreen.querySelector('#igDmInput');
+      const v = inp.value.trim(); if (!v) return;
+      iPhoneSounds.swoosh(); igDmBubble(v, true); inp.value = '';
+      setTimeout(() => { iPhoneSounds.triTone(); igDmBubble(igDmReplies[igDmReplyIdx % igDmReplies.length], false); igDmReplyIdx++; }, 900);
+    }
+    igScreen.querySelector('#igDmSend').addEventListener('click', igDmSendNow);
+    igScreen.querySelector('#igDmInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); igDmSendNow(); } });
+    // highlights viewer
+    const igHlContent = {
+      collabs: ['🤝', 'collabs', 'currently accepting collabs! brands, creators, weird little projects — if it\'s fun, i\'m in. the mail app has the button.'],
+      rates:   ['💵', 'our rates', 'rates upon request — every project is its own little universe. fair prices, zero mystery fees, good vibes included free.'],
+      agenda:  ['📅', 'agenda', 'next availability: this week, actually. the calendar gods have smiled upon you.'],
+      social:  ['📱', 'get social', '@mydigitalcrib everywhere that matters. @pastflash for the photos. this mango for everything else.'],
+      coffee:  ['☕', 'virtual coffee', 'book a virtual coffee through the mail app — i bring the ideas, you bring the wifi.'],
+      playlist:['🎧', 'our playlist', 'the playlist lives in the music app — 28 songs, zero skips. go press play.']
+    };
+    igScreen.querySelectorAll('.ig-highlight').forEach(hl => {
+      hl.addEventListener('click', () => {
+        iPhoneSounds.tap();
+        const c = igHlContent[hl.getAttribute('data-hl')];
+        igScreen.querySelector('#igHlEmoji').textContent = c[0];
+        igScreen.querySelector('#igHlTitle').textContent = c[1];
+        igScreen.querySelector('#igHlText').textContent = c[2];
+        igScreen.querySelector('#igHlView').classList.add('visible');
+      });
+    });
+    igScreen.querySelector('#igHlView').addEventListener('click', () => { iPhoneSounds.tap(); igScreen.querySelector('#igHlView').classList.remove('visible'); });
+    // lightbox wiring
+    igScreen.querySelector('#igLbLike').addEventListener('click', (e) => { if (igState.lbPost) igLikeToggle(e.target, igState.lbPost, igScreen.querySelector('#igLbLikes')); });
+    igScreen.querySelector('#igLbComment').addEventListener('click', () => { iPhoneSounds.tap(); igToast('comments are off — the paparazzi were getting weird 📸'); });
+    igScreen.querySelector('#igLbShare').addEventListener('click', () => { iPhoneSounds.tap(); igToast('shared with your 3 closest group chats ✈ (not really, but imagine)'); });
+    igScreen.querySelector('#igLbClose').addEventListener('click', () => { iPhoneSounds.tap(); igScreen.querySelector('#igLightbox').classList.remove('visible'); });
     igScreen.querySelector('#igLightbox').addEventListener('click', (e) => {
       if (e.target.id === 'igLightbox') { iPhoneSounds.tap(); igScreen.querySelector('#igLightbox').classList.remove('visible'); }
     });
+    // refresh button
+    igScreen.querySelector('#igRefresh').addEventListener('click', () => {
+      const r = igScreen.querySelector('#igRefresh');
+      r.classList.add('spinning'); iPhoneSounds.swish && iPhoneSounds.swish();
+      setTimeout(() => r.classList.remove('spinning'), 650);
+      igToast('feed refreshed. still fabulous.');
+    });
     igScreen._initIg = () => {};
-    igScreen._cleanupIg = () => { igScreen.querySelector('#igLightbox').classList.remove('visible'); };
+    igScreen._cleanupIg = () => {
+      igScreen.querySelector('#igLightbox').classList.remove('visible');
+      igScreen.querySelector('#igHlView').classList.remove('visible');
+      igScreen.querySelector('#igDm').classList.remove('visible');
+    };
     apps.instagram = igScreen;
 
     // --- CAMERA ---
@@ -12237,7 +12503,12 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
       setTimeout(() => { if (!introDone) qShow(INTRO[0][0], INTRO[0][1], true); }, 900);
     });
     window.cribQuestApp = function(appId) {
-      if (!introDone) return;
+      // App explanations fire on every open — tutorial completion not required
+      if (!introDone) {
+        const q0 = APP_QUESTS[appId];
+        if (q0) setTimeout(() => qShow(q0[0], q0[1], false), 650);
+        return;
+      }
       // Guided tour: sarifa portfolio first, then the resume in pages
       if (guideStage === 0) {
         if (appId === 'safari') {
@@ -12345,7 +12616,7 @@ window.siteUnlocked = true;
       var zoneBottom = isMobile ? Math.max(120, Math.round(vh * 0.22)) : (isTablet ? 46 : 25);
       if (isMobile || isTablet) {
         var qb = document.getElementById('questBar');
-        if (qb && qb.offsetHeight) zoneBottom = qb.offsetHeight + (isMobile ? 24 : 40);
+        if (qb && qb.offsetHeight) zoneBottom = qb.offsetHeight + (isMobile ? 18 : 40);
       }
       var scaleUI = (isMobile || isTablet) ? (vh - zoneTop - zoneBottom) / (587 * stretch) : (vh - 2 * zoneBottom) / 587;
       var scale = Math.min((vw * wFactor) / 452, (vh * hFactor) / 617, maxScale, scaleUI);
@@ -12362,6 +12633,22 @@ window.siteUnlocked = true;
       } else if (ps) {
         ps.style.marginTop = '';
         ps.style.marginBottom = '';
+      }
+      // Self-correct centering: nudge until the phone's visual center matches
+      // the zone center (flex column above offsets the math). Stable on re-runs.
+      if (isMobile || isTablet) {
+        var fl = document.querySelector('.phone-flipper');
+        if (fl) {
+          var fr = fl.getBoundingClientRect();
+          if (fr.height > 0) {
+            var zc = (zoneTop + (vh - zoneBottom)) / 2;
+            var d = zc - (fr.top + fr.bottom) / 2;
+            if (Math.abs(d) > 1) {
+              ps.style.marginTop = ((parseFloat(ps.style.marginTop) || 0) + d) + 'px';
+              ps.style.marginBottom = ((parseFloat(ps.style.marginBottom) || 0) - d) + 'px';
+            }
+          }
+        }
       }
     } catch(e) {}
   }
