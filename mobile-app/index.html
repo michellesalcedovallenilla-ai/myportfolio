@@ -4360,6 +4360,20 @@ document.addEventListener('DOMContentLoaded', () => {
   // setInterval(updateTime, 10000);
 
   // ===== WALLPAPER =====
+  const CRIB_DEFAULT_WALLPAPER = 'assets/wallpaper-lamppost.jpg';
+  const CRIB_WALLPAPER_MIGRATION = 'crib_wallpaper_lamppost_default';
+  function cribLoadWallpaper() {
+    let savedWallpaper = null;
+    try {
+      savedWallpaper = localStorage.getItem('crib_wallpaper');
+      if (localStorage.getItem(CRIB_WALLPAPER_MIGRATION) !== '1') {
+        if (!savedWallpaper || savedWallpaper === 'assets/wallpaper.jpg') savedWallpaper = CRIB_DEFAULT_WALLPAPER;
+        localStorage.setItem('crib_wallpaper', savedWallpaper);
+        localStorage.setItem(CRIB_WALLPAPER_MIGRATION, '1');
+      }
+    } catch(e) {}
+    return savedWallpaper || CRIB_DEFAULT_WALLPAPER;
+  }
   function drawWallpaper(src) {
     const c = wallpaperCanvas;
     const W = 290, H = 434;
@@ -4374,14 +4388,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const ox = (W - sw) / 2, oy = (H - sh) / 2;
       ctx.drawImage(img, ox, oy, sw, sh);
     };
-    img.src = src || 'assets/wallpaper.jpg';
+    img.src = src || CRIB_DEFAULT_WALLPAPER;
   }
   window.cribSetWallpaper = function(src) {
     try { localStorage.setItem('crib_wallpaper', src); } catch(e) {}
     drawWallpaper(src);
   };
-  let cribBootWallpaper = 'assets/wallpaper.jpg';
-  try { const savedWp = localStorage.getItem('crib_wallpaper'); if (savedWp) cribBootWallpaper = savedWp; } catch(e) {}
+  const cribBootWallpaper = cribLoadWallpaper();
   drawWallpaper(cribBootWallpaper);
 
   // ===== STATUS BAR HELPER =====
@@ -7888,7 +7901,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="settings-item" data-set="brightness" style="cursor:default"><div style="display:flex;align-items:center;flex-shrink:0"><div class="settings-item-icon" style="background:#30b0c7">🔆</div>Brightness</div><input type="range" class="set-slider" id="setBrightness" min="40" max="110" value="100"></div>
         </div>
         <div class="settings-group">
-          <div class="settings-item" data-set="wallpaper"><div style="display:flex;align-items:center"><div class="settings-item-icon" style="background:#34c759">🖼</div>Wallpaper</div><img class="set-wallpaper-thumb" id="setWpThumb" src="assets/wallpaper.jpg" alt="wallpaper"></div>
+          <div class="settings-item" data-set="wallpaper"><div style="display:flex;align-items:center"><div class="settings-item-icon" style="background:#34c759">🖼</div>Wallpaper</div><img class="set-wallpaper-thumb" id="setWpThumb" src="assets/wallpaper-lamppost.jpg" alt="wallpaper"></div>
           <div class="settings-item" data-set="about"><div style="display:flex;align-items:center"><div class="settings-item-icon" style="background:#888">🥭</div>About this mangophone</div><div class="settings-item-arrow">›</div></div>
         </div>
       </div></div>
@@ -7939,12 +7952,12 @@ document.addEventListener('DOMContentLoaded', () => {
     settingsScreen.querySelector('#settingsAboutBack').addEventListener('click', () => { iPhoneSounds.tap(); settingsScreen.querySelector('#settingsAbout').classList.remove('visible'); });
     // --- WALLPAPER PICKER ---
     const cribWallpapers = [
+      { src:CRIB_DEFAULT_WALLPAPER,    thumb:CRIB_DEFAULT_WALLPAPER,       name:'noche del farol', desc:'estrellas bajo la luz' },
       { src:'assets/wallpaper.jpg',   thumb:'assets/wallpaper.jpg',      name:'mango classic',  desc:'la de siempre' },
       { src:'assets/wp-maracay.jpg',  thumb:'assets/wp-maracay-thumb.jpg', name:'atardecer maracay', desc:'pal cerro y el cielo naranja' },
       { src:'assets/wp-night.jpg',    thumb:'assets/wp-night-thumb.jpg',   name:'noche pixel',   desc:'para los noctámbulos' }
     ];
-    let cribCurrentWallpaper = 'assets/wallpaper.jpg';
-    try { const savedWp = localStorage.getItem('crib_wallpaper'); if (savedWp) cribCurrentWallpaper = savedWp; } catch(e) {}
+    let cribCurrentWallpaper = cribLoadWallpaper();
     function cribSyncWallpaperUI() {
       const th = settingsScreen.querySelector('#setWpThumb'); if (th) th.src = cribCurrentWallpaper;
       settingsScreen.querySelectorAll('.set-wp-row').forEach(row => {
@@ -13362,7 +13375,7 @@ window.siteUnlocked = true;
       'assets/mango-front.webp',
       'assets/mango-back.webp',
       document.documentElement.classList.contains('theme-light') ? 'assets/bg-day.png' : 'assets/bg-night.png',
-      'assets/wallpaper.jpg',
+      'assets/wallpaper-lamppost.jpg',
       'assets/btn-light.png',
       'assets/btn-night.png',
       'assets/michelle-talk.gif'
