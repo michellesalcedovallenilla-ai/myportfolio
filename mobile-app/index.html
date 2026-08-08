@@ -427,41 +427,41 @@
     display: block;
     background-image: url('assets/mango-front.webp');
     background-repeat: no-repeat;
-    background-size: 588px 763px;
+    background-size: 565px 734px;
     image-rendering: pixelated;
     pointer-events: none;
   }
 
   .phone__mango-piece--top {
-    left: -68px;
-    top: -67px;
-    width: 588px;
-    height: 207px;
+    left: -56px;
+    top: -55px;
+    width: 565px;
+    height: 195px;
     background-position: 0 0;
   }
 
   .phone__mango-piece--left {
-    left: -68px;
+    left: -56px;
     top: 140px;
-    width: 133px;
+    width: 121px;
     height: 402px;
-    background-position: 0 -207px;
+    background-position: 0 -195px;
   }
 
   .phone__mango-piece--right {
     left: 385px;
     top: 140px;
-    width: 135px;
+    width: 124px;
     height: 402px;
-    background-position: -453px -207px;
+    background-position: -441px -195px;
   }
 
   .phone__mango-piece--bottom {
-    left: -68px;
+    left: -56px;
     top: 542px;
-    width: 588px;
-    height: 154px;
-    background-position: 0 -609px;
+    width: 565px;
+    height: 137px;
+    background-position: 0 -597px;
   }
 
   /* === iPhone 3 / 3GS Back Shell === */
@@ -778,7 +778,7 @@
   .phone__home-btn {
     position: absolute;
     left: 50.06%;
-    top: 599px;
+    top: 585px;
     transform: translate(-50%, -50%);
     width: 64px; height: 64px;
     border-radius: 50%;
@@ -4136,7 +4136,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (fr.height > 0) {
           const desiredTop = isMobile ? topTarget : zoneTop + 16;
           const maxBottom = vh - zoneBottom;
-          const mangoOverflowBottom = 109 * scale;
+          const mangoOverflowBottom = 92 * scale;
           let delta = desiredTop - fr.top;
           if (fr.bottom + mangoOverflowBottom + delta > maxBottom) {
             delta = maxBottom - fr.bottom - mangoOverflowBottom;
@@ -12849,7 +12849,7 @@ window.siteUnlocked = true;
           if (fr.height > 0) {
             var desiredTop = isMobile ? topTarget : zoneTop + 16;
             var maxBottom = vh - zoneBottom;
-            var mangoOverflowBottom = 109 * scale;
+            var mangoOverflowBottom = 92 * scale;
             var d = desiredTop - fr.top;
             if (fr.bottom + mangoOverflowBottom + d > maxBottom) {
               d = maxBottom - fr.bottom - mangoOverflowBottom;
