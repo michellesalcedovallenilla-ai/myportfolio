@@ -33,6 +33,7 @@
     overflow: hidden;
     font-family:'VT323', ui-monospace, monospace;
     -webkit-font-smoothing: antialiased;
+    overscroll-behavior: none; /* no pull-to-refresh swallowing the mango drag */
     /* Film border — dark frame around entire viewport */
     border: none;
     outline: none;
@@ -121,6 +122,13 @@
   #questKicker { font-size: 10px; letter-spacing: 2px; color: #7d89a8; }
   #questTitle { font-size: 14px; color: #ffd94a; letter-spacing: 1px; margin: 1px 0 2px; text-shadow: 0 1px 0 rgba(0,0,0,0.5); }
   #questText { font-size: 15px; color: #e8ecf4; line-height: 1.2; }
+  #questDots { font-size: 10px; letter-spacing: 4px; color: #4a5468; margin-top: 4px; }
+  #questDots .on { color: #ffd94a; }
+  #questBar.pulse { animation: questPulse 1.6s ease-in-out infinite; }
+  @keyframes questPulse {
+    0%, 100% { box-shadow: 0 6px 18px rgba(0,0,0,0.55), 0 0 0 0 rgba(255,217,74,0.45); }
+    50% { box-shadow: 0 6px 18px rgba(0,0,0,0.55), 0 0 0 9px rgba(255,217,74,0); }
+  }
 
   /* Warm filter + vignette + grain — all in one overlay */
   body::after {
@@ -2768,6 +2776,14 @@
   .set-about-row:last-child { border-bottom: none; }
   .set-about-row span:last-child { color: #8a857c; text-align: right; }
   .set-wallpaper-thumb { width: 34px; height: 50px; object-fit: cover; border-radius: 3px; border: 1px solid #a8a4a0; flex-shrink: 0; }
+  .set-wp-row { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-bottom: 1px solid #e0dcd4; cursor: pointer; }
+  .set-wp-row:last-child { border-bottom: none; }
+  .set-wp-row:active { background: #f0ece4; }
+  .set-wp-row img { width: 40px; height: 60px; object-fit: cover; border-radius: 4px; border: 1px solid #a8a4a0; flex-shrink: 0; }
+  .set-wp-meta { flex: 1; min-width: 0; }
+  .set-wp-name { font-size: 13px; color: #222; }
+  .set-wp-desc { font-size: 11px; color: #8a857c; margin-top: 2px; }
+  .set-wp-check { width: 20px; font-size: 15px; color: #3478f6; font-weight: bold; text-align: center; flex-shrink: 0; }
   /* radio-state effects across every status bar */
   body.wifi-off .wifi-icon, body.airplane-on .wifi-icon, body.airplane-on .signal-bars { display: none !important; }
   body.airplane-on .lock-status-left::after { content: '✈ airplane'; color: #fff; font-size: 10px; letter-spacing: 1px; }
@@ -2788,6 +2804,8 @@
   .mail-detail-date { font-family:'VT323', ui-monospace, monospace; font-size:11px; color:#999; margin-bottom:8px; }
   .mail-detail-subject { font-family:'VT323', ui-monospace, monospace; font-size:15px; font-weight:700; color:#222; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid #e0e0e0; }
   .mail-detail-body { font-family:'VT323', ui-monospace, monospace; font-size:13px; color:#333; line-height:1.5; white-space:pre-wrap; }
+  .mail-cta-btn { display:block; margin:14px 0 6px; padding:11px 12px; text-align:center; font-family:'VT323', ui-monospace, monospace; font-size:14px; color:#fff; text-decoration:none; border-radius:8px; background:linear-gradient(180deg,#5aa2f0 0%,#1c5fd6 100%); border:1px solid #144a9e; box-shadow:0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.35); }
+  .mail-cta-btn:active { background:linear-gradient(180deg,#1c5fd6 0%,#5aa2f0 100%); }
   /* === Phone keypad — glossy retro, dark panel === */
   .phone-body { background: linear-gradient(180deg, #31353a 0%, #1e2226 60%, #191d20 100%); display: flex; flex-direction: column; }
   .phone-display-wrap { display: flex; align-items: center; gap: 8px; margin: 10px 18px 4px; padding: 0 12px; height: 44px; background: linear-gradient(180deg, #101315 0%, #1b1f22 100%); border-radius: 12px; border: 1px solid rgba(255,255,255,0.09); box-shadow: inset 0 2px 6px rgba(0,0,0,0.65), 0 1px 0 rgba(255,255,255,0.07); }
@@ -2939,7 +2957,7 @@
 
   /* Phones — taller mango so the screen is easier to read */
   @media (max-width: 600px) {
-    :root { --phone-stretch: 1.14; }
+    :root { --phone-stretch: 1.08; }
   }
 
   /* Mobile portrait */
@@ -3212,6 +3230,7 @@
     <div id="questKicker">MICHELLE SALCEDO PORTFOLIO</div>
     <div id="questTitle">MAIN QUEST</div>
     <div id="questText"></div>
+    <div id="questDots"></div>
   </div>
 </div>
 <script>
@@ -3742,23 +3761,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const maxScale = isMobile ? 1.10 : isTablet ? 1.30 : 1.55;
     const scaleW = (vw * wFactor) / 452;
     const scaleH = (vh * hFactor) / 617;
-    // Ensure enough space below centered phone for flip hint + back button
-    const uiBelow = isMobile ? 56 : isTablet ? 46 : 25;
-    const scaleUI = (vh - 2 * uiBelow) / 587;
+    // Mobile layout zone: below the theme cartridges, above the quest bar
+    const stretch = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--phone-stretch')) || 1;
+    const zoneTop = isMobile ? 110 : 0;
+    const zoneBottom = isMobile ? Math.max(120, Math.round(vh * 0.22)) : (isTablet ? 46 : 25);
+    const scaleUI = isMobile ? (vh - zoneTop - zoneBottom) / (587 * stretch) : (vh - 2 * zoneBottom) / 587;
     const scale = Math.min(scaleW, scaleH, maxScale, scaleUI);
     document.documentElement.style.setProperty('--phone-scale', scale.toFixed(3));
 
     // Fix layout vs visual size mismatch: transform:scale doesn't change layout height.
     // When scale < 1, add negative margins so flex centering uses visual height.
+    // On mobile, also shift the phone up into the zone (quest bar owns the bottom).
     const phoneScene = document.querySelector('.phone-scene');
-    const mobileUp = isMobile ? 20 : 0;
+    const shiftUp = isMobile ? (zoneBottom - zoneTop) / 2 : 0;
     if (phoneScene && scale < 1) {
       const compensation = 293.5 * (1 - scale);
-      phoneScene.style.marginTop = -(compensation + mobileUp) + 'px';
-      phoneScene.style.marginBottom = -(compensation - mobileUp) + 'px';
+      phoneScene.style.marginTop = -(compensation + shiftUp) + 'px';
+      phoneScene.style.marginBottom = -(compensation - shiftUp) + 'px';
     } else if (phoneScene && isMobile) {
-      phoneScene.style.marginTop = -mobileUp + 'px';
-      phoneScene.style.marginBottom = mobileUp + 'px';
+      phoneScene.style.marginTop = -shiftUp + 'px';
+      phoneScene.style.marginBottom = shiftUp + 'px';
     } else if (phoneScene) {
       phoneScene.style.marginTop = '';
       phoneScene.style.marginBottom = '';
@@ -3766,6 +3788,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   updatePhoneScale();
   window.addEventListener('resize', updatePhoneScale);
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', updatePhoneScale);
 
   // ===== REFS =====
   const wallpaperCanvas = document.getElementById('wallpaperCanvas');
@@ -3819,7 +3842,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // setInterval(updateTime, 10000);
 
   // ===== WALLPAPER =====
-  function drawWallpaper() {
+  function drawWallpaper(src) {
     const c = wallpaperCanvas;
     const W = 290, H = 434;
     c.width = W; c.height = H;
@@ -3833,9 +3856,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const ox = (W - sw) / 2, oy = (H - sh) / 2;
       ctx.drawImage(img, ox, oy, sw, sh);
     };
-    img.src = 'assets/wallpaper.jpg';
+    img.src = src || 'assets/wallpaper.jpg';
   }
-  drawWallpaper();
+  window.cribSetWallpaper = function(src) {
+    try { localStorage.setItem('crib_wallpaper', src); } catch(e) {}
+    drawWallpaper(src);
+  };
+  let cribBootWallpaper = 'assets/wallpaper.jpg';
+  try { const savedWp = localStorage.getItem('crib_wallpaper'); if (savedWp) cribBootWallpaper = savedWp; } catch(e) {}
+  drawWallpaper(cribBootWallpaper);
 
   // ===== STATUS BAR HELPER =====
   function statusBarHTML() {
@@ -7091,8 +7120,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function cribApplySettings() {
       document.body.classList.toggle('airplane-on', cribSettings.airplane);
       document.body.classList.toggle('wifi-off', !cribSettings.wifi);
-      const fl = document.querySelector('.phone-flipper');
-      if (fl) fl.style.filter = 'brightness(' + cribSettings.brightness + ')';
+      // Apply brightness per-face, never on .phone-flipper — a filter there flattens preserve-3d and hides the mango back
+      document.querySelectorAll('.phone, .phone-back').forEach(face => {
+        face.style.filter = 'brightness(' + cribSettings.brightness + ')';
+      });
     }
     settingsScreen.innerHTML = `<div class="app-status-bar">${statusBarHTML()}</div><div class="app-header"><div class="app-header-bg"></div><div class="app-header-back" data-close="1">Home</div><div class="app-header-title">Settings</div></div>
       <div class="app-body"><div class="settings-list" id="settingsList">
@@ -7106,10 +7137,16 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="settings-item" data-set="brightness" style="cursor:default"><div style="display:flex;align-items:center;flex-shrink:0"><div class="settings-item-icon" style="background:#30b0c7">🔆</div>Brightness</div><input type="range" class="set-slider" id="setBrightness" min="40" max="110" value="100"></div>
         </div>
         <div class="settings-group">
-          <div class="settings-item" data-set="wallpaper"><div style="display:flex;align-items:center"><div class="settings-item-icon" style="background:#34c759">🖼</div>Wallpaper</div><img class="set-wallpaper-thumb" src="assets/wallpaper.jpg" alt="wallpaper"></div>
+          <div class="settings-item" data-set="wallpaper"><div style="display:flex;align-items:center"><div class="settings-item-icon" style="background:#34c759">🖼</div>Wallpaper</div><img class="set-wallpaper-thumb" id="setWpThumb" src="assets/wallpaper.jpg" alt="wallpaper"></div>
           <div class="settings-item" data-set="about"><div style="display:flex;align-items:center"><div class="settings-item-icon" style="background:#888">🥭</div>About this mangophone</div><div class="settings-item-arrow">›</div></div>
         </div>
       </div></div>
+      <div class="settings-detail" id="settingsWallpaper">
+        <div class="app-header"><div class="app-header-bg"></div><div class="app-header-back" id="settingsWallpaperBack">‹ Settings</div><div class="app-header-title">Wallpaper</div></div>
+        <div class="settings-detail-body">
+          <div class="set-about-group" id="setWpList"></div>
+        </div>
+      </div>
       <div class="settings-detail" id="settingsAbout">
         <div class="app-header"><div class="app-header-bg"></div><div class="app-header-back" id="settingsAboutBack">‹ Settings</div><div class="app-header-title">About</div></div>
         <div class="settings-detail-body">
@@ -7149,6 +7186,38 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     settingsScreen.querySelector('[data-set="about"]').addEventListener('click', () => { iPhoneSounds.tap(); settingsScreen.querySelector('#settingsAbout').classList.add('visible'); });
     settingsScreen.querySelector('#settingsAboutBack').addEventListener('click', () => { iPhoneSounds.tap(); settingsScreen.querySelector('#settingsAbout').classList.remove('visible'); });
+    // --- WALLPAPER PICKER ---
+    const cribWallpapers = [
+      { src:'assets/wallpaper.jpg',   thumb:'assets/wallpaper.jpg',      name:'mango classic',  desc:'la de siempre' },
+      { src:'assets/wp-maracay.jpg',  thumb:'assets/wp-maracay-thumb.jpg', name:'atardecer maracay', desc:'pal cerro y el cielo naranja' },
+      { src:'assets/wp-night.jpg',    thumb:'assets/wp-night-thumb.jpg',   name:'noche pixel',   desc:'para los noctámbulos' }
+    ];
+    let cribCurrentWallpaper = 'assets/wallpaper.jpg';
+    try { const savedWp = localStorage.getItem('crib_wallpaper'); if (savedWp) cribCurrentWallpaper = savedWp; } catch(e) {}
+    function cribSyncWallpaperUI() {
+      const th = settingsScreen.querySelector('#setWpThumb'); if (th) th.src = cribCurrentWallpaper;
+      settingsScreen.querySelectorAll('.set-wp-row').forEach(row => {
+        row.querySelector('.set-wp-check').textContent = (row.getAttribute('data-wp') === cribCurrentWallpaper) ? '✓' : '';
+      });
+    }
+    (function buildWallpaperRows() {
+      const list = settingsScreen.querySelector('#setWpList'); if (!list) return;
+      cribWallpapers.forEach(wp => {
+        const row = document.createElement('div');
+        row.className = 'set-wp-row'; row.setAttribute('data-wp', wp.src);
+        row.innerHTML = '<img src="' + wp.thumb + '" alt="' + wp.name + '"><div class="set-wp-meta"><div class="set-wp-name">' + wp.name + '</div><div class="set-wp-desc">' + wp.desc + '</div></div><div class="set-wp-check"></div>';
+        row.addEventListener('click', () => {
+          iPhoneSounds.tap();
+          cribCurrentWallpaper = wp.src;
+          try { localStorage.setItem('crib_wallpaper', wp.src); } catch(e) {}
+          if (typeof window.cribSetWallpaper === 'function') window.cribSetWallpaper(wp.src);
+          cribSyncWallpaperUI();
+        });
+        list.appendChild(row);
+      });
+    })();
+    settingsScreen.querySelector('[data-set="wallpaper"]').addEventListener('click', () => { iPhoneSounds.tap(); cribSyncWallpaperUI(); settingsScreen.querySelector('#settingsWallpaper').classList.add('visible'); });
+    settingsScreen.querySelector('#settingsWallpaperBack').addEventListener('click', () => { iPhoneSounds.tap(); settingsScreen.querySelector('#settingsWallpaper').classList.remove('visible'); });
     settingsScreen._initSettings = () => { cribSyncSettingsUI(); };
     cribApplySettings();
     cribSyncSettingsUI();
@@ -7175,10 +7244,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- MAIL ---
     const mailScreen = document.createElement('div'); mailScreen.className = 'app-screen app-blue'; mailScreen.id = 'app-mail';
     const mailItems=[
-      {s:'argenis zabala',sub:'Re: shoot this weekend',p:'confirmed for saturday, golden hour...',date:'June 14, 2024',body:'confirmed for saturday. golden hour, bring the 50mm and the pixel one too. location locked. also i showed the client the moodboard and they finally stopped asking for "more blue".'},
-      {s:'sunny — solara pools',sub:'content calendar approval',p:'hi michelle! the july calendar looks...',date:'June 13, 2024',body:'hi michelle! the july calendar looks amazing. the pool-from-above shots are exactly what we wanted. can we add one more reel about night swimming? budget approved. — sunny'},
-      {s:'inbeat',sub:'your campaign brief is ready',p:'the brief for the new collab is...',date:'June 12, 2024',body:'hey! the brief for the new collab is in your dashboard. timeline is flexible, deliverables are the usual: 3 posts, 2 reels, 1 story set. rate confirmed. go make it weird (affectionate).'},
-      {s:'mom',sub:'¿ya comiste?',p:'mija, your father says the website...',date:'June 11, 2024',body:'mija, your father says the website looks very nice. i dont understand the little computer inside the computer but i showed everyone at the salon. call me when you can. eat something. love, mom'},
+      {s:'michelle salcedo',sub:'let\'s make something chévere ✉',p:'you found my phone, so you basically already know me...',date:'Today',cta:true,body:'hi! you found my mangophone, so you basically already know me.\n\ni do web design, influencer marketing, creative direction y más. if you want to work together — o solo saludar — my inbox is always open. i actually answer, de verdad.\n\ntap the button and escríbeme:'},
       {s:'linkedin',sub:'you appeared in 12 searches this week',p:'your profile is getting noticed...',date:'June 10, 2024',body:'your profile is getting noticed. you appeared in 12 searches this week. recruiters are looking at your profile. update your headline to stand out even more.'}
     ];
     mailScreen.innerHTML = `<div class="app-status-bar">${statusBarHTML()}</div><div class="app-header"><div class="app-header-bg"></div><div class="app-header-back" id="mailBackBtn">Home</div><div class="app-header-title" id="mailHeaderTitle">Mail</div></div><div class="app-body" id="mailBody"><div class="mail-list" id="mailList"></div></div>`;
@@ -7192,6 +7258,14 @@ document.addEventListener('DOMContentLoaded', () => {
       mailList.appendChild(item);
       const detail=document.createElement('div');detail.className='mail-detail';detail.id=`mailDetail${i}`;
       detail.innerHTML=`<div class="mail-detail-from">From: <span>${m.s}</span></div><div class="mail-detail-date">${m.date}</div><div class="mail-detail-subject">${m.sub}</div><div class="mail-detail-body">${m.body}</div>`;
+      if (m.cta) {
+        const ctaBtn=document.createElement('a');
+        ctaBtn.className='mail-cta-btn';
+        ctaBtn.href='mailto:youfoundmichelle@gmail.com?subject=found%20your%20mangophone%20%F0%9F%A5%AD';
+        ctaBtn.textContent='✉ youfoundmichelle@gmail.com';
+        ctaBtn.addEventListener('click',()=>{ iPhoneSounds.tap(); });
+        detail.appendChild(ctaBtn);
+      }
       mailBody.appendChild(detail);
     });
     function openMailDetail(i){
@@ -11816,6 +11890,20 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
       phoneFlipper.addEventListener('transitionend', onEnd);
     }
 
+    // On touch devices the browser hijacks horizontal drags before pointermove —
+    // preventDefault on touchstart (mango body only, never the screen) keeps the flip working.
+    scene.addEventListener('touchstart', function(e) {
+      var el = e.target;
+      while (el && el !== scene) {
+        if (el.classList && (
+          el.classList.contains('phone__screen-slot') ||
+          el.classList.contains('phone__home-btn')
+        )) return;
+        el = el.parentElement;
+      }
+      e.preventDefault();
+    }, {passive: false});
+
     scene.addEventListener('pointerdown', function(e) {
       if (!window.siteUnlocked) return; // Block flip until cover is dismissed
       // Don't intercept interactions inside the screen area or home button
@@ -11919,12 +12007,13 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
     if (!bar) return;
     const qTitle = bar.querySelector('#questTitle');
     const qText = bar.querySelector('#questText');
+    const qDots = bar.querySelector('#questDots');
     let qTimer = null, introStep = 0, introDone = false;
     const questSeen = {};
     const INTRO = [
-      ['MAIN QUEST', 'you found my mangophone! i\'m michelle — se me perdió esta vaina and you picked it up. chévere.'],
-      ['MAIN QUEST', 'drag the mango to flip it over — the back is real. tap the round button to go home, like the old days.'],
-      ['SIDE QUEST', 'now pásale: open any app and i\'ll tell you su cuento. tap this bar anytime to skip.']
+      ['MAIN QUEST', 'you found my mangophone! i\'m michelle — se me perdió esta vaina and you picked it up, pana.  👆 tap this bar to continue'],
+      ['MAIN QUEST', 'first things first: drag the mango sideways — dale vuelta, the back is real. the round button takes you home.'],
+      ['SIDE QUEST', 'now open any app — cada una tiene su cuento and i\'ll explain it. pásale, chamo.']
     ];
     const APP_QUESTS = {
       messages:  ['MESSAGES', 'my texts — mom asking if i ate, dad being dad, emma the cat demanding dinner. answer if you dare, pana.'],
@@ -11956,12 +12045,17 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
       qTitle.textContent = title;
       qText.textContent = text;
       bar.classList.add('on');
+      bar.classList.toggle('pulse', !!sticky);
+      if (qDots) {
+        qDots.innerHTML = sticky ? INTRO.map((_, i) => '<span class="' + (i === introStep ? 'on' : '') + '">●</span>').join('') : '';
+      }
       if (qTimer) { clearTimeout(qTimer); qTimer = null; }
       if (!sticky) qTimer = setTimeout(qHide, 9000);
       try { iPhoneSounds.slideTick(); } catch(e) {}
     }
     function qHide() {
       bar.classList.remove('on');
+      bar.classList.remove('pulse');
       if (qTimer) { clearTimeout(qTimer); qTimer = null; }
     }
     bar.addEventListener('click', () => {
@@ -12052,18 +12146,22 @@ window.siteUnlocked = true;
       var wFactor = isMobile ? 0.995 : isTablet ? 0.95 : 0.95;
       var hFactor = isMobile ? 0.96 : isTablet ? 0.92 : 0.97;
       var maxScale = isMobile ? 1.10 : isTablet ? 1.30 : 1.55;
-      var uiBelow = isMobile ? 56 : isTablet ? 46 : 25;
-      var scale = Math.min((vw * wFactor) / 452, (vh * hFactor) / 617, maxScale, (vh - 2 * uiBelow) / 587);
+      // Mobile layout zone: below the theme cartridges, above the quest bar
+      var stretch = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--phone-stretch')) || 1;
+      var zoneTop = isMobile ? 110 : 0;
+      var zoneBottom = isMobile ? Math.max(120, Math.round(vh * 0.22)) : (isTablet ? 46 : 25);
+      var scaleUI = isMobile ? (vh - zoneTop - zoneBottom) / (587 * stretch) : (vh - 2 * zoneBottom) / 587;
+      var scale = Math.min((vw * wFactor) / 452, (vh * hFactor) / 617, maxScale, scaleUI);
       document.documentElement.style.setProperty('--phone-scale', scale.toFixed(3));
       var ps = document.querySelector('.phone-scene');
-      var mobileUp = isMobile ? 20 : 0;
+      var shiftUp = isMobile ? (zoneBottom - zoneTop) / 2 : 0;
       if (ps && scale < 1) {
         var comp = 293.5 * (1 - scale);
-        ps.style.marginTop = -(comp + mobileUp) + 'px';
-        ps.style.marginBottom = -(comp - mobileUp) + 'px';
+        ps.style.marginTop = -(comp + shiftUp) + 'px';
+        ps.style.marginBottom = -(comp - shiftUp) + 'px';
       } else if (ps && isMobile) {
-        ps.style.marginTop = -mobileUp + 'px';
-        ps.style.marginBottom = mobileUp + 'px';
+        ps.style.marginTop = -shiftUp + 'px';
+        ps.style.marginBottom = shiftUp + 'px';
       } else if (ps) {
         ps.style.marginTop = '';
         ps.style.marginBottom = '';
@@ -12093,7 +12191,9 @@ window.siteUnlocked = true;
   setTimeout(cribBoot, 600);
   setTimeout(cribBoot, 1800);
   window.addEventListener('resize', cribScale);
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', cribScale);
   window.addEventListener('orientationchange', function() { setTimeout(cribScale, 250); });
+  setTimeout(cribScale, 3200);
 
   // ===== LIGHT / NIGHT TOGGLE (page background, outside the phone) =====
   function cribApplyTheme(t) {
