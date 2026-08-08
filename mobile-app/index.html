@@ -6121,8 +6121,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const homeIconIds = [...page1Icons, ...page2Icons].map(icon => icon.id);
   const dockIconIds = dockIcons.map(icon => icon.id);
   const defaultIconLayout = {
-    page1: [...page1Icons.map(icon => icon.id), ...Array(HOME_ICON_SLOT_COUNT - page1Icons.length).fill(null)],
-    page2: [...page2Icons.map(icon => icon.id), ...Array(HOME_ICON_SLOT_COUNT - page2Icons.length).fill(null)],
+    page1: [
+      'messages', 'camera', 'map', 'music',
+      'photobooth', 'youtube', 'weather', 'voicememo',
+      'pages', 'notes', 'calculator', 'compass',
+      null, null, null, null
+    ],
+    page2: [
+      'videos', 'photos', 'numbers', 'instagram',
+      'garageband', 'airport', 'clock', 'cards',
+      null, null, null, null,
+      null, null, null, null
+    ],
     dock: [...dockIconIds]
   };
 
