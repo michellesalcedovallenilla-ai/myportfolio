@@ -219,6 +219,7 @@
   .boot-emma-runner.lucky .boot-emma-heart { animation:bootEmmaHeart .72s steps(5,end); }
   .boot-title { margin:3px 0 2px; color:#fff6c9; font-size:28px; line-height:1; text-shadow:3px 3px 0 #080d19; }
   .boot-subtitle { margin:0 0 10px; color:#f0c64f; font-size:14px; }
+  .boot-emma-intro { margin:-3px auto 11px; max-width:34ch; color:#aebbd8; font-size:13px; line-height:1.2; text-align:center; }
   .boot-language { width:100%; margin:0 0 13px; text-align:center; }
   .boot-language-question { margin:0 0 7px; color:#d7e0f3; font-size:14px; line-height:1.1; }
   .boot-language-options { display:flex; justify-content:center; gap:8px; }
@@ -263,6 +264,7 @@
     .boot-emma-sleep { width:60px; }
     .boot-title { font-size:24px; }
     .boot-subtitle { margin-bottom:6px; }
+    .boot-emma-intro { margin-bottom:7px; font-size:12px; }
     .boot-language { margin-bottom:8px; }
     .boot-language-question { margin-bottom:4px; font-size:13px; }
     .boot-language-button { min-height:30px; padding:4px 9px; }
@@ -3649,6 +3651,7 @@
     <div class="boot-console">
       <div class="boot-title" id="bootTitle">MY DIGITAL CRIB</div>
       <div class="boot-subtitle" id="bootSubtitle">EMMA VS. THE LOADING BAR</div>
+      <p class="boot-emma-intro" id="bootEmmaIntro">Emma is the name of Michelle's tuxedo cat. She's today's loading assistant.</p>
       <div class="boot-language">
         <p class="boot-language-question">WANNA CONTINUE IN ENGLISH OR SPANISH?</p>
         <div class="boot-language-options" role="group" aria-label="Choose language">
@@ -13171,14 +13174,16 @@ window.siteUnlocked = true;
   var bootLanguageChoice = new Promise(function(resolve) { resolveBootLanguage = resolve; });
   var BOOT_COPY = {
     en: {
-      windowTitle:"EMMA'S LOADING SHIFT", subtitle:'EMMA VS. THE LOADING BAR', check:'emma found the loading bar',
+      windowTitle:"EMMA'S LOADING SHIFT", subtitle:'EMMA VS. THE LOADING BAR',
+      intro:"Emma is the name of Michelle's tuxedo cat. She's today's loading assistant.", check:'emma found the loading bar',
       polish:'walking across the pixels', fit:'inspecting the mangophone', icons:'checking every phone icon',
       align:'emma approves the fit', choose:'choose your language to enter', languageSet:'language selected, one last lap',
       ready:'done. emma approves.', opening:'trying to catch the percentage', nap:'loading took too long. emma is napping.',
       petted:'emma says mrrp.', tap:'PET EMMA', luck:'TAP EMMA · PETS'
     },
     es: {
-      windowTitle:'TURNO DE CARGA DE EMMA', subtitle:'EMMA VS. LA BARRA DE CARGA', check:'emma encontró la barra de carga',
+      windowTitle:'TURNO DE CARGA DE EMMA', subtitle:'EMMA VS. LA BARRA DE CARGA',
+      intro:'Emma es el nombre de la gata tuxedo de Michelle. Hoy es la asistente de carga.', check:'emma encontró la barra de carga',
       polish:'caminando sobre los píxeles', fit:'inspeccionando el mangophone', icons:'revisando cada icono',
       align:'emma aprueba el ajuste', choose:'elige tu idioma para entrar', languageSet:'idioma elegido, una última vuelta',
       ready:'listo. emma aprueba.', opening:'intentando atrapar el porcentaje', nap:'la carga tardó mucho. emma está durmiendo.',
@@ -13263,10 +13268,12 @@ window.siteUnlocked = true;
   function bootRefreshLanguageLabels() {
     var windowTitle = document.getElementById('bootWindowTitle');
     var subtitle = document.getElementById('bootSubtitle');
+    var emmaIntro = document.getElementById('bootEmmaIntro');
     var tapLabel = document.querySelector('.boot-tap-label');
     var luckLabel = document.getElementById('bootLuck');
     if (windowTitle) windowTitle.textContent = bootCopy('windowTitle');
     if (subtitle) subtitle.textContent = bootCopy('subtitle');
+    if (emmaIntro) emmaIntro.textContent = bootCopy('intro');
     if (tapLabel) tapLabel.textContent = bootCopy('tap');
     if (luckLabel) luckLabel.textContent = bootCopy('luck') + ' ' + String(bootLuckCount).padStart(2, '0');
   }

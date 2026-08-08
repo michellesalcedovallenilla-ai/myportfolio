@@ -83,6 +83,7 @@
   .site-boot-emma-runner.is-petted .site-boot-emma-heart { animation:siteBootEmmaHeart .72s steps(5,end); }
   .site-boot-title { margin:0; color:#fff8d5; font-size:clamp(24px,7vw,34px); line-height:1; letter-spacing:0; text-shadow:3px 3px 0 #0a0e1b; }
   .site-boot-mode { margin:7px 0 12px; color:#ffd34d; font-size:13px; font-weight:700; letter-spacing:0; }
+  .site-boot-emma-intro { margin:-4px auto 13px; max-width:34ch; color:#aebbd8; font-size:11px; line-height:1.35; }
   .site-boot-language { margin:0 0 16px; }
   .site-boot-question { margin:0 0 8px; color:#d7def0; font-size:11px; font-weight:700; line-height:1.35; }
   .site-boot-lang-options { display:flex; justify-content:center; gap:9px; }
@@ -445,6 +446,7 @@
       <div class="site-boot-top"><span>MICHELLE SALCEDO PORTFOLIO</span><span class="site-boot-led" aria-hidden="true"></span></div>
       <div class="site-boot-title" id="siteBootTitle">MY DIGITAL CRIB</div>
       <div class="site-boot-mode" id="siteBootMode">EMMA VS. THE LOADING BAR</div>
+      <p class="site-boot-emma-intro" id="siteBootEmmaIntro">Emma is the name of Michelle's tuxedo cat. She's today's loading assistant.</p>
       <div class="site-boot-language">
         <p class="site-boot-question">WANNA CONTINUE IN ENGLISH OR SPANISH?</p>
         <div class="site-boot-lang-options" role="group" aria-label="Choose language">
@@ -1713,6 +1715,7 @@
   const percent = document.getElementById('siteBootPercent');
   const status = document.getElementById('siteBootStatus');
   const mode = document.getElementById('siteBootMode');
+  const emmaIntro = document.getElementById('siteBootEmmaIntro');
   const charm = document.getElementById('siteBootCharm');
   const luck = document.getElementById('siteBootLuck');
   const device = document.getElementById('siteBootDevice');
@@ -1731,6 +1734,7 @@
   const COPY = {
     en: {
       modeMobile:'EMMA VS. THE LOADING BAR', modeDesktop:'EMMA VS. THE LOADING BAR',
+      intro:"Emma is the name of Michelle's tuxedo cat. She's today's loading assistant.",
       warm:'emma found the loading bar', dust:'walking across the pixels', sprites:'inspecting every file',
       lights:'looking backward, just in case', findPhone:'finding the mangophone', icons:'checking every phone icon',
       aligned:'emma approves the fit', opening:'trying to catch the percentage', choose:'choose your language to enter',
@@ -1738,6 +1742,7 @@
     },
     es: {
       modeMobile:'EMMA VS. LA BARRA DE CARGA', modeDesktop:'EMMA VS. LA BARRA DE CARGA',
+      intro:'Emma es el nombre de la gata tuxedo de Michelle. Hoy es la asistente de carga.',
       warm:'emma encontró la barra de carga', dust:'caminando sobre los píxeles', sprites:'inspeccionando cada archivo',
       lights:'mirando hacia atrás, por si acaso', findPhone:'buscando el mangophone', icons:'revisando cada icono',
       aligned:'emma aprueba el ajuste', opening:'intentando atrapar el porcentaje', choose:'elige tu idioma para entrar',
@@ -1749,6 +1754,7 @@
   function copy(key) { return COPY[selectedLanguage || 'en'][key]; }
   function refreshLanguageCopy() {
     mode.textContent = isMobile ? copy('modeMobile') : copy('modeDesktop');
+    emmaIntro.textContent = copy('intro');
     charm.textContent = copy('charm');
     luck.textContent = copy('luck') + ' ' + String(luckCount).padStart(2, '0');
   }
