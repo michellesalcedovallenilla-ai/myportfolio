@@ -4104,7 +4104,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let zoneBottom = isMobile ? Math.max(120, Math.round(vh * 0.22)) : (isTablet ? 46 : 10);
     if (isMobile || isTablet) {
       const qb = document.getElementById('questBar');
-      if (qb && qb.offsetHeight) zoneBottom = qb.offsetHeight + (isMobile ? 14 : 34);
+      if (qb && qb.offsetHeight) zoneBottom = qb.offsetHeight + (isMobile ? 24 : 34);
     }
     const topTarget = (isMobile || isTablet) ? Math.max(zoneTop + 8, Math.round(vh * (isMobile ? 0.09 : 0.11))) : zoneTop;
     const scaleUI = (isMobile || isTablet) ? (vh - topTarget - zoneBottom) / 587 : (vh - 2 * zoneBottom) / 587;
@@ -4136,8 +4136,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (fr.height > 0) {
           const desiredTop = isMobile ? topTarget : zoneTop + 16;
           const maxBottom = vh - zoneBottom;
+          const mangoOverflowBottom = 109 * scale;
           let delta = desiredTop - fr.top;
-          if (fr.bottom + delta > maxBottom) delta = maxBottom - fr.bottom;
+          if (fr.bottom + mangoOverflowBottom + delta > maxBottom) {
+            delta = maxBottom - fr.bottom - mangoOverflowBottom;
+          }
           if (Math.abs(delta) > 1) {
             phoneScene.style.marginTop = ((parseFloat(phoneScene.style.marginTop) || 0) + delta) + 'px';
             phoneScene.style.marginBottom = ((parseFloat(phoneScene.style.marginBottom) || 0) - delta) + 'px';
@@ -12672,6 +12675,7 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
       }
       if (qTimer) { clearTimeout(qTimer); qTimer = null; }
       if (!sticky) qTimer = setTimeout(qHide, 9000);
+      requestAnimationFrame(updatePhoneScale);
       try { iPhoneSounds.slideTick(); } catch(e) {}
     }
     function qHide() {
@@ -12817,7 +12821,7 @@ window.siteUnlocked = true;
       var zoneBottom = isMobile ? Math.max(120, Math.round(vh * 0.22)) : (isTablet ? 46 : 10);
       if (isMobile || isTablet) {
         var qb = document.getElementById('questBar');
-        if (qb && qb.offsetHeight) zoneBottom = qb.offsetHeight + (isMobile ? 14 : 34);
+        if (qb && qb.offsetHeight) zoneBottom = qb.offsetHeight + (isMobile ? 24 : 34);
       }
       var topTarget = (isMobile || isTablet) ? Math.max(zoneTop + 8, Math.round(vh * (isMobile ? 0.09 : 0.11))) : zoneTop;
       var scaleUI = (isMobile || isTablet) ? (vh - topTarget - zoneBottom) / 587 : (vh - 2 * zoneBottom) / 587;
@@ -12845,8 +12849,11 @@ window.siteUnlocked = true;
           if (fr.height > 0) {
             var desiredTop = isMobile ? topTarget : zoneTop + 16;
             var maxBottom = vh - zoneBottom;
+            var mangoOverflowBottom = 109 * scale;
             var d = desiredTop - fr.top;
-            if (fr.bottom + d > maxBottom) d = maxBottom - fr.bottom;
+            if (fr.bottom + mangoOverflowBottom + d > maxBottom) {
+              d = maxBottom - fr.bottom - mangoOverflowBottom;
+            }
             if (Math.abs(d) > 1) {
               ps.style.marginTop = ((parseFloat(ps.style.marginTop) || 0) + d) + 'px';
               ps.style.marginBottom = ((parseFloat(ps.style.marginBottom) || 0) - d) + 'px';
