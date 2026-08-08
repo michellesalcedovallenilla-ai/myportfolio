@@ -20,7 +20,6 @@
   :root {
     --screen-w: 320;
     --screen-h: 480;
-    --phone-stretch: 1.07;
     --phone-y: 6px;
     --phone-origin: 50% 50%;
   }
@@ -336,7 +335,7 @@
     touch-action: manipulation;
     -webkit-touch-callout: none;
     transform-origin: var(--phone-origin, 50% 50%);
-    transform: scale(var(--phone-scale, 1.10)) scaleY(var(--phone-stretch, 1)) translateY(var(--phone-y, 6px));
+    transform: scale(var(--phone-scale, 1.10)) translateY(var(--phone-y, 6px));
     /* Phone is always visible — hidden behind cover overlay via z-index */
   }
 
@@ -3159,7 +3158,7 @@
 
   /* Tablet portrait */
   @media (max-width: 1024px) {
-    :root { --phone-scale: 0.95; --phone-stretch: 1.10; --phone-y: -20px; --phone-origin: 50% 50%; }
+    :root { --phone-scale: 0.95; --phone-y: -20px; --phone-origin: 50% 50%; }
   }
 
   /* Small tablet / large phone */
@@ -3167,9 +3166,9 @@
     :root { --phone-scale: 0.77; }
   }
 
-  /* Phones — taller mango so the screen is easier to read */
+  /* Phones - keep the mango large without distorting the pixel art */
   @media (max-width: 600px) {
-    :root { --phone-stretch: 1.10; --phone-y: -34px; --phone-origin: 50% 50%; }
+    :root { --phone-y: -34px; --phone-origin: 50% 50%; }
   }
 
   /* Mobile portrait */
@@ -4018,7 +4017,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const scaleH = (vh * hFactor) / 617;
     // Mobile layout zone: measured from the real UI — starts just below the theme
     // cartridges and ends just above the quest bar, so the mango fills the screen.
-    const stretch = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--phone-stretch')) || 1;
     let zoneTop = 110;
     if (isMobile || isTablet) {
       const tt = document.getElementById('themeToggle');
@@ -4029,7 +4027,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const qb = document.getElementById('questBar');
       if (qb && qb.offsetHeight) zoneBottom = qb.offsetHeight + (isMobile ? 14 : 34);
     }
-    const scaleUI = (isMobile || isTablet) ? (vh - zoneTop - zoneBottom) / (587 * stretch) : (vh - 2 * zoneBottom) / 587;
+    const scaleUI = (isMobile || isTablet) ? (vh - zoneTop - zoneBottom) / 587 : (vh - 2 * zoneBottom) / 587;
     const scale = Math.min(scaleW, scaleH, maxScale, scaleUI);
     document.documentElement.style.setProperty('--phone-scale', scale.toFixed(3));
 
@@ -12673,7 +12671,7 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
     const rect = phoneEl.getBoundingClientRect();
     const scale = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--phone-scale')) || 1.5;
     const visualW = 452 * scale;
-    const visualH = 587 * scale * (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--phone-stretch')) || 1);
+    const visualH = 587 * scale;
     const phoneCenterX = rect.left + rect.width / 2;
     const phoneCenterY = rect.top + rect.height / 2;
     const phoneLeft = phoneCenterX - visualW / 2;
@@ -12730,7 +12728,6 @@ window.siteUnlocked = true;
       var maxScale = isMobile ? 1.28 : isTablet ? 1.40 : 1.68;
       // Mobile layout zone: measured from the real UI — below the theme
       // cartridges, above the quest bar, so the mango fills the screen.
-      var stretch = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--phone-stretch')) || 1;
       var zoneTop = 110;
       if (isMobile || isTablet) {
         var tt = document.getElementById('themeToggle');
@@ -12741,7 +12738,7 @@ window.siteUnlocked = true;
         var qb = document.getElementById('questBar');
         if (qb && qb.offsetHeight) zoneBottom = qb.offsetHeight + (isMobile ? 14 : 34);
       }
-      var scaleUI = (isMobile || isTablet) ? (vh - zoneTop - zoneBottom) / (587 * stretch) : (vh - 2 * zoneBottom) / 587;
+      var scaleUI = (isMobile || isTablet) ? (vh - zoneTop - zoneBottom) / 587 : (vh - 2 * zoneBottom) / 587;
       var scale = Math.min((vw * wFactor) / 452, (vh * hFactor) / 617, maxScale, scaleUI);
       document.documentElement.style.setProperty('--phone-scale', scale.toFixed(3));
       var ps = document.querySelector('.phone-scene');
