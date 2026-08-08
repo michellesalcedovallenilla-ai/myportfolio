@@ -200,6 +200,7 @@
   /* lampara: brillo calido cuando esta encendida */
   #el-lamp img { transition:filter .35s; }
   #el-lamp.on img { filter:brightness(1.35) drop-shadow(0 0 12px rgba(255,190,80,.9)); }
+  #el-lamp:focus-visible { outline:3px solid #ffd36a; outline-offset:4px; }
   .lamp-glow {
     position:absolute; left:66%; top:8%; width:40%; height:60%;
     background:radial-gradient(ellipse 50% 50% at 64% 46%, rgba(255,196,92,.55) 0%, rgba(255,175,65,.26) 45%, transparent 100%);
@@ -266,13 +267,22 @@
     60%      { transform:rotate(-1.4deg); }
   }
 
-  /* lampara: parpadeo calido del brillo */
-  .scene.lamp-on .lamp-glow { animation:glowFlicker 3.2s infinite ease-in-out; }
-  @keyframes glowFlicker {
-    0%, 100% { opacity:1; }
-    42%      { opacity:.86; }
-    55%      { opacity:.97; }
-    70%      { opacity:.9; }
+  /* lampara: parpadeo breve y ocasional mientras esta encendida */
+  .scene.lamp-on.lamp-flicker .lamp-glow { animation:lampGlowFlicker .82s steps(1,end); }
+  .scene.lamp-on.lamp-flicker #el-lamp img { animation:lampBulbFlicker .82s steps(1,end); }
+  @keyframes lampGlowFlicker {
+    0%, 18%, 36%, 52%, 100% { opacity:1; }
+    12%, 30% { opacity:.3; }
+    44% { opacity:.68; }
+  }
+  @keyframes lampBulbFlicker {
+    0%, 18%, 36%, 52%, 100% { filter:brightness(1.35) drop-shadow(0 0 12px rgba(255,190,80,.9)); }
+    12%, 30% { filter:brightness(.78) drop-shadow(0 0 2px rgba(255,190,80,.35)); }
+    44% { filter:brightness(1.05) drop-shadow(0 0 7px rgba(255,190,80,.65)); }
+  }
+  @media (prefers-reduced-motion:reduce) {
+    .scene.lamp-on.lamp-flicker .lamp-glow,
+    .scene.lamp-on.lamp-flicker #el-lamp img { animation:none; }
   }
 
   /* monitor: shimmer CRT + scanline que baja lento */
@@ -358,9 +368,9 @@
   }
   @keyframes ffGlow { 0%,100% { opacity:.22; } 50% { opacity:1; } }
 
-  /* mouse, telefono y speaker arrastrables */
-  #el-mouse, #el-telefono, #el-speaker { cursor:grab; touch-action:none; z-index:10; }
-  #el-mouse.dragging, #el-telefono.dragging, #el-speaker.dragging { cursor:grabbing; z-index:50; }
+  /* objetos arrastrables del escritorio */
+  #el-mouse, #el-telefono, #el-speaker, #el-lamp { cursor:grab; touch-action:none; z-index:10; }
+  #el-mouse.dragging, #el-telefono.dragging, #el-speaker.dragging, #el-lamp.dragging { cursor:grabbing; z-index:50; }
 
   /* guacamaya en la ventana */
   #el-guacamaya { cursor:pointer; z-index:9; }
@@ -559,7 +569,9 @@
     </div>
     <div class="el sprite" id="el-lamp" data-name="lamp"
          style="left:81.771%; top:26.389%; width:5.469%;"
-         onclick="toggleLamp()">
+         role="button" tabindex="0" aria-label="Toggle lamp" aria-pressed="false"
+         onclick="toggleLamp()"
+         onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleLamp();}">
       <img src="assets/lamp.png" alt="lamp">
       <span class="tag">lamp</span>
     </div>
@@ -730,9 +742,47 @@
   }
 
   /* ---------- lampara on/off ---------- */
+  const lampMotionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let lampFlickerTimer = null;
+  let lampFlickerEndTimer = null;
+  function stopLampFlicker() {
+    clearTimeout(lampFlickerTimer);
+    clearTimeout(lampFlickerEndTimer);
+    lampFlickerTimer = null;
+    lampFlickerEndTimer = null;
+    document.getElementById('scene').classList.remove('lamp-flicker');
+  }
+  function scheduleLampFlicker() {
+    stopLampFlicker();
+    const lamp = document.getElementById('el-lamp');
+    const scene = document.getElementById('scene');
+    if (lampMotionPreference.matches || !scene.classList.contains('lamp-on') || lamp.classList.contains('dragging')) return;
+    lampFlickerTimer = setTimeout(() => {
+      if (!scene.classList.contains('lamp-on') || lamp.classList.contains('dragging')) {
+        scheduleLampFlicker();
+        return;
+      }
+      scene.classList.add('lamp-flicker');
+      lampFlickerEndTimer = setTimeout(() => {
+        scene.classList.remove('lamp-flicker');
+        scheduleLampFlicker();
+      }, 820);
+    }, 7000 + Math.random() * 10000);
+  }
+  function syncLampGlow(left, top) {
+    const glow = document.getElementById('lampGlow');
+    glow.style.left = (left - 15.771) + '%';
+    glow.style.top = (top - 18.389) + '%';
+  }
   function toggleLamp() {
-    document.getElementById('el-lamp').classList.toggle('on');
-    document.getElementById('scene').classList.toggle('lamp-on');
+    const lamp = document.getElementById('el-lamp');
+    if (lamp.dataset.dragged === '1') { lamp.dataset.dragged = ''; return; }
+    const scene = document.getElementById('scene');
+    const isOn = lamp.classList.toggle('on');
+    scene.classList.toggle('lamp-on', isOn);
+    lamp.setAttribute('aria-pressed', String(isOn));
+    if (isOn) scheduleLampFlicker();
+    else stopLampFlicker();
   }
 
   /* ---------- boton power: apaga/enciende la pantalla ---------- */
@@ -845,7 +895,7 @@
       }
       t.dispatchEvent(new w.MouseEvent('dblclick', opts));
     }
-    ['el-mouse', 'el-telefono', 'el-speaker'].forEach(id => {
+    ['el-mouse', 'el-telefono', 'el-speaker', 'el-lamp'].forEach(id => {
       const el = document.getElementById(id);
       let drag = null;
       el.addEventListener('pointerdown', e => {
@@ -858,6 +908,7 @@
                  x0: e.clientX, y0: e.clientY };
         el.dataset.w = drag.w; el.dataset.h = drag.h;
         el.classList.add('dragging');
+        if (id === 'el-lamp') stopLampFlicker();
         el.setPointerCapture(e.pointerId);
       });
       el.addEventListener('pointermove', e => {
@@ -870,12 +921,17 @@
         y = Math.max(0, Math.min(100 - drag.h, y));
         el.style.left = x + '%';
         el.style.top = y + '%';
+        if (id === 'el-lamp') syncLampGlow(x, y);
         if (id === 'el-mouse' && el.dataset.dragged === '1') {
           wakeScreen(); /* mover el mouse despierta el monitor, como uno real */
           sendCursor(el);
         }
       });
-      const end = () => { drag = null; el.classList.remove('dragging'); };
+      const end = () => {
+        drag = null;
+        el.classList.remove('dragging');
+        if (id === 'el-lamp') scheduleLampFlicker();
+      };
       el.addEventListener('pointerup', end);
       el.addEventListener('pointercancel', end);
     });
