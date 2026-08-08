@@ -4134,8 +4134,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (flipper && phoneScene) {
         const fr = flipper.getBoundingClientRect();
         if (fr.height > 0) {
-          const desiredTop = isMobile ? topTarget : zoneTop + 16;
-          const maxBottom = vh - zoneBottom + (isMobile ? 15 : 0);
+          const mobileOffsetY = isMobile ? 15 : 0;
+          const desiredTop = (isMobile ? topTarget : zoneTop + 16) + mobileOffsetY;
+          const maxBottom = vh - zoneBottom + mobileOffsetY;
           const mangoOverflowBottom = 92 * scale;
           let delta = desiredTop - fr.top;
           if (fr.bottom + mangoOverflowBottom + delta > maxBottom) {
@@ -12847,8 +12848,9 @@ window.siteUnlocked = true;
         if (fl && ps) {
           var fr = fl.getBoundingClientRect();
           if (fr.height > 0) {
-            var desiredTop = isMobile ? topTarget : zoneTop + 16;
-            var maxBottom = vh - zoneBottom + (isMobile ? 15 : 0);
+            var mobileOffsetY = isMobile ? 15 : 0;
+            var desiredTop = (isMobile ? topTarget : zoneTop + 16) + mobileOffsetY;
+            var maxBottom = vh - zoneBottom + mobileOffsetY;
             var mangoOverflowBottom = 92 * scale;
             var d = desiredTop - fr.top;
             if (fr.bottom + mangoOverflowBottom + d > maxBottom) {
