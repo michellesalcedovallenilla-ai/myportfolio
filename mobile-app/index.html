@@ -1319,7 +1319,7 @@
   .icon-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(4, auto);
+    grid-template-rows: repeat(4, 70px);
     gap: 4px 0;
     justify-items: center;
     align-content: center;
@@ -1329,7 +1329,7 @@
   .icon-grid-sparse {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(4, auto);
+    grid-template-rows: repeat(4, 70px);
     gap: 4px 0;
     justify-items: center;
     align-content: start;
@@ -1345,8 +1345,9 @@
     cursor: pointer;
     position: relative;
     width: 62px;
+    min-height: 70px;
     -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
+    touch-action: none;
   }
 
   .icon-cell.empty-cell {
@@ -1508,6 +1509,8 @@
     gap: 3px;
     cursor: pointer;
     position: relative;
+    min-height: 70px;
+    touch-action: none;
   }
 
   .dock-icon-cell:active .icon-wrap { filter: brightness(0.7); }
@@ -1535,6 +1538,52 @@
   .jiggle-mode .icon-cell:nth-child(3n) { animation-duration: 0.28s; animation-delay: 0.1s; }
   .jiggle-mode .icon-cell:nth-child(4n+1) { animation-duration: 0.24s; animation-delay: 0.08s; }
   .jiggle-mode .dock-icon-cell { animation: jiggle 0.25s ease-in-out infinite alternate; }
+
+  .icon-drag-active .icon-cell.empty-cell {
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .icon-drag-active .icon-cell.empty-cell::before {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 4px;
+    width: 54px;
+    height: 54px;
+    border: 1px dashed rgba(255,255,255,0.24);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.035);
+    box-sizing: border-box;
+  }
+
+  .icon-cell.icon-drag-placeholder::before { display: none; }
+
+  .icon-dragging {
+    position: absolute !important;
+    z-index: 120 !important;
+    margin: 0 !important;
+    pointer-events: none !important;
+    animation: none !important;
+    transform: scale(1.09) rotate(0deg) !important;
+    filter: drop-shadow(0 7px 5px rgba(0,0,0,0.45));
+    cursor: grabbing !important;
+    will-change: left, top, transform;
+  }
+
+  .icon-dragging .delete-badge { display: none !important; }
+
+  .icon-drop-target:not(.empty-cell) .icon-wrap {
+    transform: scale(.86);
+    opacity: .68;
+    transition: transform .14s ease-out, opacity .14s ease-out;
+  }
+
+  .icon-drop-target.empty-cell::before {
+    border-color: rgba(255,211,77,0.78) !important;
+    background: rgba(255,211,77,0.12) !important;
+    box-shadow: 0 0 8px rgba(255,211,77,0.24);
+  }
 
   @keyframes jiggle {
     0% { transform: rotate(-1.5deg); }
@@ -3367,6 +3416,12 @@
   /* Tablet portrait */
   @media (max-width: 1024px) {
     :root { --phone-scale: 0.95; --phone-y: -20px; --phone-origin: 50% 50%; }
+  }
+
+  @media (prefers-reduced-motion:reduce) {
+    .jiggle-mode .icon-cell,
+    .jiggle-mode .dock-icon-cell { animation:none; }
+    .icon-drop-target:not(.empty-cell) .icon-wrap { transition:none; }
   }
 
   /* Small tablet / large phone */
@@ -6056,14 +6111,47 @@ document.addEventListener('DOMContentLoaded', () => {
   const page2Icons = [
     {id:'videos', label:'Videos'}, {id:'photos', label:'Photos'}, {id:'numbers', label:'Numbers'},
     {id:'instagram', label:'michisgram'}, {id:'garageband', label:'Garageband'},
-    {id:'airport', label:'Airport'}, {id:'_empty', label:''}, {id:'_empty', label:''}, {id:'_empty', label:''}, {id:'_empty', label:''}
+    {id:'airport', label:'Airport'}
   ];
   const dockIcons = [
     {id:'phone', label:'Phone'}, {id:'safari', label:'my portfolio'}, {id:'mail', label:'Mail'}, {id:'settings', label:'Settings'}
   ];
+  const HOME_ICON_SLOT_COUNT = 16;
+  const ICON_LAYOUT_STORAGE_KEY = 'crib_icon_layout_v1';
+  const homeIconIds = [...page1Icons, ...page2Icons].map(icon => icon.id);
+  const dockIconIds = dockIcons.map(icon => icon.id);
+  const defaultIconLayout = {
+    page1: [...page1Icons.map(icon => icon.id), ...Array(HOME_ICON_SLOT_COUNT - page1Icons.length).fill(null)],
+    page2: [...page2Icons.map(icon => icon.id), ...Array(HOME_ICON_SLOT_COUNT - page2Icons.length).fill(null)],
+    dock: [...dockIconIds]
+  };
+
+  function hasSameIconIds(actual, expected) {
+    return actual.length === expected.length && new Set(actual).size === actual.length && actual.every(id => expected.includes(id));
+  }
+
+  function isValidIconLayout(layout) {
+    if (!layout || !Array.isArray(layout.page1) || !Array.isArray(layout.page2) || !Array.isArray(layout.dock)) return false;
+    if (layout.page1.length !== HOME_ICON_SLOT_COUNT || layout.page2.length !== HOME_ICON_SLOT_COUNT || layout.dock.length !== dockIcons.length) return false;
+    if (![...layout.page1, ...layout.page2].every(id => id === null || typeof id === 'string')) return false;
+    return hasSameIconIds([...layout.page1, ...layout.page2].filter(Boolean), homeIconIds) && hasSameIconIds(layout.dock, dockIconIds);
+  }
+
+  function loadIconLayout() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(ICON_LAYOUT_STORAGE_KEY));
+      if (isValidIconLayout(saved)) return saved;
+    } catch(e) {}
+    return defaultIconLayout;
+  }
 
   function createIconCell(icon, forDock) {
-    if (icon.id === '_empty') { const cell = document.createElement('div'); cell.className = 'icon-cell empty-cell'; return cell; }
+    if (icon.id === '_empty') {
+      const cell = document.createElement('div');
+      cell.className = 'icon-cell empty-cell';
+      cell.setAttribute('aria-hidden', 'true');
+      return cell;
+    }
     const cell = document.createElement('div');
     cell.className = forDock ? 'dock-icon-cell' : 'icon-cell';
     cell.dataset.app = icon.id;
@@ -6079,9 +6167,29 @@ document.addEventListener('DOMContentLoaded', () => {
     return cell;
   }
 
-  page1Icons.forEach(i => iconGrid.appendChild(createIconCell(i, false)));
-  dockIcons.forEach(i => dockBar.appendChild(createIconCell(i, true)));
-  page2Icons.forEach(i => iconGrid2.appendChild(createIconCell(i, false)));
+  const iconCellsById = new Map();
+  [...page1Icons, ...page2Icons].forEach(icon => iconCellsById.set(icon.id, createIconCell(icon, false)));
+  dockIcons.forEach(icon => iconCellsById.set(icon.id, createIconCell(icon, true)));
+
+  function appendIconLayout(container, order, forDock) {
+    order.forEach(id => container.appendChild(id ? iconCellsById.get(id) : createIconCell({id:'_empty', label:''}, forDock)));
+  }
+
+  const initialIconLayout = loadIconLayout();
+  appendIconLayout(iconGrid, initialIconLayout.page1, false);
+  appendIconLayout(iconGrid2, initialIconLayout.page2, false);
+  appendIconLayout(dockBar, initialIconLayout.dock, true);
+
+  function saveIconLayout() {
+    const readSlots = container => Array.from(container.children).map(cell => cell.dataset.app || null);
+    try {
+      localStorage.setItem(ICON_LAYOUT_STORAGE_KEY, JSON.stringify({
+        page1: readSlots(iconGrid),
+        page2: readSlots(iconGrid2),
+        dock: readSlots(dockBar)
+      }));
+    } catch(e) {}
+  }
 
   // ===== APP SCREENS =====
   function buildAppScreens() {
@@ -12633,7 +12741,7 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
     if (phoneState === 'locked' && homeScreen.classList.contains('visible')) { phoneState = 'home'; }
     if (phoneState === 'app') { closeApp(); }
     else if (phoneState === 'home') {
-      if (jiggleMode) { jiggleMode = false; document.querySelectorAll('.icon-grid, .icon-grid-sparse, .dock-bg').forEach(g => g.classList.remove('jiggle-mode')); }
+      if (jiggleMode) { exitJiggleMode(); }
       else if (currentPage !== 0) { currentPage = 0; pagesSlider.style.transform = 'translateX(0%)'; updatePageDots(); }
       else { iPhoneSounds.lock(); phoneState = 'locked'; screenWake.style.opacity = '1'; setTimeout(() => { homeScreen.classList.remove('visible'); lockScreen.classList.remove('hidden'); lockScreen.style.transform = ''; lockScreen.style.opacity = ''; lockScreen.style.transition = ''; setTimeout(() => { screenWake.style.opacity = '0'; }, 50); }, 250); }
     } else if (phoneState === 'locked') { screenFlash.style.opacity = '1'; setTimeout(() => { screenFlash.style.opacity = '0'; }, 120); }
@@ -12685,13 +12793,225 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
   document.addEventListener('mouseup', () => { if (!ncDragging) return; ncDragging = false; ncPanel.style.transition = ''; if (ncDragOffset < -40) ncHide(); else { ncPanel.style.transform = ''; } ncDragOffset = 0; });
 
   // ===== JIGGLE MODE =====
-  let longPressTimer = null;
+  let iconPress = null;
+  let iconDrag = null;
+  let iconLongPressTimer = null;
+  let iconEdgePageTimer = null;
+  let iconEdgePageTarget = null;
+
+  function setJiggleStyles(enabled) {
+    document.querySelectorAll('.icon-grid, .icon-grid-sparse, .dock-bg').forEach(group => group.classList.toggle('jiggle-mode', enabled));
+  }
+
+  function enterJiggleMode() {
+    if (jiggleMode) return;
+    jiggleMode = true;
+    swiping = false;
+    pagesSlider.classList.remove('no-transition');
+    pagesSlider.style.transform = `translateX(${-currentPage * 50}%)`;
+    setJiggleStyles(true);
+    iPhoneSounds.tap();
+  }
+
+  function exitJiggleMode() {
+    clearTimeout(iconLongPressTimer);
+    clearIconEdgePageSwitch();
+    if (iconDrag) finishIconDrag(true);
+    iconPress = null;
+    jiggleMode = false;
+    setJiggleStyles(false);
+    homeScreen.classList.remove('icon-drag-active');
+    document.querySelectorAll('.icon-drop-target').forEach(cell => cell.classList.remove('icon-drop-target'));
+  }
+
+  function clearIconEdgePageSwitch() {
+    clearTimeout(iconEdgePageTimer);
+    iconEdgePageTimer = null;
+    iconEdgePageTarget = null;
+  }
+
+  function queueIconEdgePageSwitch(clientX) {
+    if (!iconDrag || iconDrag.isDock) return;
+    const viewportRect = pagesViewport.getBoundingClientRect();
+    const edgeSize = Math.max(18, viewportRect.width * 0.09);
+    let targetPage = null;
+    if (clientX <= viewportRect.left + edgeSize && currentPage > 0) targetPage = currentPage - 1;
+    else if (clientX >= viewportRect.right - edgeSize && currentPage < totalPages - 1) targetPage = currentPage + 1;
+    if (targetPage === iconEdgePageTarget) return;
+    clearIconEdgePageSwitch();
+    if (targetPage === null) return;
+    iconEdgePageTarget = targetPage;
+    iconEdgePageTimer = setTimeout(() => {
+      currentPage = targetPage;
+      pagesSlider.style.transform = `translateX(${-currentPage * 50}%)`;
+      updatePageDots();
+      iconEdgePageTimer = null;
+      iconEdgePageTarget = null;
+      if (iconDrag) moveIconDrag(iconDrag.lastX, iconDrag.lastY);
+    }, 650);
+  }
+
+  function getIconDropTarget(clientX, clientY, isDock) {
+    const hit = document.elementFromPoint(clientX, clientY);
+    if (!hit) return null;
+    if (isDock) {
+      const dockCell = hit.closest('.dock-icon-cell[data-app]');
+      return dockCell && dockCell.parentElement === dockBar ? dockCell : null;
+    }
+    const homeCell = hit.closest('.icon-cell');
+    return homeCell && (homeCell.parentElement === iconGrid || homeCell.parentElement === iconGrid2) ? homeCell : null;
+  }
+
+  function beginIconDrag(cell, clientX, clientY) {
+    if (iconDrag || !cell || !jiggleMode) return;
+    const isDock = cell.classList.contains('dock-icon-cell');
+    const cellRect = cell.getBoundingClientRect();
+    const homeRect = homeScreen.getBoundingClientRect();
+    const scaleX = homeRect.width / homeScreen.offsetWidth || 1;
+    const scaleY = homeRect.height / homeScreen.offsetHeight || 1;
+    const placeholder = document.createElement('div');
+    placeholder.className = isDock ? 'dock-icon-cell icon-drag-placeholder' : 'icon-cell empty-cell icon-drag-placeholder';
+    placeholder.setAttribute('aria-hidden', 'true');
+    cell.parentElement.replaceChild(placeholder, cell);
+    homeScreen.appendChild(cell);
+    cell.classList.add('icon-dragging');
+    cell.setAttribute('aria-grabbed', 'true');
+    cell.style.width = (cellRect.width / scaleX) + 'px';
+    cell.style.height = (cellRect.height / scaleY) + 'px';
+    homeScreen.classList.add('icon-drag-active');
+    iconDrag = {
+      cell,
+      placeholder,
+      isDock,
+      offsetX:(clientX - cellRect.left) / scaleX,
+      offsetY:(clientY - cellRect.top) / scaleY,
+      width:cellRect.width / scaleX,
+      height:cellRect.height / scaleY,
+      target:null,
+      lastX:clientX,
+      lastY:clientY
+    };
+    moveIconDrag(clientX, clientY);
+  }
+
+  function moveIconDrag(clientX, clientY) {
+    if (!iconDrag) return;
+    iconDrag.lastX = clientX;
+    iconDrag.lastY = clientY;
+    const homeRect = homeScreen.getBoundingClientRect();
+    const scaleX = homeRect.width / homeScreen.offsetWidth || 1;
+    const scaleY = homeRect.height / homeScreen.offsetHeight || 1;
+    const left = Math.max(-6, Math.min(homeScreen.offsetWidth - iconDrag.width + 6, (clientX - homeRect.left) / scaleX - iconDrag.offsetX));
+    const top = Math.max(-6, Math.min(homeScreen.offsetHeight - iconDrag.height + 6, (clientY - homeRect.top) / scaleY - iconDrag.offsetY));
+    iconDrag.cell.style.left = left + 'px';
+    iconDrag.cell.style.top = top + 'px';
+    queueIconEdgePageSwitch(clientX);
+    const target = getIconDropTarget(clientX, clientY, iconDrag.isDock);
+    if (target === iconDrag.target) return;
+    if (iconDrag.target) iconDrag.target.classList.remove('icon-drop-target');
+    iconDrag.target = target;
+    if (target) target.classList.add('icon-drop-target');
+  }
+
+  function swapIconSlots(first, second) {
+    const firstMarker = document.createComment('icon-slot-a');
+    const secondMarker = document.createComment('icon-slot-b');
+    first.parentElement.replaceChild(firstMarker, first);
+    second.parentElement.replaceChild(secondMarker, second);
+    firstMarker.replaceWith(second);
+    secondMarker.replaceWith(first);
+  }
+
+  function placeIconPlaceholder(placeholder, target) {
+    if (placeholder.parentElement !== target.parentElement) {
+      swapIconSlots(placeholder, target);
+      return;
+    }
+
+    const siblings = Array.from(placeholder.parentElement.children);
+    const sourceIndex = siblings.indexOf(placeholder);
+    const targetIndex = siblings.indexOf(target);
+    if (sourceIndex < targetIndex) target.after(placeholder);
+    else target.before(placeholder);
+  }
+
+  function finishIconDrag(cancelled) {
+    if (!iconDrag) return;
+    clearIconEdgePageSwitch();
+    const {cell, placeholder, target} = iconDrag;
+    if (target) target.classList.remove('icon-drop-target');
+    if (!cancelled && target && target !== placeholder) placeIconPlaceholder(placeholder, target);
+    placeholder.replaceWith(cell);
+    cell.classList.remove('icon-dragging');
+    cell.removeAttribute('aria-grabbed');
+    cell.style.removeProperty('left');
+    cell.style.removeProperty('top');
+    cell.style.removeProperty('width');
+    cell.style.removeProperty('height');
+    homeScreen.classList.remove('icon-drag-active');
+    iconDrag = null;
+    if (!cancelled) {
+      saveIconLayout();
+      iPhoneSounds.tap();
+    }
+  }
+
+  function onIconPointerDown(event) {
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    if (phoneState === 'locked' && homeScreen.classList.contains('visible')) phoneState = 'home';
+    if (phoneState !== 'home' || iconPress) return;
+    const cell = event.currentTarget;
+    iconPress = {
+      cell,
+      pointerId:event.pointerId,
+      startX:event.clientX,
+      startY:event.clientY,
+      lastX:event.clientX,
+      lastY:event.clientY
+    };
+    try { cell.setPointerCapture(event.pointerId); } catch(e) {}
+    clearTimeout(iconLongPressTimer);
+    if (jiggleMode) {
+      event.preventDefault();
+      beginIconDrag(cell, event.clientX, event.clientY);
+      return;
+    }
+    iconLongPressTimer = setTimeout(() => {
+      if (!iconPress || iconPress.cell !== cell) return;
+      enterJiggleMode();
+      beginIconDrag(cell, iconPress.lastX, iconPress.lastY);
+    }, 560);
+  }
+
+  function onIconPointerMove(event) {
+    if (!iconPress || event.pointerId !== iconPress.pointerId) return;
+    iconPress.lastX = event.clientX;
+    iconPress.lastY = event.clientY;
+    const distance = Math.hypot(event.clientX - iconPress.startX, event.clientY - iconPress.startY);
+    if (!jiggleMode && distance > 9) {
+      clearTimeout(iconLongPressTimer);
+      return;
+    }
+    if (iconDrag) {
+      event.preventDefault();
+      moveIconDrag(event.clientX, event.clientY);
+    }
+  }
+
+  function endIconPointer(event, cancelled) {
+    if (!iconPress || event.pointerId !== iconPress.pointerId) return;
+    clearTimeout(iconLongPressTimer);
+    if (iconDrag) finishIconDrag(cancelled);
+    try { iconPress.cell.releasePointerCapture(event.pointerId); } catch(e) {}
+    iconPress = null;
+  }
+
   document.querySelectorAll('.icon-cell[data-app], .dock-icon-cell[data-app]').forEach(cell => {
-    cell.addEventListener('mousedown', startLP); cell.addEventListener('touchstart', startLP, {passive: true});
-    cell.addEventListener('mouseup', cancelLP); cell.addEventListener('touchend', cancelLP); cell.addEventListener('mouseleave', cancelLP);
+    cell.addEventListener('pointerdown', onIconPointerDown);
   });
-  function startLP() { longPressTimer = setTimeout(() => { jiggleMode = true; document.querySelectorAll('.icon-grid, .icon-grid-sparse, .dock-bg').forEach(g => g.classList.add('jiggle-mode')); }, 600); }
-  function cancelLP() { clearTimeout(longPressTimer); }
+  document.addEventListener('pointermove', onIconPointerMove, {passive:false});
+  document.addEventListener('pointerup', event => endIconPointer(event, false));
+  document.addEventListener('pointercancel', event => endIconPointer(event, true));
 
   // ===== DRAG-TO-FLIP =====
   (function initFlipDrag() {
