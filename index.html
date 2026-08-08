@@ -210,6 +210,17 @@
 
   /* poster: notificacion estilo XP */
   #bg-poster { cursor:pointer; }
+  #bg-poster .desktop-poster-image {
+    position:absolute;
+    left:-0.8%;
+    top:-0.8%;
+    width:101.6%;
+    height:101.6%;
+    max-width:none;
+    object-fit:fill;
+    pointer-events:none;
+    image-rendering:pixelated;
+  }
   .xp-notif {
     position:absolute; left:24.8%; top:12.5%; width:23%; z-index:60;
     display:none; font:600 clamp(10px,1.05vw,15px)/1.35 Tahoma, Verdana, sans-serif;
@@ -495,6 +506,7 @@
     <div class="el region" id="bg-poster" data-name="poster" title="click!"
          style="left:5.625%; top:10.926%; width:17.708%; height:28.426%;"
          onclick="togglePosterNotif()">
+      <img class="desktop-poster-image" src="assets/creativity-help-poster.webp?v=1" alt="">
       <span class="tag">bg: poster</span>
     </div>
     <div class="el region" id="bg-bed" data-name="bed"
