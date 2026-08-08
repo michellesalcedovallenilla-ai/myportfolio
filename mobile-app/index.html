@@ -479,12 +479,15 @@
   }
 
   .phone-back-inner {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    /* Mango body back — pixel art, shadow baked into the image */
+    width: 565px;
+    height: 734px;
+    position: absolute;
+    left: -56px;
+    top: -55px;
+    /* Match the current 125% front mango footprint exactly. */
     background: url('assets/mango-back.webp') center / 100% 100% no-repeat;
     image-rendering: pixelated;
+    pointer-events: none;
   }
 
   /* Hide the old iPhone-shell detailing — the mango render replaces it all */
@@ -3124,6 +3127,20 @@
   .sf-res:active .sf-title { text-decoration: underline; }
   .sf-url { font-size: 11px; color: #0a7d2c; margin: 3px 0 4px; word-break: break-all; }
   .sf-snippet { font-size: 12px; color: #555; line-height: 1.35; }
+  .sf-portfolio.is-hidden { display: none; }
+  .sf-resume-result { width: 100%; appearance: none; -webkit-appearance: none; font: inherit; text-align: left; color: inherit; border-color: #9eb5d2; background: #f7faff; }
+  .sf-resume-result .sf-title, .sf-resume-result .sf-url, .sf-resume-result .sf-snippet { display: block; }
+  .sf-resume-label { display: inline-block; margin-bottom: 5px; padding: 2px 6px; border-radius: 3px; background: #355f93; color: #fff; font-size: 9px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .sf-resume-view { display: none; flex: 1; min-height: 0; align-items: stretch; justify-content: flex-start; padding: 0; overflow: hidden; background: #bfc3c8; color: #222; text-align: left; }
+  .sf-resume-view.active { display: flex; }
+  .sf-resume-toolbar { height: 38px; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 8px; background: linear-gradient(180deg, #eef3f9 0%, #c8d3e1 49%, #aab9cb 50%, #bac7d5 100%); border-bottom: 1px solid #7c8998; }
+  .sf-resume-back, .sf-resume-download { min-width: 0; flex-shrink: 0; appearance: none; -webkit-appearance: none; padding: 5px 9px; border: 1px solid #73869d; border-radius: 5px; background: linear-gradient(180deg, #fff 0%, #dce5ef 50%, #c1cfdd 51%, #d2dce7 100%); color: #244b78; font: 12px 'VT323', ui-monospace, monospace; line-height: 1; text-decoration: none; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.8); }
+  .sf-resume-back:active, .sf-resume-download:active { transform: translateY(1px); background: #b8c8d8; }
+  .sf-resume-toolbar-title { flex: 1; min-width: 0; color: #26394f; font-size: 13px; font-weight: 700; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sf-resume-pages { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding: 10px; }
+  .sf-resume-page { display: block; width: 100%; height: auto; margin: 0 0 10px; background: #f7f3eb; border: 1px solid rgba(0,0,0,0.18); box-shadow: 0 2px 6px rgba(0,0,0,0.24); }
+  .sf-resume-open { display: block; margin: 2px 0 4px; padding: 9px 10px; border: 1px solid #8e9dad; border-radius: 5px; background: #f2f5f8; color: #244b78; font-size: 12px; text-align: center; text-decoration: none; }
+  .dock-icon-cell[data-app="safari"] .icon-label { max-width: 66px; font-size: 8px; }
 
   .app-blue .app-header-bg { background: linear-gradient(180deg, #6098d8 0%, #5088cc 20%, #3060a0 55%, #204880 85%, #183870 100%); }
   #app-mail .app-header-title { position:absolute; left:0; right:0; padding:0 90px; text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:15px; pointer-events:none; }
@@ -5892,7 +5909,7 @@ document.addEventListener('DOMContentLoaded', () => {
     {id:'airport', label:'Airport'}, {id:'_empty', label:''}, {id:'_empty', label:''}, {id:'_empty', label:''}, {id:'_empty', label:''}
   ];
   const dockIcons = [
-    {id:'phone', label:'Phone'}, {id:'safari', label:'sarifa'}, {id:'mail', label:'Mail'}, {id:'settings', label:'Settings'}
+    {id:'phone', label:'Phone'}, {id:'safari', label:'my portfolio'}, {id:'mail', label:'Mail'}, {id:'settings', label:'Settings'}
   ];
 
   function createIconCell(icon, forDock) {
@@ -7833,7 +7850,7 @@ document.addEventListener('DOMContentLoaded', () => {
     phoneScreen.querySelector('#phoneCallBtn').addEventListener('click',()=>{iPhoneSounds.tap();if(!phoneDisplay.textContent)return;phoneDisplay.textContent='calling…';setTimeout(()=>{phoneDisplay.textContent='';phoneSyncBksp();},1500);});
     apps.phone=phoneScreen;
 
-    // --- SAFARI (sarifa) — "my websites portfolio", same links as the XP google ---
+    // --- MY PORTFOLIO ---
     const safariScreen = document.createElement('div'); safariScreen.className = 'app-screen app-blue'; safariScreen.id = 'app-safari';
     const cribSites = [
       { title:'mydigitalcrib (@mydigitalcrib) • Instagram', url:'https://www.instagram.com/mydigitalcrib/', displayUrl:'www.instagram.com/mydigitalcrib', snippet:'Freelance Web Designer & Creative Director — websites and digital portfolios with strong visual direction, storytelling and personality. 🛋️' },
@@ -7843,21 +7860,65 @@ document.addEventListener('DOMContentLoaded', () => {
       { title:'@argeniszabalarealtor — real estate influencer', url:'https://argeniszabala.com', displayUrl:'argeniszabala.com', snippet:'real estate influencer site for @argeniszabalarealtor — listings never looked this good. 🏠' },
       { title:'MySpace.com', url:'https://ifyourereadingthishiremenow.my.canva.site', displayUrl:'ifyourereadingthishiremenow.my.canva.site', snippet:'creative portfolio & digital playground. the url is not a typo, it is a business plan. ✨' }
     ];
-    safariScreen.innerHTML = `<div class="app-status-bar">${statusBarHTML()}</div><div class="app-header"><div class="app-header-bg"></div><div class="app-header-back" data-close="1">Home</div><div class="app-header-title">my websites portfolio</div></div>
+    safariScreen.innerHTML = `<div class="app-status-bar">${statusBarHTML()}</div><div class="app-header"><div class="app-header-bg"></div><div class="app-header-back" data-close="1">Home</div><div class="app-header-title" id="sfHeaderTitle">my portfolio</div></div>
       <div class="app-body safari-body"><div class="safari-url-bar">michisearch.com</div>
-      <div class="safari-content sf-portfolio">
+      <div class="safari-content sf-portfolio" id="sfPortfolioHome">
         <div class="sf-logo"><span style="color:#4285f4">m</span><span style="color:#ea4335">i</span><span style="color:#fbbc05">c</span><span style="color:#4285f4">h</span><span style="color:#34a853">i</span><span style="color:#ea4335">s</span><span style="color:#fbbc05">e</span><span style="color:#34a853">a</span><span style="color:#4285f4">r</span><span style="color:#ea4335">c</span><span style="color:#fbbc05">h</span></div>
-        <div class="sf-searchbox">my websites portfolio</div>
-        <div class="sf-stats">6 results (0.42 seconds, obviously)</div>
+        <div class="sf-searchbox">my portfolio</div>
+        <div class="sf-stats">7 results (0.42 seconds, obviously)</div>
         <div class="sf-results" id="sfResults"></div>
+      </div>
+      <div class="safari-content sf-resume-view" id="sfResumeView" aria-hidden="true">
+        <div class="sf-resume-toolbar">
+          <button class="sf-resume-back" id="sfResumeBack" type="button">&lsaquo; Portfolio</button>
+          <div class="sf-resume-toolbar-title">Michelle Salcedo - Resume</div>
+          <a class="sf-resume-download" href="assets/michelle-salcedo-resume.pdf" download="Michelle Salcedo - Resume.pdf">Download</a>
+        </div>
+        <div class="sf-resume-pages">
+          <img class="sf-resume-page" src="assets/resume-preview.png" alt="Michelle Salcedo resume, page 1">
+          <img class="sf-resume-page" src="assets/resume-preview-2.png" alt="Michelle Salcedo resume, page 2" loading="lazy">
+          <a class="sf-resume-open" href="assets/michelle-salcedo-resume.pdf" target="_blank" rel="noopener">Open full PDF</a>
+        </div>
       </div></div>`;
     const sfResults = safariScreen.querySelector('#sfResults');
+    const sfPortfolioHome = safariScreen.querySelector('#sfPortfolioHome');
+    const sfResumeView = safariScreen.querySelector('#sfResumeView');
+    const sfUrlBar = safariScreen.querySelector('.safari-url-bar');
+    const sfHeaderTitle = safariScreen.querySelector('#sfHeaderTitle');
+    const resumeResult = document.createElement('button');
+    resumeResult.type = 'button';
+    resumeResult.className = 'sf-res sf-resume-result';
+    resumeResult.innerHTML = `<span class="sf-resume-label">PDF</span><span class="sf-title">Michelle Salcedo - Resume</span><span class="sf-url">myportfolio.local/resume.pdf</span><span class="sf-snippet">Preview both pages, open the full PDF, or download a copy.</span>`;
+    sfResults.appendChild(resumeResult);
     cribSites.forEach(site => {
       const res = document.createElement('div'); res.className = 'sf-res';
       res.innerHTML = `<div class="sf-title">${site.title}</div><div class="sf-url">${site.displayUrl}</div><div class="sf-snippet">${site.snippet}</div>`;
       res.addEventListener('click', () => { iPhoneSounds.tap(); window.open(site.url, '_blank', 'noopener'); });
       sfResults.appendChild(res);
     });
+    function sfShowPortfolio() {
+      sfPortfolioHome.classList.remove('is-hidden');
+      sfResumeView.classList.remove('active');
+      sfResumeView.setAttribute('aria-hidden', 'true');
+      sfUrlBar.textContent = 'michisearch.com';
+      sfHeaderTitle.textContent = 'my portfolio';
+    }
+    function sfShowResume() {
+      iPhoneSounds.tap();
+      sfPortfolioHome.classList.add('is-hidden');
+      sfResumeView.classList.add('active');
+      sfResumeView.setAttribute('aria-hidden', 'false');
+      sfResumeView.querySelector('.sf-resume-pages').scrollTop = 0;
+      sfUrlBar.textContent = 'myportfolio.local/resume.pdf';
+      sfHeaderTitle.textContent = 'resume';
+      document.dispatchEvent(new CustomEvent('portfolioResumeOpened'));
+    }
+    resumeResult.addEventListener('click', sfShowResume);
+    safariScreen.querySelector('#sfResumeBack').addEventListener('click', () => { iPhoneSounds.tap(); sfShowPortfolio(); });
+    safariScreen.querySelectorAll('.sf-resume-download, .sf-resume-open').forEach(link => {
+      link.addEventListener('click', () => { iPhoneSounds.tap(); });
+    });
+    safariScreen._resetSafari = sfShowPortfolio;
     appContainer.appendChild(safariScreen); apps.safari=safariScreen;
 
     // --- MAIL ---
@@ -12300,6 +12361,7 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
     if (currentApp === 'youtube' && screen._ytCleanup) { screen._ytCleanup(); }
     if (currentApp === 'voicememo' && screen._cleanupVm) { screen._cleanupVm(); }
     if (currentApp === 'pages' && screen._pgReset) { screen._pgReset(); }
+    if (currentApp === 'safari' && screen._resetSafari) { screen._resetSafari(); }
     if (currentApp === 'newstand' && screen._nsReset) { screen._nsReset(); }
     if (currentApp === 'appstore' && screen._asReset) { screen._asReset(); }
     if (currentApp === 'cards' && screen._cardsReset) { screen._cardsReset(); }
@@ -12628,7 +12690,7 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
     const qText = bar.querySelector('#questText');
     const qDots = bar.querySelector('#questDots');
     let qTimer = null, introStep = 0, introDone = false;
-    let guideStage = 0; // 0 = open sarifa, 1 = open pages & grab the resume, 2 = free roam
+    let guideStage = 0; // 0 = open my portfolio, 1 = open the resume, 2 = free roam
     let guideRestoreTimer = null;
     const INTRO = [
       ['MAIN QUEST', 'you found my mangophone! i\'m michelle — web designer, creative director, and former owner of this phone.  👆 tap this bar to continue'],
@@ -12636,9 +12698,9 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
       ['SIDE QUEST', 'every app has a story and i\'ll narrate as you explore. think of me as your tour guide. tip your tour guide.']
     ];
     const GUIDE = [
-      ['MAIN QUEST', 'first stop: open sarifa (bottom dock, the little compass) — my websites portfolio lives in there. go on, i\'ll wait.'],
-      ['MAIN QUEST', 'great taste. next: open pages and download my resume — it pairs beautifully with a job offer. 📄'],
-      ['SIDE QUEST', 'tap "resume", hit yes, and the PDF is yours. the rest of the phone is now legally snoopable. enjoy!']
+      ['MAIN QUEST', 'first stop: open my portfolio in the bottom dock. my websites and resume live in there. go on, i\'ll wait.'],
+      ['MAIN QUEST', 'great taste. now tap the resume result to preview both pages and download the PDF.'],
+      ['SIDE QUEST', 'resume unlocked. open the full PDF or download a copy; the rest of the phone is now legally snoopable. enjoy!']
     ];
     const APP_QUESTS = {
       messages:  ['MESSAGES', 'my texts — mom checking if i ate, dad discovering emojis, emma the cat demanding her third dinner. feel free to answer for me, they\'ve stopped listening.'],
@@ -12662,7 +12724,7 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
       garageband:['GARAGEBAND', 'garageband — where my unfinished hits live. one day the album. one day.'],
       airport:   ['AIRPORT', 'airport — boarding passes and travel plans. maracay to everywhere.'],
       phone:     ['PHONE', 'the phone app — dial someone. call your mom. this is a sign.'],
-      safari:    ['SARIFA', 'sarifa — welcome to my websites portfolio. every link is real client work. click responsibly.'],
+      safari:    ['MY PORTFOLIO', 'welcome to my portfolio. every link is real client work, and the full resume is ready to preview or download.'],
       mail:      ['MAIL', 'mail — the important one is from me. the button inside actually works. try it. i dare you. (please.)'],
       settings:  ['SETTINGS', 'settings — toggles that actually work. try the wallpaper picker, i made extras just for you.']
     };
@@ -12697,7 +12759,7 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
         introStep++;
         if (introStep >= INTRO.length) {
           introDone = true;
-          qShow(GUIDE[0][0], GUIDE[0][1], true); // guided tour: sarifa first
+          qShow(GUIDE[0][0], GUIDE[0][1], true); // guided tour: my portfolio first
         }
         else qShow(INTRO[introStep][0], INTRO[introStep][1], true);
       } else {
@@ -12716,7 +12778,7 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
         if (q0) setTimeout(() => qShow(q0[0], q0[1], false), 650);
         return;
       }
-      // Guided tour: sarifa portfolio first, then the resume in pages
+      // Guided tour: my portfolio first, then its resume result.
       if (guideStage === 0) {
         if (appId === 'safari') {
           guideStage = 1;
@@ -12728,20 +12790,20 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
         return;
       }
       if (guideStage === 1) {
-        if (appId === 'pages') {
-          guideStage = 2;
-          if (guideRestoreTimer) { clearTimeout(guideRestoreTimer); guideRestoreTimer = null; }
-          setTimeout(() => qShow(GUIDE[2][0], GUIDE[2][1], false), 650);
-        } else {
-          const q = APP_QUESTS[appId];
-          if (q) setTimeout(() => { qShow(q[0], q[1], false); scheduleGuideRestore(); }, 650);
-        }
+        const q = APP_QUESTS[appId];
+        if (q) setTimeout(() => { qShow(q[0], q[1], false); scheduleGuideRestore(); }, 650);
         return;
       }
       const q = APP_QUESTS[appId];
       if (!q) return;
       setTimeout(() => qShow(q[0], q[1], false), 650);
     };
+    document.addEventListener('portfolioResumeOpened', () => {
+      if (!introDone || guideStage !== 1) return;
+      guideStage = 2;
+      if (guideRestoreTimer) { clearTimeout(guideRestoreTimer); guideRestoreTimer = null; }
+      setTimeout(() => qShow(GUIDE[2][0], GUIDE[2][1], false), 300);
+    });
     window.cribQuestNotify = function(title, text) {
       qShow(title, text, false);
     };
