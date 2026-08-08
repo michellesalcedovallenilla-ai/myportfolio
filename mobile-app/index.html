@@ -4104,7 +4104,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let zoneBottom = isMobile ? Math.max(120, Math.round(vh * 0.22)) : (isTablet ? 46 : 10);
     if (isMobile || isTablet) {
       const qb = document.getElementById('questBar');
-      if (qb && qb.offsetHeight) zoneBottom = qb.offsetHeight + (isMobile ? 16 : 34);
+      if (qb && qb.offsetHeight) zoneBottom = qb.offsetHeight + (isMobile ? 12 : 34);
     }
     const topTarget = (isMobile || isTablet) ? Math.max(zoneTop + 8, Math.round(vh * (isMobile ? 0.09 : 0.11))) : zoneTop;
     const scaleUI = (isMobile || isTablet) ? (vh - topTarget - zoneBottom) / 587 : (vh - 2 * zoneBottom) / 587;
@@ -12821,7 +12821,7 @@ window.siteUnlocked = true;
       var zoneBottom = isMobile ? Math.max(120, Math.round(vh * 0.22)) : (isTablet ? 46 : 10);
       if (isMobile || isTablet) {
         var qb = document.getElementById('questBar');
-        if (qb && qb.offsetHeight) zoneBottom = qb.offsetHeight + (isMobile ? 16 : 34);
+        if (qb && qb.offsetHeight) zoneBottom = qb.offsetHeight + (isMobile ? 12 : 34);
       }
       var topTarget = (isMobile || isTablet) ? Math.max(zoneTop + 8, Math.round(vh * (isMobile ? 0.09 : 0.11))) : zoneTop;
       var scaleUI = (isMobile || isTablet) ? (vh - topTarget - zoneBottom) / 587 : (vh - 2 * zoneBottom) / 587;
