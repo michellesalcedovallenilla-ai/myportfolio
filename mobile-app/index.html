@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://www.youtube.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://img.youtube.com https://i.ytimg.com; media-src 'self' data: blob:; connect-src 'self' https://www.youtube.com; frame-src https://www.youtube.com; object-src 'none'; base-uri 'self'; form-action 'none';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://www.youtube.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://img.youtube.com https://i.ytimg.com; media-src 'self' data: blob:; connect-src 'self' https://www.youtube.com; frame-src https://www.youtube.com; object-src 'none'; base-uri 'self'; form-action 'none';">
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Permissions-Policy" content="camera=(self), microphone=(), geolocation=(), payment=(), accelerometer=(self https://www.youtube.com), gyroscope=(self https://www.youtube.com), picture-in-picture=(self https://www.youtube.com)">
@@ -117,10 +117,14 @@
   @media (max-height: 700px) { #themeToggle img { width: 46px; } }
 
   /* Quest tutorial bar — videogame-style walkthrough (mobile + tablet only) */
-  #questBar { display: none; position: fixed; left: 50%; bottom: max(10px, env(safe-area-inset-bottom)); transform: translateX(-50%) translateY(160%); width: calc(100% - 20px); max-width: 520px; z-index: 96; align-items: center; gap: 10px; padding: 10px 12px; background: linear-gradient(180deg, #232a3a 0%, #141a28 100%); border: 2px solid #3a4664; border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08); transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.15); cursor: pointer; -webkit-tap-highlight-color: transparent; }
-  #questBar.on { transform: translateX(-50%) translateY(0); }
+  #questBar { display: none; position: fixed; left: 50%; bottom: max(10px, env(safe-area-inset-bottom)); transform: translateX(-50%); width: calc(100% - 20px); max-width: 520px; height: 132px; z-index: 96; align-items: center; gap: 10px; padding: 10px 12px; background: linear-gradient(180deg, #232a3a 0%, #141a28 100%); border: 2px solid #3a4664; border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  #questBar.on { transform: translateX(-50%); }
   @media (max-width: 1024px) { #questBar { display: flex; } }
+  @media (min-width: 601px) and (max-width: 1024px) { #questBar { height: 108px; max-width: 640px; } }
+  @media (max-height: 700px) and (max-width: 600px) { #questBar { height: 116px; } }
   #questBar img { width: 46px; height: 46px; border-radius: 8px; border: 2px solid #57a04a; object-fit: cover; flex-shrink: 0; background: #2a4a24; }
+  #questTextWrap { min-width: 0; max-height: 100%; overflow-y: auto; scrollbar-width: none; }
+  #questTextWrap::-webkit-scrollbar { display: none; }
   #questKicker { font-size: 10px; letter-spacing: 2px; color: #7d89a8; }
   #questTitle { font-size: 14px; color: #ffd94a; letter-spacing: 1px; margin: 1px 0 2px; text-shadow: 0 1px 0 rgba(0,0,0,0.5); }
   #questText { font-size: 15px; color: #e8ecf4; line-height: 1.2; }
@@ -197,11 +201,22 @@
     -webkit-tap-highlight-color:transparent;
   }
   .boot-mango-button:focus-visible { outline:3px solid #9fc2ff; outline-offset:3px; }
-  .boot-mango-button .boot-mango {
-    position:absolute; left:35px; top:13px; margin:0; transform-origin:0 0;
+  .boot-mini-phone {
+    position:absolute; left:50%; top:0; width:94px; height:122px; transform:translateX(-50%);
     animation:bootMangoReady 1.15s steps(4,end) infinite; pointer-events:none;
   }
-  .boot-mango-button.lucky .boot-mango { animation:bootMangoLucky .38s steps(3,end); }
+  .boot-mini-phone-screen {
+    position:absolute; z-index:1; left:26%; top:27%; width:48%; height:56%; overflow:hidden;
+    background:#17233c; border:2px solid #080d19;
+  }
+  .boot-mini-phone-screen::before {
+    content:''; position:absolute; inset:5px; background:
+      linear-gradient(90deg,#ffd34d 0 27%,transparent 27% 36%,#58c96a 36% 64%,transparent 64% 73%,#9fc2ff 73%),
+      linear-gradient(#2a3b5b 0 17%,transparent 17% 31%,#2a3b5b 31% 48%,transparent 48% 62%,#2a3b5b 62% 79%,transparent 79%);
+    animation:bootMiniPixels 1s steps(4,end) infinite;
+  }
+  .boot-mini-phone img { position:absolute; z-index:2; inset:0; width:100%; height:100%; object-fit:contain; image-rendering:pixelated; }
+  .boot-mango-button.lucky .boot-mini-phone { animation:bootMangoLucky .38s steps(3,end); }
   .boot-tap-label {
     position:absolute; left:50%; bottom:4px; transform:translateX(-50%); width:max-content;
     padding:5px 9px; color:#162039; background:#ffd34d; border:2px solid #080d19;
@@ -239,18 +254,19 @@
   .boot-luck { margin-top:12px; color:#93a4ca; font-size:13px; }
   .boot-spark { position:absolute; z-index:4; left:50%; top:48%; width:5px; height:5px; background:#fff39a; pointer-events:none; animation:bootSpark .58s steps(5,end) forwards; }
   @keyframes bootMangoReady {
-    0%,100% { transform:scale(3) translateY(0); }
-    50% { transform:scale(3) translateY(-2px); }
+    0%,100% { transform:translateX(-50%) translateY(0); }
+    50% { transform:translateX(-50%) translateY(-5px); }
   }
   @keyframes bootMangoLucky {
-    33% { transform:scale(3) translateY(-8px) rotate(-4deg); }
-    66% { transform:scale(3) translateY(-4px) rotate(5deg); }
+    33% { transform:translateX(-50%) translateY(-10px) rotate(-4deg); }
+    66% { transform:translateX(-50%) translateY(-5px) rotate(5deg); }
   }
+  @keyframes bootMiniPixels { 50% { transform:translateY(4px); filter:hue-rotate(28deg); } }
   @keyframes bootSpark { to { opacity:0; transform:translate(var(--spark-x),var(--spark-y)) scale(0); } }
   @media (max-height:620px) {
     .boot-window { padding-bottom:12px; transform:scale(.9); }
     .boot-mango-button { height:132px; }
-    .boot-mango-button .boot-mango { top:6px; }
+    .boot-mini-phone { top:-5px; transform:translateX(-50%) scale(.9); }
     .boot-title { font-size:24px; }
     .boot-subtitle { margin-bottom:6px; }
     .boot-language { margin-bottom:8px; }
@@ -3624,6 +3640,7 @@
 <link rel="preload" as="image" href="assets/bg-day.png">
 <script>(function(){try{var t=localStorage.getItem('crib_theme');if(t!=='light'&&t!=='night'){var h=new Date().getHours();t=(h>=6&&h<19)?'light':'night';}if(t==='light')document.documentElement.classList.add('theme-light');}catch(e){}})();</script>
 <script>(function(){var l='en';try{l=localStorage.getItem('pr_lang')==='es'?'es':'en';}catch(e){}window.cribLanguage=l;document.documentElement.lang=l;})();</script>
+<script src="../i18n.js"></script>
 </head>
 <body>
 
@@ -3637,7 +3654,7 @@
     <div class="boot-window-bar"><span>MANGOPHONE ASSEMBLY</span><span class="boot-window-led" aria-hidden="true"></span></div>
     <div class="boot-console">
       <button class="boot-mango-button" id="bootMangoButton" type="button" aria-label="Tap the mango for luck">
-        <span class="boot-mango" aria-hidden="true"></span>
+        <span class="boot-mini-phone" aria-hidden="true"><span class="boot-mini-phone-screen"></span><img src="assets/mango-front.webp" alt=""></span>
         <span class="boot-tap-label">TAP MANGO FOR LUCK</span>
       </button>
       <div class="boot-title" id="bootTitle">MY DIGITAL CRIB</div>
@@ -4240,11 +4257,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const tt = document.getElementById('themeToggle');
       if (tt) { const r = tt.getBoundingClientRect(); if (r.bottom > 0) zoneTop = Math.round(r.bottom) + 6; }
     }
-    let zoneBottom = isMobile ? Math.max(120, Math.round(vh * 0.22)) : (isTablet ? 46 : 10);
-    if (isMobile || isTablet) {
-      const qb = document.getElementById('questBar');
-      if (qb && qb.offsetHeight) zoneBottom = qb.offsetHeight + (isMobile ? 12 : 34);
-    }
+    // Reserve a fixed guide area so translated or changing dialog never resizes the phone.
+    let zoneBottom = isMobile ? (vh <= 700 ? 138 : 154) : (isTablet ? 132 : 10);
     const topTarget = (isMobile || isTablet) ? Math.max(zoneTop + 8, Math.round(vh * (isMobile ? 0.09 : 0.11))) : zoneTop;
     const scaleUI = (isMobile || isTablet) ? (vh - topTarget - zoneBottom) / 587 : (vh - 2 * zoneBottom) / 587;
     const scale = Math.min(scaleW, scaleH, maxScale, scaleUI);
@@ -12469,6 +12483,10 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
     if (appId === 'instagram' && screen._initIg) { screen._initIg(); }
     if (appId === 'settings' && screen._initSettings) { screen._initSettings(); }
     if (window.cribQuestApp) { try { window.cribQuestApp(appId); } catch(e) {} }
+    if (window.CribI18n) {
+      setTimeout(() => window.CribI18n.translateTree(screen), 0);
+      setTimeout(() => window.CribI18n.translateTree(screen), 450);
+    }
   }
 
   function closeApp() {
@@ -12826,6 +12844,18 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
           ['MAIN QUEST', 'great taste. now tap the resume result to preview both pages and download the PDF.'],
           ['SIDE QUEST', 'resume unlocked. open the full PDF or download a copy; the rest of the phone is now legally snoopable. enjoy!']
         ],
+        advice: [
+          ['PIXEL TIP', 'the round button always takes you home. tiny button, enormous responsibility.'],
+          ['PIXEL TIP', 'drag the mango sideways whenever you want to flip it. yes, the back has secrets too.'],
+          ['MICHELLE SAYS', 'try a different wallpaper in settings. interior design counts even when the room is 320 pixels wide.'],
+          ['MICHELLE SAYS', 'the apps reward curiosity. tap things that look suspiciously tappable.'],
+          ['CRIB TIP', 'my portfolio in the dock has the downloadable resume and all the real client work.'],
+          ['CRIB TIP', 'the camera and photobooth have different filters. serious research requires testing all of them.'],
+          ['PIXEL TIP', 'switch day and night mode from the cartridges in the top corners.'],
+          ['MICHELLE SAYS', 'messages, mail, and notes hide some of the best tiny details in the phone.'],
+          ['CRIB TIP', 'music keeps playing while you explore, exactly as a 2010 phone should.'],
+          ['PIXEL TIP', 'open an app again and i\'ll keep dropping different advice here. i live in this box now.']
+        ],
         apps: {
           messages:['MESSAGES', 'my texts — mom checking if i ate, dad discovering emojis, emma the cat demanding her third dinner. feel free to answer for me, they\'ve stopped listening.'],
           camera:['CAMERA', 'the camera — take a pic, try the filters. everything looks better in pixels, including me.'],
@@ -12864,6 +12894,18 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
           ['MISIÓN PRINCIPAL', 'buen gusto. ahora toca el resultado del resume para ver las dos páginas y descargar el PDF.'],
           ['MISIÓN SECUNDARIA', 'resume desbloqueado. abre el PDF completo o descarga una copia; el resto del teléfono ya se puede curiosear legalmente. ¡disfruta!']
         ],
+        advice: [
+          ['CONSEJO PIXEL', 'el botón redondo siempre te lleva al inicio. botón pequeño, responsabilidad enorme.'],
+          ['CONSEJO PIXEL', 'arrastra el mango hacia un lado cuando quieras voltearlo. sí, la parte de atrás también guarda secretos.'],
+          ['DICE MICHELLE', 'prueba otro fondo en ajustes. el diseño interior cuenta aunque el cuarto mida 320 píxeles.'],
+          ['DICE MICHELLE', 'las apps premian la curiosidad. toca todo lo que parezca sospechosamente tocable.'],
+          ['CONSEJO DEL CRIB', 'mi portfolio en el dock tiene el currículum descargable y todos los proyectos reales.'],
+          ['CONSEJO DEL CRIB', 'la cámara y el photobooth tienen filtros distintos. una investigación seria exige probarlos todos.'],
+          ['CONSEJO PIXEL', 'cambia entre día y noche con los cartuchos de las esquinas superiores.'],
+          ['DICE MICHELLE', 'mensajes, mail y notas esconden algunos de los mejores detalles del teléfono.'],
+          ['CONSEJO DEL CRIB', 'la música sigue sonando mientras exploras, exactamente como debe hacerlo un teléfono de 2010.'],
+          ['CONSEJO PIXEL', 'abre una app otra vez y seguiré dejando consejos distintos aquí. ahora vivo en esta caja.']
+        ],
         apps: {
           messages:['MENSAJES', 'mis mensajes — mamá preguntando si comí, papá descubriendo los emojis y emma exigiendo su tercera cena. puedes responder por mí.'],
           camera:['CÁMARA', 'la cámara — toma una foto y prueba los filtros. todo se ve mejor en píxeles, incluyéndome.'],
@@ -12896,6 +12938,7 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
     let INTRO = QUEST_COPY[questLanguage].intro;
     let GUIDE = QUEST_COPY[questLanguage].guide;
     let APP_QUESTS = QUEST_COPY[questLanguage].apps;
+    let RANDOM_ADVICE = QUEST_COPY[questLanguage].advice;
     function qShow(title, text, sticky) {
       qTitle.textContent = title;
       qText.textContent = text;
@@ -12905,12 +12948,10 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
         qDots.innerHTML = (sticky && !introDone) ? INTRO.map((_, i) => '<span class="' + (i === introStep ? 'on' : '') + '">●</span>').join('') : '';
       }
       if (qTimer) { clearTimeout(qTimer); qTimer = null; }
-      if (!sticky) qTimer = setTimeout(qHide, 9000);
       requestAnimationFrame(updatePhoneScale);
       try { iPhoneSounds.slideTick(); } catch(e) {}
     }
     function qHide() {
-      bar.classList.remove('on');
       bar.classList.remove('pulse');
       if (qTimer) { clearTimeout(qTimer); qTimer = null; }
     }
@@ -12919,6 +12960,7 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
       INTRO = QUEST_COPY[questLanguage].intro;
       GUIDE = QUEST_COPY[questLanguage].guide;
       APP_QUESTS = QUEST_COPY[questLanguage].apps;
+      RANDOM_ADVICE = QUEST_COPY[questLanguage].advice;
       if (!bar.classList.contains('on')) return;
       if (!introDone) {
         qShow(INTRO[Math.min(introStep, INTRO.length - 1)][0], INTRO[Math.min(introStep, INTRO.length - 1)][1], true);
@@ -12946,40 +12988,39 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
         }
         else qShow(INTRO[introStep][0], INTRO[introStep][1], true);
       } else {
-        qHide();
-        scheduleGuideRestore();
+        const advice = RANDOM_ADVICE[Math.floor(Math.random() * RANDOM_ADVICE.length)];
+        qShow(advice[0], advice[1], false);
       }
     });
     document.addEventListener('coverUnlocked', () => {
       if (introDone) return;
-      setTimeout(() => { if (!introDone) qShow(INTRO[0][0], INTRO[0][1], true); }, 900);
+      setTimeout(() => { if (!introDone) qShow(INTRO[0][0], INTRO[0][1], true); }, 180);
     });
+    const appOpenCounts = Object.create(null);
+    function appMessage(appId) {
+      appOpenCounts[appId] = (appOpenCounts[appId] || 0) + 1;
+      if (appOpenCounts[appId] === 1 && APP_QUESTS[appId]) return APP_QUESTS[appId];
+      return RANDOM_ADVICE[Math.floor(Math.random() * RANDOM_ADVICE.length)];
+    }
     window.cribQuestApp = function(appId) {
-      // App explanations fire on every open — tutorial completion not required
-      if (!introDone) {
-        const q0 = APP_QUESTS[appId];
-        if (q0) setTimeout(() => qShow(q0[0], q0[1], false), 650);
-        return;
-      }
+      const message = appMessage(appId);
+      if (!message) return;
+      // Every app explains itself once. Later openings rotate persistent advice.
       // Guided tour: my portfolio first, then its resume result.
       if (guideStage === 0) {
         if (appId === 'safari') {
           guideStage = 1;
-          setTimeout(() => qShow(GUIDE[1][0], GUIDE[1][1], true), 650);
+          setTimeout(() => { qShow(message[0], message[1], false); scheduleGuideRestore(); }, 350);
         } else {
-          const q = APP_QUESTS[appId];
-          if (q) setTimeout(() => { qShow(q[0], q[1], false); scheduleGuideRestore(); }, 650);
+          setTimeout(() => { qShow(message[0], message[1], false); scheduleGuideRestore(); }, 350);
         }
         return;
       }
       if (guideStage === 1) {
-        const q = APP_QUESTS[appId];
-        if (q) setTimeout(() => { qShow(q[0], q[1], false); scheduleGuideRestore(); }, 650);
+        setTimeout(() => { qShow(message[0], message[1], false); scheduleGuideRestore(); }, 350);
         return;
       }
-      const q = APP_QUESTS[appId];
-      if (!q) return;
-      setTimeout(() => qShow(q[0], q[1], false), 650);
+      setTimeout(() => qShow(message[0], message[1], false), 350);
     };
     document.addEventListener('portfolioResumeOpened', () => {
       if (!introDone || guideStage !== 1) return;
@@ -13064,11 +13105,8 @@ window.siteUnlocked = true;
         var tt = document.getElementById('themeToggle');
         if (tt) { var tr = tt.getBoundingClientRect(); if (tr.bottom > 0) zoneTop = Math.round(tr.bottom) + 6; }
       }
-      var zoneBottom = isMobile ? Math.max(120, Math.round(vh * 0.22)) : (isTablet ? 46 : 10);
-      if (isMobile || isTablet) {
-        var qb = document.getElementById('questBar');
-        if (qb && qb.offsetHeight) zoneBottom = qb.offsetHeight + (isMobile ? 12 : 34);
-      }
+      // Keep this value independent from quest text height to prevent visual jumps.
+      var zoneBottom = isMobile ? (vh <= 700 ? 138 : 154) : (isTablet ? 132 : 10);
       var topTarget = (isMobile || isTablet) ? Math.max(zoneTop + 8, Math.round(vh * (isMobile ? 0.09 : 0.11))) : zoneTop;
       var scaleUI = (isMobile || isTablet) ? (vh - topTarget - zoneBottom) / 587 : (vh - 2 * zoneBottom) / 587;
       var scale = Math.min((vw * wFactor) / 452, (vh * hFactor) / 617, maxScale, scaleUI);

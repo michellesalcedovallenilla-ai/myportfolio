@@ -14,6 +14,7 @@
     document.documentElement.classList.add('is-mobile');
 }catch(e){}})();
 </script>
+<script src="i18n.js"></script>
 <style>
   :root {
     --c-sprite: #00ff9d;
@@ -57,30 +58,53 @@
     letter-spacing:0; text-transform:uppercase;
   }
   .site-boot-led { width:10px; height:10px; flex:0 0 auto; background:#57cf66; box-shadow:0 0 0 2px #0a111f,0 0 10px #57cf66; }
-  .site-boot-device {
-    position:relative; width:172px; height:118px; margin:0 auto 20px;
-    background:#e6c27a; border:5px solid #10121b; border-radius:3px;
-    box-shadow:inset 0 0 0 4px #7e5f38,7px 7px 0 #090d18;
+  .site-boot-world { position:relative; width:252px; height:142px; margin:0 auto 16px; image-rendering:pixelated; }
+  .site-boot-room {
+    position:absolute; inset:0; overflow:hidden; background:#17131b; border:4px solid #090d18;
+    border-radius:3px; box-shadow:0 0 0 3px #7889ad,7px 7px 0 #080b14;
   }
-  .site-boot-device::before {
-    content:''; position:absolute; inset:13px 18px 25px; background:#15243d;
-    border:4px solid #080b12; box-shadow:inset 0 0 0 3px #355074;
+  .site-boot-room-bg { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; image-rendering:pixelated; }
+  .site-boot-room-sprite { position:absolute; z-index:2; height:auto; image-rendering:pixelated; pointer-events:none; }
+  .site-boot-room-monitor { left:31.25%; top:7.4%; width:41.67%; }
+  .site-boot-room-cat { left:4.7%; top:50%; width:10.94%; transform-origin:50% 100%; }
+  .site-boot-room-lamp { left:81.77%; top:26.39%; width:5.47%; transform-origin:50% 100%; }
+  .site-boot-room::after {
+    content:''; position:absolute; z-index:1; left:62%; top:4%; width:43%; height:65%; opacity:0;
+    background:radial-gradient(circle at 62% 42%,rgba(255,211,111,.72),rgba(255,170,66,.25) 42%,transparent 72%);
+    transition:opacity .18s steps(3,end); pointer-events:none;
   }
-  .site-boot-device::after {
-    content:''; position:absolute; left:50%; bottom:-20px; width:68px; height:17px;
-    transform:translateX(-50%); background:#9a7546; border:4px solid #10121b;
-    box-shadow:0 7px 0 #10121b;
+  .site-boot-world.lamp-on .site-boot-room::after { opacity:1; }
+  .site-boot-world.lamp-on .site-boot-room-lamp { filter:brightness(1.45) drop-shadow(0 0 4px #ffd36b); }
+  .site-boot-world.cat-pet .site-boot-room-cat { animation:siteBootCatPet .48s steps(4,end); }
+  .site-boot-object {
+    position:absolute; z-index:5; padding:0; border:0; background:transparent; cursor:pointer;
   }
-  .site-boot-sprite {
-    position:absolute; z-index:2; left:50%; top:50%; width:58px; height:58px;
-    transform:translate(-50%,-55%); object-fit:cover; image-rendering:pixelated;
-    border:3px solid #57cf66; border-radius:2px; background:#17321c;
+  .site-boot-object-lamp { left:76%; top:18%; width:18%; height:43%; }
+  .site-boot-object-cat { left:1%; top:44%; width:20%; height:35%; }
+  .site-boot-object:focus-visible { outline:3px solid #ffd34d; outline-offset:1px; }
+  .site-boot-phone { display:none; position:absolute; inset:0; }
+  .site-boot-phone-screen {
+    position:absolute; z-index:1; left:26%; top:27%; width:48%; height:56%; overflow:hidden;
+    background:#17233c; border:2px solid #080b14;
   }
-  html.is-mobile .site-boot-device { width:124px; height:160px; border-radius:22px 22px 16px 16px; background:#ffac1f; }
-  html.is-mobile .site-boot-device::before { inset:19px 13px 25px; }
-  html.is-mobile .site-boot-device::after { width:18px; height:18px; bottom:4px; border-radius:50%; background:#1b2333; box-shadow:none; }
-  html.is-mobile .site-boot-sprite { width:64px; height:64px; transform:translate(-50%,-63%); }
-  .site-boot-device.boost { animation:siteBootBoost .34s steps(3,end); }
+  .site-boot-phone-screen::before {
+    content:''; position:absolute; inset:8px; background:
+      linear-gradient(90deg,#ffd34d 0 28%,transparent 28% 36%,#58c96a 36% 64%,transparent 64% 72%,#9fc2ff 72%),
+      linear-gradient(#263653 0 17%,transparent 17% 30%,#263653 30% 47%,transparent 47% 60%,#263653 60% 77%,transparent 77%);
+    animation:siteBootPhonePixels 1.1s steps(4,end) infinite;
+  }
+  .site-boot-phone-shell { position:absolute; z-index:2; inset:0; width:100%; height:100%; object-fit:contain; image-rendering:pixelated; pointer-events:none; }
+  .site-boot-heart-pixel {
+    position:absolute; z-index:7; left:12%; top:46%; width:7px; height:7px; opacity:0;
+    background:#ff668c; box-shadow:7px 0 #ff668c,14px 7px #ff668c,7px 14px #ff668c,0 7px #ff668c;
+    pointer-events:none;
+  }
+  .site-boot-world.cat-pet .site-boot-heart-pixel { animation:siteBootHeart .72s steps(5,end); }
+  html.is-mobile .site-boot-world { width:130px; height:168px; margin-bottom:12px; }
+  html.is-mobile .site-boot-room { display:none; }
+  html.is-mobile .site-boot-object, html.is-mobile .site-boot-heart-pixel { display:none; }
+  html.is-mobile .site-boot-phone { display:block; }
+  .site-boot-world.boost { animation:siteBootBoost .34s steps(3,end); }
   .site-boot-title { margin:0; color:#fff8d5; font-size:clamp(24px,7vw,34px); line-height:1; letter-spacing:0; text-shadow:3px 3px 0 #0a0e1b; }
   .site-boot-mode { margin:7px 0 12px; color:#ffd34d; font-size:13px; font-weight:700; letter-spacing:0; }
   .site-boot-language { margin:0 0 16px; }
@@ -120,10 +144,13 @@
   @keyframes siteBootSky { 50% { opacity:.9; transform:translateY(4px); } }
   @keyframes siteBootBoost { 33% { transform:translateY(-7px) rotate(-2deg); } 66% { transform:translateY(-3px) rotate(2deg); } }
   @keyframes siteBootSpark { to { opacity:0; transform:translate(var(--spark-x), var(--spark-y)) scale(0); } }
+  @keyframes siteBootCatPet { 40% { transform:scaleY(.82) translateY(3px); } 70% { transform:scaleY(1.08); } }
+  @keyframes siteBootHeart { 15% { opacity:1; } 100% { opacity:0; transform:translate(22px,-38px) scale(.5); } }
+  @keyframes siteBootPhonePixels { 50% { transform:translateY(5px); filter:hue-rotate(28deg); } }
   @media (max-height:620px) {
     .site-boot-panel { padding:13px 17px 15px; }
     .site-boot-top { margin-bottom:8px; }
-    .site-boot-device { transform:scale(.78); margin:-10px auto -1px; }
+    .site-boot-world { transform:scale(.78); margin:-10px auto -1px; }
     .site-boot-mode { margin-bottom:7px; }
     .site-boot-language { margin-bottom:10px; }
     .site-boot-question { margin-bottom:5px; }
@@ -131,7 +158,7 @@
     .site-boot-actions { margin-top:12px; }
   }
   @media (prefers-reduced-motion:reduce) {
-    #siteBoot::before,.site-boot-device.boost,.site-boot-spark { animation:none !important; }
+    #siteBoot::before,.site-boot-world.boost,.site-boot-spark { animation:none !important; }
     #siteBoot,.site-boot-fill { transition-duration:.01ms; }
   }
   .scene {
@@ -434,8 +461,20 @@
   <div id="siteBoot" role="dialog" aria-modal="true" aria-labelledby="siteBootTitle" aria-describedby="siteBootStatus">
     <section class="site-boot-panel">
       <div class="site-boot-top"><span>MICHELLE SALCEDO PORTFOLIO</span><span class="site-boot-led" aria-hidden="true"></span></div>
-      <div class="site-boot-device" id="siteBootDevice" aria-hidden="true">
-        <img class="site-boot-sprite" src="assets/favicon.png" alt="">
+      <div class="site-boot-world" id="siteBootDevice">
+        <div class="site-boot-room" aria-hidden="true">
+          <img class="site-boot-room-bg" data-boot-src="assets/bg.png?v=2" alt="">
+          <img class="site-boot-room-sprite site-boot-room-monitor" data-boot-src="assets/monitor.png" alt="">
+          <img class="site-boot-room-sprite site-boot-room-cat" data-boot-src="assets/cat.png" alt="">
+          <img class="site-boot-room-sprite site-boot-room-lamp" data-boot-src="assets/lamp.png" alt="">
+        </div>
+        <button class="site-boot-object site-boot-object-lamp" type="button" data-boot-world-action="lamp" aria-label="Toggle the cozy lamp"></button>
+        <button class="site-boot-object site-boot-object-cat" type="button" data-boot-world-action="cat" aria-label="Pet the pixel cat"></button>
+        <span class="site-boot-heart-pixel" aria-hidden="true"></span>
+        <div class="site-boot-phone" aria-hidden="true">
+          <div class="site-boot-phone-screen"></div>
+          <img class="site-boot-phone-shell" data-boot-src="mobile-app/assets/mango-front.webp" alt="">
+        </div>
       </div>
       <div class="site-boot-title" id="siteBootTitle">MY DIGITAL CRIB</div>
       <div class="site-boot-mode" id="siteBootMode">BOOTING THE ROOM</div>
@@ -1126,6 +1165,11 @@
     if (mobileSub) mobileSub.textContent = mobileCopy[0];
     if (mobileNote) mobileNote.textContent = mobileCopy[1];
     if (step) render();
+    if (window.CribI18n) window.CribI18n.setLanguage(lang);
+    document.querySelectorAll('iframe').forEach(frame => {
+      try { if (frame.contentWindow) frame.contentWindow.postMessage({ type:'crib-language', language:lang }, '*'); }
+      catch (error) {}
+    });
     return lang;
   }
   window.cribSetLanguage = setSiteLanguage;
@@ -1725,6 +1769,8 @@
   };
 
   if (!boot) return;
+  const visualSelector = isMobile ? '.site-boot-phone [data-boot-src]' : '.site-boot-room [data-boot-src]';
+  document.querySelectorAll(visualSelector).forEach(image => { image.src = image.dataset.bootSrc; });
   function copy(key) { return COPY[selectedLanguage || 'en'][key]; }
   function refreshLanguageCopy() {
     mode.textContent = isMobile ? copy('modeMobile') : copy('modeDesktop');
@@ -1785,10 +1831,16 @@
   }
   languageButtons.forEach(button => button.addEventListener('click', () => selectLanguage(button.dataset.bootLang)));
 
-  charm.addEventListener('click', () => {
+  function playBootWorld(action) {
     luckCount += 1;
     luck.textContent = copy('luck') + ' ' + String(luckCount).padStart(2, '0');
     device.classList.remove('boost');
+    if (action === 'lamp') device.classList.toggle('lamp-on');
+    if (action === 'cat') {
+      device.classList.remove('cat-pet');
+      void device.offsetWidth;
+      device.classList.add('cat-pet');
+    }
     void device.offsetWidth;
     device.classList.add('boost');
     const paths = [['-72px','-48px'],['68px','-54px'],['-82px','28px'],['78px','32px']];
@@ -1801,10 +1853,14 @@
     spark.style.setProperty('--spark-y', path[1]);
     device.appendChild(spark);
     setTimeout(() => spark.remove(), 650);
+  }
+  charm.addEventListener('click', () => playBootWorld(isMobile ? 'phone' : 'cat'));
+  document.querySelectorAll('[data-boot-world-action]').forEach(button => {
+    button.addEventListener('click', () => playBootWorld(button.dataset.bootWorldAction));
   });
 
   async function waitForDesktop() {
-    const images = Array.from(document.querySelectorAll('#scene img, #siteBoot img'));
+    const images = Array.from(document.querySelectorAll('#scene img, #siteBoot img[src]'));
     let ready = 0;
     setProgress(12, copy('dust'));
     await Promise.all(images.map(image => waitForImage(image).then(() => {
