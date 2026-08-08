@@ -3048,7 +3048,7 @@
 
   /* Tablet portrait */
   @media (max-width: 1024px) {
-    :root { --phone-scale: 0.95; --phone-stretch: 1.18; --phone-y: -22px; --phone-origin: 50% 100%; }
+    :root { --phone-scale: 0.95; --phone-stretch: 1.10; --phone-y: -20px; --phone-origin: 50% 50%; }
   }
 
   /* Small tablet / large phone */
@@ -3058,7 +3058,7 @@
 
   /* Phones — taller mango so the screen is easier to read */
   @media (max-width: 600px) {
-    :root { --phone-stretch: 1.36; --phone-y: -58px; --phone-origin: 50% 100%; }
+    :root { --phone-stretch: 1.10; --phone-y: -34px; --phone-origin: 50% 50%; }
   }
 
   /* Mobile portrait */
@@ -3892,9 +3892,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const isMobile = vw <= 600;
     const isTablet = vw > 600 && vw <= 1024;
     // On mobile: leave room at sides for back btn, and below for flip hint
-    const wFactor = isMobile ? 1.18 : isTablet ? 1.03 : 0.95;
-    const hFactor = isMobile ? 1.20 : isTablet ? 1.06 : 1.06;
-    const maxScale = isMobile ? 1.32 : isTablet ? 1.44 : 1.68;
+    const wFactor = isMobile ? 1.26 : isTablet ? 1.05 : 0.95;
+    const hFactor = isMobile ? 1.24 : isTablet ? 1.08 : 1.06;
+    const maxScale = isMobile ? 1.28 : isTablet ? 1.40 : 1.68;
     const scaleW = (vw * wFactor) / 452;
     const scaleH = (vh * hFactor) / 617;
     // Mobile layout zone: measured from the real UI — starts just below the theme
@@ -3908,7 +3908,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let zoneBottom = isMobile ? Math.max(120, Math.round(vh * 0.22)) : (isTablet ? 46 : 10);
     if (isMobile || isTablet) {
       const qb = document.getElementById('questBar');
-      if (qb && qb.offsetHeight) zoneBottom = qb.offsetHeight + (isMobile ? 4 : 28);
+      if (qb && qb.offsetHeight) zoneBottom = qb.offsetHeight + (isMobile ? 14 : 34);
     }
     const scaleUI = (isMobile || isTablet) ? (vh - zoneTop - zoneBottom) / (587 * stretch) : (vh - 2 * zoneBottom) / 587;
     const scale = Math.min(scaleW, scaleH, maxScale, scaleUI);
@@ -12606,9 +12606,9 @@ window.siteUnlocked = true;
     try {
       var vw = window.innerWidth, vh = window.innerHeight;
       var isMobile = vw <= 600, isTablet = vw > 600 && vw <= 1024;
-      var wFactor = isMobile ? 1.18 : isTablet ? 1.03 : 0.95;
-      var hFactor = isMobile ? 1.20 : isTablet ? 1.06 : 1.06;
-      var maxScale = isMobile ? 1.32 : isTablet ? 1.44 : 1.68;
+      var wFactor = isMobile ? 1.26 : isTablet ? 1.05 : 0.95;
+      var hFactor = isMobile ? 1.24 : isTablet ? 1.08 : 1.06;
+      var maxScale = isMobile ? 1.28 : isTablet ? 1.40 : 1.68;
       // Mobile layout zone: measured from the real UI — below the theme
       // cartridges, above the quest bar, so the mango fills the screen.
       var stretch = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--phone-stretch')) || 1;
@@ -12620,7 +12620,7 @@ window.siteUnlocked = true;
       var zoneBottom = isMobile ? Math.max(120, Math.round(vh * 0.22)) : (isTablet ? 46 : 10);
       if (isMobile || isTablet) {
         var qb = document.getElementById('questBar');
-        if (qb && qb.offsetHeight) zoneBottom = qb.offsetHeight + (isMobile ? 4 : 28);
+        if (qb && qb.offsetHeight) zoneBottom = qb.offsetHeight + (isMobile ? 14 : 34);
       }
       var scaleUI = (isMobile || isTablet) ? (vh - zoneTop - zoneBottom) / (587 * stretch) : (vh - 2 * zoneBottom) / 587;
       var scale = Math.min((vw * wFactor) / 452, (vh * hFactor) / 617, maxScale, scaleUI);
