@@ -294,7 +294,7 @@
     ['influencer marketing specialist', 'especialista en marketing de influencers'],
     ['freelance web designer', 'diseñadora web freelance'],
     ['photographer & creative director', 'fotógrafa y directora creativa'],
-    ['present', 'actualidad'], ['aug', 'ago'], ['apr', 'abr'], ['dec', 'dic'],
+    [' – present', ' – actualidad'], ['aug ', 'ago '], ['apr ', 'abr '], ['dec ', 'dic '],
     ['▶ menu', '▶ menú'], ['sun ', 'dom '], ['mon ', 'lun '], ['tue ', 'mar '],
     ['wed ', 'mié '], ['thu ', 'jue '], ['fri ', 'vie '], ['sat ', 'sáb '],
     [' and ', ' y '], [' or ', ' o '],
