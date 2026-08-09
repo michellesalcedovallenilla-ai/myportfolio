@@ -151,19 +151,30 @@
   .scene > img.bg { position:absolute; inset:0; width:100%; height:100%; image-rendering:pixelated; }
   .wall-repair {
     position:absolute;
-    left:-1%;
-    top:-1.4%;
-    width:33%;
-    height:15.5%;
-    background:radial-gradient(
-      ellipse 63% 76% at 63% 58%,
-      rgba(0,0,0,.18) 0%,
-      rgba(0,0,0,.14) 30%,
-      rgba(0,0,0,.07) 58%,
-      transparent 100%
-    );
-    filter:blur(clamp(4px,.45vw,9px));
+    left:0;
+    top:0;
+    width:32.292%;
+    height:14.815%;
+    overflow:hidden;
+    -webkit-mask-image:linear-gradient(to right,#000 0 90.323%,transparent 100%);
+    mask-image:linear-gradient(to right,#000 0 90.323%,transparent 100%);
     pointer-events:none;
+  }
+  .wall-repair-fade {
+    position:absolute;
+    inset:0;
+    overflow:hidden;
+    -webkit-mask-image:linear-gradient(to bottom,#000 0 75%,transparent 100%);
+    mask-image:linear-gradient(to bottom,#000 0 75%,transparent 100%);
+  }
+  .wall-repair img {
+    position:absolute;
+    left:-90.323%;
+    top:0;
+    width:309.677%;
+    height:675%;
+    max-width:none;
+    image-rendering:pixelated;
   }
   .el { position:absolute; }
   .el img { width:100%; display:block; image-rendering:pixelated; }
@@ -519,7 +530,9 @@
   </div>
   <div class="scene" id="scene">
     <img class="bg" src="assets/bg.png?v=2" alt="room">
-    <div class="wall-repair" aria-hidden="true"></div>
+    <div class="wall-repair" aria-hidden="true">
+      <div class="wall-repair-fade"><img src="assets/bg.png?v=2" alt=""></div>
+    </div>
     <div class="el region" id="bg-poster" data-name="poster" title="click!"
          style="left:5.625%; top:10.926%; width:17.708%; height:28.426%;"
          onclick="togglePosterNotif()">
