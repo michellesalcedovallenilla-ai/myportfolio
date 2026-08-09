@@ -91,13 +91,8 @@ p{font-size:.8em;line-height:1.3;margin-bottom:.2em;}
 .srow.s{background:var(--fg);color:var(--bg);}
 .sval{font-size:.72em;color:var(--mid);}
 .srow.s .sval{color:var(--bg);opacity:.8;}
-/* FORM */
-.flbl{font-size:.65em;color:var(--mid);letter-spacing:.05em;margin-bottom:.06em;}
-.finp,.fta{width:100%;background:var(--lt);border:.1em solid var(--fg);color:var(--fg);font-family:'VT323','Courier New',monospace;font-size:.78em;padding:.1em .22em;outline:none;margin-bottom:.2em;}
-.finp.foc,.fta.foc{outline:.12em solid var(--fg);}
-.fta{resize:none;height:2.3em;line-height:1.3;}
+/* CALL TO ACTION */
 .fbtn{display:block;width:100%;background:var(--fg);color:var(--bg);border:none;font-family:'VT323','Courier New',monospace;font-size:.8em;padding:.2em;cursor:pointer;letter-spacing:.06em;}
-.fbtn.foc{outline:.12em solid var(--mid);}
 /* LINKS */
 .lrow{display:flex;gap:.2em;align-items:center;padding:.15em 0;font-size:.78em;border-bottom:.08em solid var(--mid);cursor:pointer;}
 .lrow.s{background:var(--fg);color:var(--bg);padding-left:.2em;}
@@ -258,7 +253,6 @@ p{font-size:.8em;line-height:1.3;margin-bottom:.2em;}
 #bHome  {top:58.5%;left:10%; width:22%;height:5%;}
 #bCals  {top:64.0%;left:10%; width:22%;height:5.2%;}
 #bConts {top:58.5%;left:66%; width:21%;height:4.8%;}
-#bMsgs  {top:64.0%;left:67%; width:20%;height:5.2%;}
 /* ── D-PAD ── */
 #bUp   {top:57.50%;left:37%; width:23%;height:2.90%;border-radius:8px 8px 3px 3px;}
 #bDown {top:66.9%;left:38%;  width:22%;height:3%;  border-radius:3px 3px 8px 8px;}
@@ -298,7 +292,6 @@ p{font-size:.8em;line-height:1.3;margin-bottom:.2em;}
   <div class="btn-ov" id="bHome"  data-a="left"></div>
   <div class="btn-ov" id="bCals"  data-a="cal-short"></div>
   <div class="btn-ov" id="bConts" data-a="right"></div>
-  <div class="btn-ov" id="bMsgs"  data-a="msg-short"></div>
   <div class="btn-ov" id="bCall"  data-a="call"></div>
   <div class="btn-ov" id="bEnd"   data-a="end"></div>
   <div class="btn-ov" id="bBack"  data-a="down"></div>
@@ -393,8 +386,6 @@ const ICONS={
   about:px('<rect x="5" y="0" width="6" height="4"/><rect x="6" y="6" width="4" height="6"/><rect x="4" y="12" width="8" height="4"/>'),
   // External link: small box bottom-left + arrow escaping top-right with staircase diagonal
   links:px('<rect x="0" y="6" width="2" height="10"/><rect x="0" y="14" width="10" height="2"/><rect x="8" y="8" width="2" height="6"/><rect x="0" y="6" width="6" height="2"/><rect x="8" y="0" width="8" height="2"/><rect x="14" y="0" width="2" height="8"/><rect x="12" y="2" width="2" height="2"/><rect x="10" y="4" width="2" height="2"/><rect x="8" y="6" width="2" height="2"/>'),
-  // Envelope: solid body + V-flap cutouts
-  inquiry:px('<rect x="0" y="2" width="16" height="12"/><rect x="0" y="2" width="5" height="4" fill="var(--bg)"/><rect x="11" y="2" width="5" height="4" fill="var(--bg)"/><rect x="3" y="5" width="4" height="3" fill="var(--bg)"/><rect x="9" y="5" width="4" height="3" fill="var(--bg)"/><rect x="6" y="7" width="4" height="2" fill="var(--bg)"/>'),
   // Phone handset: earpiece top-left + curved arc + mouthpiece bottom-right
   book:px('<rect x="0" y="0" width="6" height="4"/><rect x="0" y="3" width="3" height="6"/><rect x="2" y="7" width="5" height="2"/><rect x="6" y="9" width="5" height="2"/><rect x="13" y="7" width="3" height="6"/><rect x="10" y="12" width="6" height="4"/>'),
   // Calendar: solid body + two rings + interior grid with date dots
@@ -603,8 +594,6 @@ const S={
   camFilter:0,gallery:[],galIdx:0,galView:false,camAnimReq:null,
   // settings
   settIdx:0,profIdx:0,
-  // form
-  formF:0,formV:{name:'',email:'',brand:'',kind:'',timeline:'',budget:'',vision:''},formSent:false,
   linksIdx:0,
   idleIdx:0,
   lastInput:Date.now(),
@@ -915,33 +904,6 @@ function rLinks(){
     <div class="atitle"><span>► LINKS</span><span class="back-btn" onclick="act('leftsoft')">◄ BACK</span></div>
     <div class="abody">${rows}<p style="font-size:.6em;color:var(--mid);margin-top:.2em">Tap any row to open link</p></div>
     <div class="sk"><span>BACK</span><span>OPEN</span></div>`);
-}
-function rInquiry(){
-  if(S.formSent){
-    setApp(`<div class="atitle"><span>► INQUIRY</span></div><div class="abody"><div style="text-align:center;padding:1em 0"><div style="font-size:1.5em">✓</div><p>Message sent!</p><p style="font-size:.75em;color:var(--mid)">I'll be in touch soon.</p></div></div><div class="sk"><span>BACK</span><span></span></div>`);
-    return;
-  }
-  const f=S.formF;
-  setApp(`
-    <div class="atitle"><span>► INQUIRY</span><span class="back-btn" onclick="act('leftsoft')">◄ BACK</span></div>
-    <div class="abody">
-      <div style="margin-bottom:.22em"><div class="flbl">FULL NAME:</div><input class="finp${f===0?' foc':''}" id="fi0" value="${esc(S.formV.name)}" placeholder="Your full name" oninput="S.formV.name=this.value" onfocus="S.formF=0"></div>
-      <div style="margin-bottom:.22em"><div class="flbl">EMAIL:</div><input class="finp${f===1?' foc':''}" id="fi1" type="email" value="${esc(S.formV.email)}" placeholder="your@email.com" oninput="S.formV.email=this.value" onfocus="S.formF=1"></div>
-      <div style="margin-bottom:.22em"><div class="flbl">BUSINESS / BRAND NAME:</div><input class="finp${f===2?' foc':''}" id="fi2" value="${esc(S.formV.brand)}" placeholder="Your brand name" oninput="S.formV.brand=this.value" onfocus="S.formF=2"></div>
-      <div style="margin-bottom:.22em"><div class="flbl">WEBSITE TYPE:</div><input class="finp${f===3?' foc':''}" id="fi3" value="${esc(S.formV.kind)}" placeholder="What kind of website?" oninput="S.formV.kind=this.value" onfocus="S.formF=3"></div>
-      <div style="margin-bottom:.22em"><div class="flbl">TIMELINE:</div><input class="finp${f===4?' foc':''}" id="fi4" value="${esc(S.formV.timeline)}" placeholder="What is your timeline?" oninput="S.formV.timeline=this.value" onfocus="S.formF=4"></div>
-      <div style="margin-bottom:.22em"><div class="flbl">BUDGET RANGE:</div><input class="finp${f===5?' foc':''}" id="fi5" value="${esc(S.formV.budget)}" placeholder="Your budget range" oninput="S.formV.budget=this.value" onfocus="S.formF=5"></div>
-      <div style="margin-bottom:.22em"><div class="flbl">YOUR VISION:</div><textarea class="fta${f===6?' foc':''}" id="fi6" placeholder="Tell me about your vision..." oninput="S.formV.vision=this.value" onfocus="S.formF=6">${esc(S.formV.vision)}</textarea></div>
-      <button class="fbtn${f===7?' foc':''}" onclick="submitForm()">► LET'S BUILD YOUR WEBSITE</button>
-      <p style="font-size:.65em;color:var(--mid);margin-top:.15em">↑↓ nav fields · OK submit</p>
-    </div>
-    <div class="sk"><span>BACK</span><span>SEND</span></div>`);
-  const ids=['fi0','fi1','fi2','fi3','fi4','fi5','fi6',null];
-  if(ids[f])setTimeout(()=>{const e=document.getElementById(ids[f]);if(e)e.focus();},50);
-}
-function submitForm(){
-  if(!S.formV.name||!S.formV.email){errSound();return;}
-  selSound();S.formSent=true;rInquiry();
 }
 function rBook(){
   setApp(`
@@ -1394,7 +1356,6 @@ function act(a){
   if(a==='home-short'){stopSnk();stopCam();clearSS();S.menuGroup=0;S.menuIdx=0;S.stack=[];go('menu');return;}
   if(a==='cal-short') {stopSnk();stopCam();clearSS();S.stack=[];pushGo('calendar');return;}
   if(a==='cont-short'){stopSnk();stopCam();clearSS();S.stack=[];pushGo('links');return;}
-  if(a==='msg-short') {stopSnk();stopCam();clearSS();S.stack=[];pushGo('inquiry');return;}
   if(a==='end'&&S.screen!=='calling'){
     stopRing();if(S.callInterval){clearInterval(S.callInterval);S.callInterval=null;}
     if(S.dialDigits){S.dialDigits='';if(S.screen==='idle')rIdle();return;}
@@ -1484,14 +1445,6 @@ function actLinks(a){
   else if(a==='down'||a==='right'){S.linksIdx=Math.min(1,S.linksIdx+1);navSound();rLinks();}
   // Soft keys follow screen labels: BACK / OPEN
   else if(a==='rightsoft'||a==='ok'||a==='call'){selSound();const links=['https://www.linkedin.com/in/marketingwithcats/','https://www.instagram.com/mydigitalcrib/'];openUrl(links[S.linksIdx]);}
-  else if(a==='leftsoft'||a==='back'||a==='end'){backSound();back();}
-}
-
-function actInquiry(a){
-  if(a==='up'){S.formF=Math.max(0,S.formF-1);navSound();rInquiry();}
-  else if(a==='down'){S.formF=Math.min(7,S.formF+1);navSound();rInquiry();}
-  // Soft keys follow screen labels: BACK / SEND
-  else if(a==='ok'||a==='rightsoft'){if(S.formF===7){selSound();submitForm();}else{navSound();S.formF=Math.min(7,S.formF+1);rInquiry();}}
   else if(a==='leftsoft'||a==='back'||a==='end'){backSound();back();}
 }
 
@@ -1691,9 +1644,9 @@ function rMsgView(){
     <div class="abody">
       <p>${esc(m.text)}</p>
       <hr style="border:none;border-top:.1em dashed var(--mid);margin:.2em 0">
-      <p style="font-size:.66em;color:var(--mid)">Right soft key opens the inquiry screen so you can keep the conversation moving.</p>
+      <p style="font-size:.66em;color:var(--mid)">Use BOOK CALL from the main menu if you'd like to talk.</p>
     </div>
-    <div class="sk"><span>BACK</span><span>REPLY</span></div>`);
+    <div class="sk"><span>BACK</span><span>BOOK CALL</span></div>`);
 }
 function rPortfolio(){
   selSound();
@@ -2002,7 +1955,7 @@ function actLocked(a){
 function _render(id){
   S.screen=id;
   const map={
-    idle:rIdle,sim:rSim,boot:rBoot,menu:rMenu,calling:rCalling,    home:rHome,about:rAbout,links:rLinks,portfolio:rPortfolio,inquiry:rInquiry,book:rBook,
+    idle:rIdle,sim:rSim,boot:rBoot,menu:rMenu,calling:rCalling,    home:rHome,about:rAbout,links:rLinks,portfolio:rPortfolio,book:rBook,
     contacts:rContacts,messages:rMsgs,msg_view:rMsgView,calllog:rCallLog,
     calculator:rCalc,alarm:rAlarm,stopwatch:rSW,calendar:rCal,notes:rNotes,note_view:rNoteView,worldclock:rWC,ringtone:rRT,
     snake:rSnake,camera:rCamera,gallery:rGallery,
