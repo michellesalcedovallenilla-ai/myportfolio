@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://www.youtube.com; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://img.youtube.com https://i.ytimg.com; media-src 'self' data: blob:; connect-src 'self' https://www.youtube.com; frame-src https://www.youtube.com; object-src 'none'; base-uri 'self'; form-action 'none';">
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
-<meta name="referrer" content="no-referrer">
-<meta http-equiv="Permissions-Policy" content="camera=(self), microphone=(), geolocation=(), payment=(), accelerometer=(self https://www.youtube.com), gyroscope=(self https://www.youtube.com), picture-in-picture=(self https://www.youtube.com)">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Permissions-Policy" content="camera=(self), microphone=(self), geolocation=(), payment=(), autoplay=(self https://www.youtube.com), accelerometer=(self https://www.youtube.com), gyroscope=(self https://www.youtube.com), picture-in-picture=(self https://www.youtube.com)">
 <title>My Digital Crib</title>
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,7 +15,7 @@
 <style>
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { background: #1a1510; overflow: hidden; height: 100%; }
+  html { background: #1a1510; overflow: hidden; height: 100%; touch-action: manipulation; }
 
   :root {
     --screen-w: 320;
@@ -35,6 +35,7 @@
     overflow: hidden;
     font-family:'VT323', ui-monospace, monospace;
     -webkit-font-smoothing: antialiased;
+    touch-action: manipulation;
     overscroll-behavior: none; /* no pull-to-refresh swallowing the mango drag */
     /* Film border — dark frame around entire viewport */
     border: none;
@@ -1020,6 +1021,7 @@
     inset: 0;
     width: 100%;
     height: 100%;
+    background: #080d26 url('assets/wallpaper-lamppost.jpg') center / cover no-repeat;
   }
 
   .lock-status-bar {
@@ -2228,8 +2230,8 @@
   .music-now-playing.visible { display: flex; }
   .music-np-art-wrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 16px; position: relative; }
   .music-np-art {
-    width: 180px;
-    height: 180px;
+    width: 200px;
+    height: 200px;
     border-radius: 6px;
     background: #333;
     box-shadow: 0 8px 30px rgba(0,0,0,0.7), 0 2px 8px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.1);
@@ -2247,7 +2249,13 @@
     filter: blur(8px);
     pointer-events: none;
   }
-  .music-np-art canvas { width: 100%; height: 100%; display: block; image-rendering: pixelated; }
+  .music-np-art::after { z-index: 3; }
+  .music-np-art canvas,
+  .music-np-art.youtube-active canvas { position: relative; z-index: 2; width: 100%; height: 100%; display: block; image-rendering: pixelated; }
+  .music-youtube-player,
+  .music-np-art.youtube-active .music-youtube-player { position: absolute; inset: 0; z-index: 1; display: block; width: 200px; height: 200px; background: #000; opacity: 0; pointer-events: none; }
+  .music-youtube-player iframe { display: block; width: 200px; height: 200px; border: 0; }
+  .music-np-status { min-height: 12px; margin-top: 3px; color: #ffd36a; font-family:'VT323', ui-monospace, monospace; font-size: 10px; line-height: 1.1; }
   .music-np-meta { text-align: center; padding: 0 16px 10px; flex-shrink: 0; }
   .music-np-title { font-family:'VT323', ui-monospace, monospace; font-size: 15px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
   .music-np-artist { font-family:'VT323', ui-monospace, monospace; font-size: 12px; color: rgba(255,255,255,0.55); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -2529,6 +2537,11 @@
   .pg-doc-title { font-size: 14px; color: #222; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .pg-doc-meta { font-size: 11px; color: #998a78; margin-top: 2px; }
   .pg-doc-arrow { color: #bbb; font-size: 14px; flex-shrink: 0; margin-left: 6px; }
+  .pg-preview-btn { min-width: 58px; height: 26px; margin-left: 8px; padding: 0 8px; border: 1px solid #5b7fa9; border-radius: 5px; background: linear-gradient(180deg, #91b4da 0%, #668fbd 48%, #4977ac 52%, #5d89b8 100%); color: #fff; font: 600 10px/24px 'VT323', ui-monospace, monospace; letter-spacing: 0; text-shadow: 0 -1px 0 rgba(0,0,0,0.3); box-shadow: inset 0 1px 0 rgba(255,255,255,0.35); cursor: pointer; flex-shrink: 0; }
+  .pg-preview-btn:active { transform: translateY(1px); filter: brightness(0.94); }
+  .pg-preview-btn:focus-visible,
+  .pg-resume-back:focus-visible,
+  .pg-resume-download:focus-visible { outline: 2px solid #173f73; outline-offset: 2px; }
 
   /* Document reader */
   .pg-reader { display: none; flex-direction: column; flex: 1; overflow: hidden; background: #c8c0b4; }
@@ -2549,6 +2562,16 @@
   .pg-edit-bar.active { display: flex; }
   .pg-edit-btn { font-size: 11px; color: #5577aa; cursor: pointer; padding: 4px 8px; font-weight: 600; }
   .pg-edit-btn.save { color: #fff; background: linear-gradient(180deg, #6898cc 0%, #4070a8 100%); border-radius: 4px; border: 1px solid rgba(0,0,0,0.2); text-shadow: 0 -1px 0 rgba(0,0,0,0.2); }
+
+  /* Resume preview */
+  .pg-resume-preview { display: none; flex: 1; min-height: 0; flex-direction: column; overflow: hidden; background: #a9a9a9; }
+  .pg-resume-preview.active { display: flex; }
+  .pg-resume-toolbar { min-height: 38px; display: grid; grid-template-columns: 38px minmax(0, 1fr) 62px; align-items: center; gap: 4px; padding: 0 6px; background: linear-gradient(180deg, #c8d8ec 0%, #b8c8dc 3%, #8aa4c4 50%, #6888b0 51%, #7898c0 100%); border-bottom: 1px solid rgba(0,0,0,0.35); box-shadow: 0 1px 0 rgba(255,255,255,0.35) inset; flex-shrink: 0; }
+  .pg-resume-back { width: 32px; height: 28px; padding: 0; border: 0; background: transparent; color: #fff; font: 28px/26px Arial, sans-serif; text-align: center; text-shadow: 0 -1px 0 rgba(0,0,0,0.35); cursor: pointer; }
+  .pg-resume-title { min-width: 0; overflow: hidden; color: #fff; font-size: 12px; font-weight: 700; text-align: center; text-overflow: ellipsis; text-shadow: 0 -1px 0 rgba(0,0,0,0.35); white-space: nowrap; }
+  .pg-resume-download { display: flex; min-height: 28px; align-items: center; justify-content: flex-end; color: #fff; font-size: 10px; font-weight: 600; text-decoration: none; text-shadow: 0 -1px 0 rgba(0,0,0,0.35); }
+  .pg-resume-pages { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 10px; background: #aaa; }
+  .pg-resume-page { display: block; width: 100%; height: auto; background: #fff; border: 1px solid rgba(0,0,0,0.24); box-shadow: 0 2px 7px rgba(0,0,0,0.28); }
 
   /* ===== Newsstand App ===== */
   #app-newstand { background: #3a3028 !important; display: flex; flex-direction: column; }
@@ -4350,9 +4373,17 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   }
+  let phoneScaleFrame = 0;
+  function requestPhoneScale() {
+    // Pinch zoom changes visualViewport repeatedly without changing the layout
+    // viewport. Re-scaling the phone during that gesture can collapse the scene.
+    if (window.visualViewport && Math.abs(window.visualViewport.scale - 1) > 0.01) return;
+    cancelAnimationFrame(phoneScaleFrame);
+    phoneScaleFrame = requestAnimationFrame(updatePhoneScale);
+  }
+  window.__requestCribPhoneScale = requestPhoneScale;
   updatePhoneScale();
-  window.addEventListener('resize', updatePhoneScale);
-  if (window.visualViewport) window.visualViewport.addEventListener('resize', updatePhoneScale);
+  window.addEventListener('resize', requestPhoneScale, {passive:true});
 
   // ===== REFS =====
   const wallpaperCanvas = document.getElementById('wallpaperCanvas');
@@ -4452,21 +4483,33 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch(e) {}
     return savedWallpaper || CRIB_DEFAULT_WALLPAPER;
   }
+  let cribWallpaperRequest = 0;
   function drawWallpaper(src) {
+    const requestId = ++cribWallpaperRequest;
+    const requestedSrc = src || CRIB_DEFAULT_WALLPAPER;
     const c = wallpaperCanvas;
     const W = 290, H = 434;
     c.width = W; c.height = H;
-    const ctx = c.getContext('2d');
+    c.dataset.wallpaperReady = '0';
     const img = new Image();
+    img.decoding = 'async';
     img.onload = function() {
+      if (requestId !== cribWallpaperRequest) return;
+      const ctx = c.getContext('2d');
+      ctx.clearRect(0, 0, W, H);
       // Cover-fit the image into the canvas
       const iw = img.width, ih = img.height;
       const scale = Math.max(W / iw, H / ih);
       const sw = iw * scale, sh = ih * scale;
       const ox = (W - sw) / 2, oy = (H - sh) / 2;
       ctx.drawImage(img, ox, oy, sw, sh);
+      c.dataset.wallpaperReady = '1';
     };
-    img.src = src || CRIB_DEFAULT_WALLPAPER;
+    img.onerror = function() {
+      if (requestId !== cribWallpaperRequest) return;
+      if (requestedSrc !== CRIB_DEFAULT_WALLPAPER) drawWallpaper(CRIB_DEFAULT_WALLPAPER);
+    };
+    img.src = requestedSrc;
   }
   window.cribSetWallpaper = function(src) {
     try { localStorage.setItem('crib_wallpaper', src); } catch(e) {}
@@ -6551,9 +6594,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- DESKTOP EASTER EGG — after 1.5 minutes, michelle texts you from her computer ---
     setTimeout(function() {
       try {
-        const t = {name:'michelle (desktop)', color:'#3478f6', preview:'its crazyyyy', time:'now', unread:true,
-          msgs:[{f:'michelle (desktop)',t:'you should check this website again but in desktop, its crazyyyy'},
-                {f:'michelle (desktop)',t:'it is a COMPLETELY different website over there. windows xp chaos. go go go 🖥✨'}]};
+        const desktopNudge = (window.cribLanguage === 'es') ? {
+          preview: 'el desktop tiene un segundo acto',
+          first: 'cuando tengas una pantalla grande, visita también la versión desktop. abre un cuarto completamente distinto.',
+          second: 'es el mismo trabajo con otra interfaz: windows xp, proyectos, currículum y un poco de caos bien organizado.',
+          notificationTitle: 'NUEVO MENSAJE',
+          notificationBody: 'michelle (desktop): la versión desktop tiene un segundo acto.'
+        } : {
+          preview: 'the desktop has a second act',
+          first: 'when you have a larger screen, visit the desktop version too. it opens a completely different room.',
+          second: 'same work, different interface: windows xp, projects, resume, and a little well-organized chaos.',
+          notificationTitle: 'NEW MESSAGE',
+          notificationBody: 'michelle (desktop): the desktop version has a second act.'
+        };
+        const t = {name:'michelle (desktop)', color:'#3478f6', preview:desktopNudge.preview, time:'now', unread:true,
+          msgs:[{f:'michelle (desktop)',t:desktopNudge.first},
+                {f:'michelle (desktop)',t:desktopNudge.second}]};
         msgThreads.push(t);
         const i = msgThreads.length - 1;
         const item = document.createElement('div'); item.className = 'msg-thread-item';
@@ -6578,7 +6634,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (_msgBadgeEl) { _msgBadgeEl.style.display = ''; _msgBadgeEl.textContent = _msgUnreadCount; }
         try { iPhoneSounds.triTone(); } catch(e) {}
         try { if (navigator.vibrate) navigator.vibrate(120); } catch(e) {}
-        if (window.cribQuestNotify) window.cribQuestNotify('NEW MESSAGE 💬', 'michelle (desktop): you should check this website again but in desktop, its crazyyyy');
+        if (window.cribQuestNotify) window.cribQuestNotify(desktopNudge.notificationTitle, desktopNudge.notificationBody);
       } catch(e) {}
     }, window._cribMsgDelay || 90000);
 
@@ -7038,34 +7094,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- MUSIC ---
     const allTracks = [
-      {title:'Video Games', artist:'Lana Del Rey', dur:'4:45', secs:285, src:'assets/music/lana-del-rey-video-games.mp3', cover:'assets/music/covers/lana-del-rey-video-games.png'},
-      {title:'Midnight City', artist:'M83', dur:'4:04', secs:244, src:'assets/music/m83-midnight-city.mp3', cover:'assets/music/covers/m83-midnight-city.png'},
-      {title:'Genesis', artist:'Grimes', dur:'4:15', secs:255, src:'assets/music/grimes-genesis.mp3', cover:'assets/music/covers/grimes-genesis.png'},
-      {title:'Little Secrets', artist:'Passion Pit', dur:'3:59', secs:239, src:'assets/music/passion-pit-little-secrets.mp3', cover:'assets/music/covers/passion-pit-little-secrets.png'},
-      {title:'Under Cover of Darkness', artist:'The Strokes', dur:'3:56', secs:236, src:'assets/music/the-strokes-under-cover-of-darkness.mp3', cover:'assets/music/covers/the-strokes-under-cover-of-darkness.png'},
-      {title:'Norway', artist:'Beach House', dur:'3:55', secs:235, src:'assets/music/beach-house-norway.mp3', cover:'assets/music/covers/beach-house-norway.png'},
-      {title:'Holocene', artist:'Bon Iver', dur:'5:37', secs:337, src:'assets/music/bon-iver-holocene.mp3', cover:'assets/music/covers/bon-iver-holocene.png'},
-      {title:'Skinny Love', artist:'Bon Iver', dur:'3:59', secs:239, src:'assets/music/bon-iver-skinny-love.mp3', cover:'assets/music/covers/bon-iver-skinny-love.png'},
-      {title:'Take Me Out', artist:'Franz Ferdinand', dur:'3:57', secs:237, src:'assets/music/franz-ferdinand-take-me-out.mp3', cover:'assets/music/covers/franz-ferdinand-take-me-out.png'},
-      {title:'A-Punk', artist:'Vampire Weekend', dur:'2:17', secs:137, src:'assets/music/vampire-weekend-a-punk.mp3', cover:'assets/music/covers/vampire-weekend-a-punk.png'},
-      {title:'Electric Feel', artist:'MGMT', dur:'3:50', secs:230, src:'assets/music/mgmt-electric-feel.mp3', cover:'assets/music/covers/mgmt-electric-feel.png'},
-      {title:'The Look', artist:'Metronomy', dur:'4:38', secs:278, src:'assets/music/metronomy-the-look.mp3', cover:'assets/music/covers/metronomy-the-look.png'},
-      {title:'Kids', artist:'MGMT', dur:'5:03', secs:303, src:'assets/music/mgmt-kids.mp3', cover:'assets/music/covers/mgmt-kids.png'},
-      {title:'Everything Is Embarrassing', artist:'Sky Ferreira', dur:'4:10', secs:250, src:'assets/music/sky-ferreira-everything-is-embarrassing.mp3', cover:'assets/music/covers/sky-ferreira-everything-is-embarrassing.png'},
-      {title:'Sprawl II (Mountains Beyond Mountains)', artist:'Arcade Fire', dur:'5:26', secs:326, src:'assets/music/arcade-fire-sprawl-ii-mountains-beyond-mountains.mp3', cover:'assets/music/covers/arcade-fire-sprawl-ii-mountains-beyond-mountains.png'},
-      {title:'Head Over Feet', artist:'Alanis Morissette', dur:'5:29', secs:329, src:'assets/music/alanis-morissette-head-over-feet.mp3', cover:'assets/music/covers/alanis-morissette-head-over-feet.png'},
-      {title:'Myth', artist:'Beach House', dur:'4:19', secs:259, src:'assets/music/beach-house-myth.mp3', cover:'assets/music/covers/beach-house-myth.png'},
-      {title:'Medicine', artist:'DAUGHTER', dur:'4:19', secs:259, src:'assets/music/daughter-medicine.mp3', cover:'assets/music/covers/daughter-medicine.png'},
-      {title:'Youth', artist:'DAUGHTER', dur:'4:12', secs:252, src:'assets/music/daughter-youth.mp3', cover:'assets/music/covers/daughter-youth.png'},
-      {title:'Lemon Tree', artist:'Fools Garden', dur:'3:11', secs:191, src:'assets/music/fools-garden-lemon-tree.mp3', cover:'assets/music/covers/fools-garden-lemon-tree.png'},
-      {title:'Wet Blanket', artist:'Metric', dur:'4:08', secs:248, src:'assets/music/metric-wet-blanket.mp3', cover:'assets/music/covers/metric-wet-blanket.png'},
-      {title:'Novacane', artist:'Frank Ocean', dur:'1:59', secs:119, src:'assets/music/frank-ocean-novacane.mp3', cover:'assets/music/covers/frank-ocean-novacane.png'},
-      {title:'1901', artist:'Phoenix', dur:'3:13', secs:193, src:'assets/music/phoenix-1901.mp3', cover:'assets/music/covers/phoenix-1901.png'},
-      {title:'Geri', artist:'Superhumanoids', dur:'2:23', secs:143, src:'assets/music/superhumanoids-geri.mp3', cover:'assets/music/covers/superhumanoids-geri.png'},
-      {title:'Somebody Else', artist:'The 1975', dur:'5:48', secs:348, src:'assets/music/the-1975-somebody-else.mp3', cover:'assets/music/covers/the-1975-somebody-else.png'},
-      {title:'You Only Live Once', artist:'The Strokes', dur:'3:09', secs:189, src:'assets/music/the-strokes-you-only-live-once.mp3', cover:'assets/music/covers/the-strokes-you-only-live-once.png'},
-      {title:'Intro', artist:'The xx', dur:'2:08', secs:128, src:'assets/music/the-xx-intro.mp3', cover:'assets/music/covers/the-xx-intro.png'},
-      {title:'Modern World', artist:'Wolf Parade', dur:'2:52', secs:172, src:'assets/music/wolf-parade-modern-world.mp3', cover:'assets/music/covers/wolf-parade-modern-world.png'}
+      {title:'Video Games', artist:'Lana Del Rey', dur:'4:45', secs:285, youtubeId:'mhr4YecSV_Y', cover:'assets/music/covers/lana-del-rey-video-games.png'},
+      {title:'Midnight City', artist:'M83', dur:'4:04', secs:244, youtubeId:'dX3k_QDnzHE', cover:'assets/music/covers/m83-midnight-city.png'},
+      {title:'Genesis', artist:'Grimes', dur:'4:15', secs:255, youtubeId:'1FH-q0I1fJY', cover:'assets/music/covers/grimes-genesis.png'},
+      {title:'Little Secrets', artist:'Passion Pit', dur:'3:59', secs:239, youtubeId:'ScC_pi3PJ9k', cover:'assets/music/covers/passion-pit-little-secrets.png'},
+      {title:'Under Cover of Darkness', artist:'The Strokes', dur:'3:56', secs:236, youtubeId:'Ho86D-yuBUw', cover:'assets/music/covers/the-strokes-under-cover-of-darkness.png'},
+      {title:'Norway', artist:'Beach House', dur:'3:55', secs:235, youtubeId:'2L_R-DELtX8', cover:'assets/music/covers/beach-house-norway.png'},
+      {title:'Holocene', artist:'Bon Iver', dur:'5:37', secs:337, youtubeId:'8T0cHQb39GY', cover:'assets/music/covers/bon-iver-holocene.png'},
+      {title:'Skinny Love', artist:'Bon Iver', dur:'3:59', secs:239, youtubeId:'ssdgFoHLwnk', cover:'assets/music/covers/bon-iver-skinny-love.png'},
+      {title:'Take Me Out', artist:'Franz Ferdinand', dur:'3:57', secs:237, youtubeId:'d11xns8lE4w', cover:'assets/music/covers/franz-ferdinand-take-me-out.png'},
+      {title:'A-Punk', artist:'Vampire Weekend', dur:'2:17', secs:137, youtubeId:'_XC2mqcMMGQ', cover:'assets/music/covers/vampire-weekend-a-punk.png'},
+      {title:'Electric Feel', artist:'MGMT', dur:'3:50', secs:230, youtubeId:'MmZexg8sxyk', cover:'assets/music/covers/mgmt-electric-feel.png'},
+      {title:'The Look', artist:'Metronomy', dur:'4:38', secs:278, youtubeId:'sFrNsSnk8GM', cover:'assets/music/covers/metronomy-the-look.png'},
+      {title:'Kids', artist:'MGMT', dur:'5:03', secs:303, youtubeId:'fe4EK4HSPkI', cover:'assets/music/covers/mgmt-kids.png'},
+      {title:'Everything Is Embarrassing', artist:'Sky Ferreira', dur:'4:10', secs:250, youtubeId:'1jtTeMgWNhA', cover:'assets/music/covers/sky-ferreira-everything-is-embarrassing.png'},
+      {title:'Sprawl II (Mountains Beyond Mountains)', artist:'Arcade Fire', dur:'5:26', secs:326, youtubeId:'XLDWUSt9uuo', cover:'assets/music/covers/arcade-fire-sprawl-ii-mountains-beyond-mountains.png'},
+      {title:'Head Over Feet', artist:'Alanis Morissette', dur:'5:29', secs:329, youtubeId:'4iuO49jbovg', cover:'assets/music/covers/alanis-morissette-head-over-feet.png'},
+      {title:'Myth', artist:'Beach House', dur:'4:19', secs:259, youtubeId:'FuvWc3ToDHg', cover:'assets/music/covers/beach-house-myth.png'},
+      {title:'Medicine', artist:'DAUGHTER', dur:'4:19', secs:259, youtubeId:'sf6mkYz4mx0', cover:'assets/music/covers/daughter-medicine.png'},
+      {title:'Youth', artist:'DAUGHTER', dur:'4:12', secs:252, youtubeId:'VEpMj-tqixs', cover:'assets/music/covers/daughter-youth.png'},
+      {title:'Lemon Tree', artist:'Fools Garden', dur:'3:11', secs:191, youtubeId:'wCQfkEkePx8', cover:'assets/music/covers/fools-garden-lemon-tree.png'},
+      {title:'Wet Blanket', artist:'Metric', dur:'4:08', secs:248, youtubeId:'E9cY9GTB0jU', cover:'assets/music/covers/metric-wet-blanket.png'},
+      {title:'Novacane', artist:'Frank Ocean', dur:'1:59', secs:119, youtubeId:'hgOu8eRJZ3Q', cover:'assets/music/covers/frank-ocean-novacane.png'},
+      {title:'1901', artist:'Phoenix', dur:'3:13', secs:193, youtubeId:'HL548cHH3OY', cover:'assets/music/covers/phoenix-1901.png'},
+      {title:'Geri', artist:'Superhumanoids', dur:'2:23', secs:143, youtubeId:'ml4wSOokq5w', cover:'assets/music/covers/superhumanoids-geri.png'},
+      {title:'Somebody Else', artist:'The 1975', dur:'5:48', secs:348, youtubeId:'K9SUTtDVheM', cover:'assets/music/covers/the-1975-somebody-else.png'},
+      {title:'You Only Live Once', artist:'The Strokes', dur:'3:09', secs:189, youtubeId:'pT68FS3YbQ4', cover:'assets/music/covers/the-strokes-you-only-live-once.png'},
+      {title:'Intro', artist:'The xx', dur:'2:08', secs:128, youtubeId:'xMV6l2y67rk', cover:'assets/music/covers/the-xx-intro.png'},
+      {title:'Modern World', artist:'Wolf Parade', dur:'2:52', secs:172, youtubeId:'6tTgqxkocf8', cover:'assets/music/covers/wolf-parade-modern-world.png'}
     ];
     const musicScreen = document.createElement('div'); musicScreen.className = 'app-screen music-app'; musicScreen.id = 'app-music';
     musicScreen.innerHTML = `
@@ -7075,8 +7131,8 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="music-playlist-list" id="musicPlaylists" style="display:none"></div>
         <div class="music-track-list" id="musicTrackList"></div>
         <div class="music-now-playing" id="musicNP">
-          <div class="music-np-art-wrap"><div class="music-np-art"><canvas id="musicNPArtCanvas" width="180" height="180"></canvas></div></div>
-          <div class="music-np-meta"><div class="music-np-title" id="musicNPTitle">—</div><div class="music-np-artist" id="musicNPArtist">—</div></div>
+          <div class="music-np-art-wrap"><div class="music-np-art" id="musicNPArt"><canvas id="musicNPArtCanvas" width="200" height="200"></canvas><div class="music-youtube-player" id="musicYoutubePlayer"></div></div></div>
+          <div class="music-np-meta"><div class="music-np-title" id="musicNPTitle">—</div><div class="music-np-artist" id="musicNPArtist">—</div><div class="music-np-status" id="musicNPStatus" role="status" aria-live="polite"></div></div>
           <div class="music-np-progress"><div class="music-np-bar-wrap" id="musicNPBarWrap"><div class="music-np-bar-fill" id="musicNPFill"></div><div class="music-np-bar-knob" id="musicNPKnob"></div></div></div>
           <div class="music-np-times"><span id="musicNPElapsed">0:00</span><span id="musicNPRemain">-0:00</span></div>
           <div class="music-np-controls">
@@ -7109,7 +7165,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     openSongs();
     function drawNPArt(coverSrc) {
-      const canvas = musicScreen.querySelector('#musicNPArtCanvas'); const ctx = canvas.getContext('2d'), s = 180;
+      const canvas = musicScreen.querySelector('#musicNPArtCanvas'); const ctx = canvas.getContext('2d'), s = 200;
       ctx.imageSmoothingEnabled = false;
       ctx.fillStyle = '#111'; ctx.fillRect(0, 0, s, s);
       const img = new Image();
@@ -7121,54 +7177,202 @@ document.addEventListener('DOMContentLoaded', () => {
       musicTrackListEl.style.display = 'none'; musicNP.classList.add('visible'); musicNP.dataset.wasPlaying = '1';
       musicScreen.querySelector('#musicHeaderTitle').textContent = 'Now Playing'; musicScreen.querySelector('#musicBackBtn').textContent = 'Songs';
       musicScreen.querySelector('#musicNPTitle').textContent = track.title; musicScreen.querySelector('#musicNPArtist').textContent = track.artist;
-      drawNPArt(track.cover); musicTrackDuration = track.secs; musicProgress = 0; musicPlaying = true; updatePlayIcon(); startProgressTimer(); playAudioTrack(track);
+      drawNPArt(track.cover); musicTrackDuration = track.secs; musicProgress = 0; musicPlaying = true; updatePlayIcon(); updateProgressUI(); startProgressTimer(); playYouTubeTrack(track);
     }
-    /* reproductor local: las rolas son mp3 en assets/music */
-    let _musicAudio = null, _auPoll = null;
-    function playAudioTrack(track) {
-      stopAudioTrack();
-      const a = new Audio(track.src); a.volume = 0.7;
-      a.addEventListener('ended', function() {
-        if (musicCurrentTrackIdx < allTracks.length - 1) { playTrack(musicCurrentTrackIdx + 1); }
-        else { musicPlaying = false; updatePlayIcon(); clearInterval(musicProgressInterval); }
+    let _youtubeMusicApiPromise = null;
+    let _youtubeMusicPlayer = null;
+    let _youtubeMusicReady = false;
+    let _youtubeMusicPendingTrack = null;
+    let _youtubeMusicStopping = false;
+    const musicNPArt = musicScreen.querySelector('#musicNPArt');
+    const musicNPStatus = musicScreen.querySelector('#musicNPStatus');
+    const MUSIC_STATUS_COPY = {
+      error: {
+        en: 'YouTube playback unavailable. Choose another song.',
+        es: 'La reproducción de YouTube no está disponible. Elige otra canción.'
+      },
+      autoplay: {
+        en: 'Tap play to start YouTube.',
+        es: 'Toca reproducir para iniciar YouTube.'
+      }
+    };
+    function musicStatusLanguage() {
+      if (window.CribI18n && window.CribI18n.getLanguage) return window.CribI18n.getLanguage();
+      return window.cribLanguage === 'es' ? 'es' : 'en';
+    }
+    function setMusicStatus(key) {
+      musicNPStatus.dataset.statusKey = key || '';
+      musicNPStatus.textContent = key ? MUSIC_STATUS_COPY[key][musicStatusLanguage()] : '';
+    }
+    document.addEventListener('cribLanguageChanged', function() {
+      const key = musicNPStatus.dataset.statusKey;
+      if (key) setMusicStatus(key);
+    });
+    function ensureYouTubeMusicApi() {
+      if (window.YT && window.YT.Player) return Promise.resolve(window.YT);
+      if (_youtubeMusicApiPromise) return _youtubeMusicApiPromise;
+      _youtubeMusicApiPromise = new Promise(function(resolve, reject) {
+        const previousReady = window.onYouTubeIframeAPIReady;
+        const timeout = setTimeout(function() { reject(new Error('YouTube player timed out')); }, 15000);
+        window.onYouTubeIframeAPIReady = function() {
+          if (typeof previousReady === 'function') previousReady();
+          clearTimeout(timeout);
+          resolve(window.YT);
+        };
+        let script = document.querySelector('script[data-youtube-music-api]');
+        if (!script) {
+          script = document.createElement('script');
+          script.src = 'https://www.youtube.com/iframe_api';
+          script.async = true;
+          script.dataset.youtubeMusicApi = '1';
+          document.head.appendChild(script);
+        }
+        script.addEventListener('error', function() {
+          clearTimeout(timeout);
+          reject(new Error('YouTube player failed to load'));
+        }, {once:true});
       });
-      a.play().catch(function(){});
-      _musicAudio = a;
-      clearInterval(_auPoll);
-      _auPoll = setInterval(function() {
-        if (!_musicAudio || !musicPlaying) return;
-        try {
-          const d = _musicAudio.duration || 0;
-          if (d > 0 && isFinite(d)) musicTrackDuration = Math.floor(d);
-          musicProgress = Math.floor(_musicAudio.currentTime || 0);
-          updateProgressUI();
-        } catch(e){}
-      }, 500);
+      return _youtubeMusicApiPromise;
     }
-    function stopAudioTrack() { if (_musicAudio) { try{_musicAudio.pause();}catch(e){} _musicAudio = null; } clearInterval(_auPoll); }
+    function handleYouTubeMusicReady(event) {
+      _youtubeMusicReady = true;
+      event.target.setVolume(70);
+      const iframe = event.target.getIframe && event.target.getIframe();
+      if (iframe) {
+        iframe.setAttribute('aria-hidden', 'true');
+        iframe.setAttribute('tabindex', '-1');
+      }
+      if (!_youtubeMusicPendingTrack) return;
+      const currentVideo = event.target.getVideoData();
+      if (!currentVideo || currentVideo.video_id !== _youtubeMusicPendingTrack.youtubeId) {
+        event.target.loadVideoById(_youtubeMusicPendingTrack.youtubeId);
+      } else {
+        event.target.playVideo();
+      }
+    }
+    function handleYouTubeMusicState(event) {
+      if (!window.YT || !_youtubeMusicPlayer) return;
+      if (event.data === window.YT.PlayerState.PLAYING) {
+        _youtubeMusicStopping = false;
+        musicPlaying = true;
+        setMusicStatus('');
+        updatePlayIcon();
+        startProgressTimer();
+      } else if (event.data === window.YT.PlayerState.PAUSED) {
+        musicPlaying = false;
+        updatePlayIcon();
+        clearInterval(musicProgressInterval);
+      } else if (event.data === window.YT.PlayerState.ENDED && !_youtubeMusicStopping) {
+        if (musicCurrentTrackIdx < allTracks.length - 1) playTrack(musicCurrentTrackIdx + 1);
+        else {
+          musicPlaying = false;
+          updatePlayIcon();
+          clearInterval(musicProgressInterval);
+        }
+      }
+    }
+    function handleYouTubeMusicError() {
+      musicPlaying = false;
+      updatePlayIcon();
+      clearInterval(musicProgressInterval);
+      setMusicStatus('error');
+    }
+    function handleYouTubeAutoplayBlocked() {
+      musicPlaying = false;
+      updatePlayIcon();
+      clearInterval(musicProgressInterval);
+      setMusicStatus('autoplay');
+    }
+    function playYouTubeTrack(track) {
+      _youtubeMusicPendingTrack = track;
+      _youtubeMusicStopping = false;
+      setMusicStatus('');
+      ensureYouTubeMusicApi().then(function() {
+        if (_youtubeMusicPlayer && _youtubeMusicReady) {
+          _youtubeMusicPlayer.loadVideoById(track.youtubeId);
+          return;
+        }
+        if (_youtubeMusicPlayer) return;
+        musicNPArt.classList.add('youtube-active');
+        const playerVars = {autoplay:1, controls:0, disablekb:1, playsinline:1, rel:0};
+        if (location.protocol === 'http:' || location.protocol === 'https:') playerVars.origin = location.origin;
+        _youtubeMusicPlayer = new window.YT.Player('musicYoutubePlayer', {
+          width: 200,
+          height: 200,
+          videoId: track.youtubeId,
+          playerVars: playerVars,
+          events: {
+            onReady: handleYouTubeMusicReady,
+            onStateChange: handleYouTubeMusicState,
+            onError: handleYouTubeMusicError,
+            onAutoplayBlocked: handleYouTubeAutoplayBlocked
+          }
+        });
+      }).catch(function() {
+        _youtubeMusicApiPromise = null;
+        handleYouTubeMusicError();
+      });
+    }
+    function pauseYouTubeTrack() {
+      musicPlaying = false;
+      updatePlayIcon();
+      clearInterval(musicProgressInterval);
+      if (_youtubeMusicPlayer && _youtubeMusicReady) {
+        try { _youtubeMusicPlayer.pauseVideo(); } catch(e) {}
+      }
+    }
+    function stopYouTubeTrack() {
+      _youtubeMusicStopping = true;
+      musicPlaying = false;
+      updatePlayIcon();
+      clearInterval(musicProgressInterval);
+      if (_youtubeMusicPlayer && _youtubeMusicReady) {
+        try { _youtubeMusicPlayer.stopVideo(); } catch(e) {}
+      }
+      setTimeout(function() { _youtubeMusicStopping = false; }, 250);
+    }
     function updatePlayIcon() { const icon = musicScreen.querySelector('#musicPlayIcon'); icon.innerHTML = musicPlaying ? '<rect x="5" y="3" width="5" height="18" rx="1"/><rect x="14" y="3" width="5" height="18" rx="1"/>' : '<polygon points="6,2 22,12 6,22"/>'; }
     function startProgressTimer() {
       clearInterval(musicProgressInterval); musicProgressInterval = setInterval(() => {
-        if (!musicPlaying) return;
-        // If real audio is playing, the poll handles progress; only manual-increment as fallback
-        if (!_musicAudio || _musicAudio.paused) { musicProgress += 1; }
-        if (musicProgress >= musicTrackDuration) { if (musicCurrentTrackIdx < allTracks.length - 1) { playTrack(musicCurrentTrackIdx + 1); } else { musicPlaying = false; updatePlayIcon(); clearInterval(musicProgressInterval); } return; }
-        updateProgressUI();
-      }, 1000);
+        if (!musicPlaying || !_youtubeMusicPlayer || !_youtubeMusicReady) return;
+        try {
+          const duration = _youtubeMusicPlayer.getDuration();
+          const currentTime = _youtubeMusicPlayer.getCurrentTime();
+          if (duration > 0 && isFinite(duration)) musicTrackDuration = Math.floor(duration);
+          if (currentTime >= 0 && isFinite(currentTime)) musicProgress = Math.floor(currentTime);
+          updateProgressUI();
+        } catch(e) {}
+      }, 500);
     }
     function updateProgressUI() {
-      const pct = (musicProgress / musicTrackDuration) * 100; musicScreen.querySelector('#musicNPFill').style.transform = 'scaleX(' + (pct/100) + ')'; musicScreen.querySelector('#musicNPKnob').style.left = pct + '%';
-      const em = Math.floor(musicProgress / 60), es = (musicProgress % 60).toString().padStart(2, '0'); const rem = musicTrackDuration - musicProgress, rm = Math.floor(rem / 60), rs = (rem % 60).toString().padStart(2, '0');
+      const safeDuration = Math.max(1, musicTrackDuration); const pct = Math.max(0, Math.min(100, (musicProgress / safeDuration) * 100)); musicScreen.querySelector('#musicNPFill').style.transform = 'scaleX(' + (pct/100) + ')'; musicScreen.querySelector('#musicNPKnob').style.left = pct + '%';
+      const em = Math.floor(musicProgress / 60), es = (musicProgress % 60).toString().padStart(2, '0'); const rem = Math.max(0, musicTrackDuration - musicProgress), rm = Math.floor(rem / 60), rs = (rem % 60).toString().padStart(2, '0');
       musicScreen.querySelector('#musicNPElapsed').textContent = em + ':' + es; musicScreen.querySelector('#musicNPRemain').textContent = '-' + rm + ':' + rs;
     }
-    musicScreen.querySelector('#musicPlayPause').addEventListener('click', () => { iPhoneSounds.tap(); musicPlaying = !musicPlaying; updatePlayIcon(); if (musicPlaying) { startProgressTimer(); if (_musicAudio) _musicAudio.play().catch(()=>{}); } else { clearInterval(musicProgressInterval); if (_musicAudio) _musicAudio.pause(); } });
+    musicScreen.querySelector('#musicPlayPause').addEventListener('click', () => {
+      iPhoneSounds.tap();
+      if (!_youtubeMusicPlayer || !_youtubeMusicReady) {
+        musicPlaying = true;
+        updatePlayIcon();
+        playYouTubeTrack(allTracks[musicCurrentTrackIdx]);
+        return;
+      }
+      if (musicPlaying) pauseYouTubeTrack();
+      else {
+        musicPlaying = true;
+        setMusicStatus('');
+        updatePlayIcon();
+        try { _youtubeMusicPlayer.playVideo(); } catch(e) { handleYouTubeMusicError(); }
+      }
+    });
     musicScreen.querySelector('#musicNext').addEventListener('click', () => { iPhoneSounds.tap(); playTrack((musicCurrentTrackIdx + 1) % allTracks.length); });
     musicScreen.querySelector('#musicPrev').addEventListener('click', () => { iPhoneSounds.tap(); playTrack(musicCurrentTrackIdx > 0 ? musicCurrentTrackIdx - 1 : allTracks.length - 1); });
-    musicScreen.querySelector('#musicNPBarWrap').addEventListener('click', (e) => { const rect = e.currentTarget.getBoundingClientRect(); const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width)); musicProgress = Math.floor(pct * musicTrackDuration); if (_musicAudio) _musicAudio.currentTime = musicProgress; updateProgressUI(); });
+    musicScreen.querySelector('#musicNPBarWrap').addEventListener('click', (e) => { const rect = e.currentTarget.getBoundingClientRect(); const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width)); musicProgress = Math.floor(pct * musicTrackDuration); if (_youtubeMusicPlayer && _youtubeMusicReady) { try { _youtubeMusicPlayer.seekTo(musicProgress, true); } catch(err) {} } updateProgressUI(); });
     musicScreen.querySelector('#musicBackBtn').addEventListener('click', () => {
       if (musicNP.classList.contains('visible')) { openSongs(); }
-      else { stopAudioTrack(); musicPlaying = false; clearInterval(musicProgressInterval); closeApp(); }
+      else { closeApp(); }
     });
+    musicScreen._initMusic = function() { ensureYouTubeMusicApi().catch(function() { _youtubeMusicApiPromise = null; }); };
     apps.music = musicScreen;
 
     // --- PHOTOBOOTH ---
@@ -8644,33 +8848,61 @@ document.addEventListener('DOMContentLoaded', () => {
     pgScreen.style.cssText = 'display:flex;flex-direction:column;';
 
     const pgDocs = [
-      { id: 'resume', title: 'resume', meta: 'pdf · tap to download', body: '' },
+      { id: 'resume', title: 'resume', meta: 'pdf · tap to preview', body: '', bodyEs: '' },
       { id: 'crib-onesheet', title: 'my digital crib — one sheet', meta: 'edited today · 1 page', body: `MY DIGITAL CRIB
-michelle salcedo — portfolio
+michelle salcedo — creative portfolio
 
-what it is:
-a pixel-art world built like a tiny video game. click around the bedroom, boot up doors xt, explore the phone, and find my work hidden across the room.
+the short version:
+i design websites, creative systems, and campaigns that are useful, memorable, and allergic to looking generic.
 
 what i do:
 web design · influencer marketing · creative direction · ai workflows · photography
 
-i build distinctive digital experiences, organize creative systems, and turn ideas into campaigns and websites that actually feel like something.
+how i work:
+i turn fuzzy ideas into clear plans, keep the moving pieces organized, and make the final experience feel human. spreadsheets are involved, but they are supervised.
 
 where i've been:
 brainlabs · inbeat agency · my digital crib
-plus years working across account management, creative operations, and photography.
+plus years across account management, creative operations, and photography.
 
-currently obsessed with:
-interactive websites · pixel art · internet nostalgia · ai-assisted workflows · making portfolios feel less like portfolios
+why this site is a tiny world:
+because a portfolio can show the work and the thinking behind it. also, a normal PDF did not have enough buttons.
+
+good fit for:
+teams, clients, and collaborators looking for thoughtful digital work with personality and a reliable process underneath it.
 
 contact:
 youfoundmichelle@gmail.com
-mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcats/ · @mydigitalcrib` }
+mydigitalcrib.com · linkedin.com/in/marketingwithcats · @mydigitalcrib`, bodyEs: `MY DIGITAL CRIB
+michelle salcedo — portfolio creativo
+
+la versión corta:
+diseño websites, sistemas creativos y campañas que sean útiles, memorables y alérgicas a verse genéricas.
+
+lo que hago:
+diseño web · marketing de influencers · dirección creativa · flujos de IA · fotografía
+
+cómo trabajo:
+convierto ideas borrosas en planes claros, organizo todas las piezas y hago que la experiencia final se sienta humana. hay hojas de cálculo, pero están bajo supervisión.
+
+dónde he estado:
+brainlabs · inbeat agency · my digital crib
+además de varios años en account management, operaciones creativas y fotografía.
+
+por qué este sitio es un mundo pequeño:
+porque un portfolio puede mostrar el trabajo y también cómo pienso. además, un PDF normal no tenía suficientes botones.
+
+buena combinación para:
+equipos, clientes y colaboradores que buscan trabajo digital con intención, personalidad y un proceso confiable detrás.
+
+contacto:
+youfoundmichelle@gmail.com
+mydigitalcrib.com · linkedin.com/in/marketingwithcats · @mydigitalcrib` }
     ];
 
     // Store current doc content (for editing)
     const pgDocContent = {};
-    pgDocs.forEach(d => { pgDocContent[d.id] = { title: d.title, body: d.body }; });
+    pgDocs.forEach(d => { pgDocContent[d.id] = { title: d.title, body: d.body, bodyEs: d.bodyEs || '' }; });
 
     let pgCurrentDoc = null;
     let pgEditing = false;
@@ -8692,7 +8924,9 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
                 <div class="pg-doc-title">${d.title}</div>
                 <div class="pg-doc-meta">${d.meta}</div>
               </div>
-              <div class="pg-doc-arrow">›</div>
+              ${d.id === 'resume'
+                ? '<button class="pg-preview-btn" type="button" data-pg-preview="resume">Preview</button>'
+                : '<div class="pg-doc-arrow">›</div>'}
             </div>
           `).join('')}
         </div>
@@ -8713,6 +8947,17 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
             <div class="pg-edit-btn save" id="pgSaveEdit">Save</div>
           </div>
         </div>
+        <div class="pg-resume-preview" id="pgResumePreview">
+          <div class="pg-resume-toolbar">
+            <button class="pg-resume-back" id="pgResumeBack" type="button" aria-label="Back to documents" title="Back">&#8249;</button>
+            <div class="pg-resume-title">Resume preview</div>
+            <a class="pg-resume-download" href="assets/michelle-salcedo-resume.pdf" download="Michelle Salcedo - Resume.pdf">Download</a>
+          </div>
+          <div class="pg-resume-pages" id="pgResumePages">
+            <img class="pg-resume-page" src="assets/resume-preview.png" alt="Michelle Salcedo resume, page 1" decoding="async">
+            <img class="pg-resume-page" src="assets/resume-preview-2.png" alt="Michelle Salcedo resume, page 2" loading="lazy" decoding="async">
+          </div>
+        </div>
       </div>`;
 
     appContainer.appendChild(pgScreen);
@@ -8730,13 +8975,23 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
     const pgCancelEdit = pgScreen.querySelector('#pgCancelEdit');
     const pgSaveEdit = pgScreen.querySelector('#pgSaveEdit');
     const pgPaperScroll = pgScreen.querySelector('.pg-paper-scroll');
+    const pgResumePreview = pgScreen.querySelector('#pgResumePreview');
+    const pgResumeBack = pgScreen.querySelector('#pgResumeBack');
+    const pgResumePages = pgScreen.querySelector('#pgResumePages');
+    let pgCurrentBodyKey = 'body';
+
+    function pgLanguage() {
+      if (window.CribI18n && window.CribI18n.getLanguage) return window.CribI18n.getLanguage();
+      return window.cribLanguage === 'es' ? 'es' : 'en';
+    }
 
     function pgOpenDoc(docId) {
       const doc = pgDocContent[docId];
       if (!doc) return;
       pgCurrentDoc = docId;
+      pgCurrentBodyKey = pgLanguage() === 'es' && doc.bodyEs ? 'bodyEs' : 'body';
       pgPaperTitle.textContent = doc.title;
-      pgPaperBody.textContent = doc.body;
+      pgPaperBody.textContent = doc[pgCurrentBodyKey];
       pgReaderTitleBar.textContent = doc.title;
       pgPaperBody.contentEditable = 'false';
       pgPaperBody.classList.remove('editing');
@@ -8755,6 +9010,23 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
       pgScreen.querySelector('.pg-topbar').style.display = '';
       pgDocList.style.display = '';
       pgCurrentDoc = null;
+      pgCurrentBodyKey = 'body';
+    }
+
+    function pgOpenResumePreview() {
+      iPhoneSounds.tap();
+      pgDocList.style.display = 'none';
+      pgScreen.querySelector('.pg-topbar').style.display = 'none';
+      pgReader.classList.remove('active');
+      pgResumePreview.classList.add('active');
+      pgResumePages.scrollTop = 0;
+    }
+
+    function pgCloseResumePreview() {
+      iPhoneSounds.tap();
+      pgResumePreview.classList.remove('active');
+      pgScreen.querySelector('.pg-topbar').style.display = '';
+      pgDocList.style.display = '';
     }
 
     function pgEnterEdit() {
@@ -8768,9 +9040,9 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
 
     function pgExitEdit(save) {
       if (save && pgCurrentDoc) {
-        pgDocContent[pgCurrentDoc].body = pgPaperBody.innerText;
+        pgDocContent[pgCurrentDoc][pgCurrentBodyKey] = pgPaperBody.innerText;
       } else if (pgCurrentDoc) {
-        pgPaperBody.textContent = pgDocContent[pgCurrentDoc].body;
+        pgPaperBody.textContent = pgDocContent[pgCurrentDoc][pgCurrentBodyKey];
       }
       pgEditing = false;
       pgPaperBody.contentEditable = 'false';
@@ -8781,50 +9053,37 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
 
     pgDocList.querySelectorAll('.pg-doc-row').forEach(row => {
       row.addEventListener('click', () => {
-        if (row.dataset.pgdoc === 'resume') { pgAskResumeDownload(); return; }
+        if (row.dataset.pgdoc === 'resume') { pgOpenResumePreview(); return; }
         pgOpenDoc(row.dataset.pgdoc);
+      });
+      if (row.dataset.pgdoc !== 'resume') {
+        row.setAttribute('role', 'button');
+        row.setAttribute('tabindex', '0');
+        row.addEventListener('keydown', event => {
+          if (event.key !== 'Enter' && event.key !== ' ') return;
+          event.preventDefault();
+          row.click();
+        });
+      }
+    });
+
+    pgDocList.querySelectorAll('[data-pg-preview="resume"]').forEach(button => {
+      button.addEventListener('click', event => {
+        event.stopPropagation();
+        pgOpenResumePreview();
       });
     });
 
-    // Resume doc — ask before downloading the PDF
-    function pgAskResumeDownload() {
-      iPhoneSounds.tap();
-      const overlay = document.createElement('div');
-      overlay.className = 'ios4-alert-overlay';
-      overlay.innerHTML =
-        '<div class="ios4-alert-box">' +
-          '<div class="ios4-alert-body">' +
-            '<div class="ios4-alert-title">resume</div>' +
-            '<div class="ios4-alert-msg">do you want to download my resume :)?</div>' +
-          '</div>' +
-          '<div class="ios4-alert-btns">' +
-            '<div class="ios4-alert-btn" id="pgResumeNo">no</div>' +
-            '<div class="ios4-alert-btn" id="pgResumeYes">yes</div>' +
-          '</div>' +
-        '</div>';
-      function pgCloseAlert() {
-        overlay.style.opacity = '0';
-        overlay.style.transition = 'opacity 0.15s ease';
-        setTimeout(function() { overlay.remove(); }, 150);
-      }
-      overlay.querySelector('#pgResumeNo').addEventListener('click', function() {
-        iPhoneSounds.tap();
-        pgCloseAlert();
-      });
-      overlay.querySelector('#pgResumeYes').addEventListener('click', function() {
-        iPhoneSounds.tap();
-        const a = document.createElement('a');
-        a.href = 'assets/michelle-salcedo-resume.pdf';
-        a.download = 'Michelle Salcedo - Resume.pdf';
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        pgCloseAlert();
-      });
-      pgScreen.appendChild(overlay);
-    }
-
     pgBackBtn.addEventListener('click', pgCloseDoc);
+    pgResumeBack.addEventListener('click', pgCloseResumePreview);
+
+    document.addEventListener('cribLanguageChanged', event => {
+      if (!pgCurrentDoc || pgEditing) return;
+      const doc = pgDocContent[pgCurrentDoc];
+      const nextLanguage = event.detail && event.detail.language;
+      pgCurrentBodyKey = nextLanguage === 'es' && doc.bodyEs ? 'bodyEs' : 'body';
+      pgPaperBody.textContent = doc[pgCurrentBodyKey];
+    });
 
     pgEditBtn.addEventListener('click', () => {
       if (pgEditing) { pgExitEdit(true); }
@@ -8838,6 +9097,7 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
     pgScreen._pgReset = () => {
       if (pgEditing) pgExitEdit(false);
       if (pgCurrentDoc) pgCloseDoc();
+      if (pgResumePreview.classList.contains('active')) pgCloseResumePreview();
     };
 
     // ===== NEWSSTAND APP =====
@@ -12638,6 +12898,7 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
     if (appId === 'facetime' && screen._initFacetime) { screen._initFacetime(); }
     if (appId === 'instagram' && screen._initIg) { screen._initIg(); }
     if (appId === 'settings' && screen._initSettings) { screen._initSettings(); }
+    if (appId === 'music' && screen._initMusic) { screen._initMusic(); }
     if (window.cribQuestApp) { try { window.cribQuestApp(appId); } catch(e) {} }
     if (window.CribI18n) {
       setTimeout(() => window.CribI18n.translateTree(screen), 0);
@@ -13203,102 +13464,102 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
     const QUEST_COPY = {
       en: {
         intro: [
-          ['MAIN QUEST', 'you found my mangophone! i\'m michelle — web designer, creative director, and former owner of this phone.  👆 tap this bar to continue'],
-          ['MAIN QUEST', 'quick controls: drag the mango sideways to flip it — go ahead, it likes that. the round button takes you home.'],
-          ['SIDE QUEST', 'every app has a story and i\'ll narrate as you explore. think of me as your tour guide. tip your tour guide.']
+          ['MAIN QUEST', 'you found my mangophone. i\'m michelle: web designer, creative director, and the person who turned a resume into a tiny operating system. tap this bar and i\'ll show you around.'],
+          ['MAIN QUEST', 'quick controls: drag the mango sideways to flip it. the round button takes you home. delightfully old-school, suspiciously functional.'],
+          ['SIDE QUEST', 'each app reveals a piece of my work, process, or personality. useful for clients, hiring teams, collaborators, and curious internet people alike.']
         ],
         guide: [
-          ['MAIN QUEST', 'first stop: open my portfolio in the bottom dock. my websites and resume live in there. go on, i\'ll wait.'],
-          ['MAIN QUEST', 'great taste. now tap the resume result to preview both pages and download the PDF.'],
-          ['SIDE QUEST', 'resume unlocked. open the full PDF or download a copy; the rest of the phone is now legally snoopable. enjoy!']
+          ['MAIN QUEST', 'first stop: open my portfolio in the bottom dock. the client work and full resume live there, looking unusually organized.'],
+          ['MAIN QUEST', 'nice. now tap the resume result to preview both pages and download the PDF. Pages offers the same route with extra office nostalgia.'],
+          ['SIDE QUEST', 'the essentials are unlocked. explore the work, test the apps, or jump to contact when business calls. curiosity is welcome here.']
         ],
         advice: [
-          ['PIXEL TIP', 'the round button always takes you home. tiny button, enormous responsibility.'],
-          ['PIXEL TIP', 'drag the mango sideways whenever you want to flip it. yes, the back has secrets too.'],
-          ['MICHELLE SAYS', 'try a different wallpaper in settings. interior design counts even when the room is 320 pixels wide.'],
-          ['MICHELLE SAYS', 'the apps reward curiosity. tap things that look suspiciously tappable.'],
-          ['CRIB TIP', 'my portfolio in the dock has the downloadable resume and all the real client work.'],
-          ['CRIB TIP', 'the camera and photobooth have different filters. serious research requires testing all of them.'],
-          ['PIXEL TIP', 'switch day and night mode from the cartridges in the top corners.'],
-          ['MICHELLE SAYS', 'messages, mail, and notes hide some of the best tiny details in the phone.'],
-          ['CRIB TIP', 'music keeps playing while you explore, exactly as a 2010 phone should.'],
-          ['PIXEL TIP', 'open an app again and i\'ll keep dropping different advice here. i live in this box now.']
+          ['PIXEL TIP', 'the round button always takes you home. tiny button, excellent boundaries.'],
+          ['PIXEL TIP', 'drag the mango sideways to see the back. product design should reward a little curiosity.'],
+          ['MICHELLE SAYS', 'Settings has extra wallpapers. even a 320-pixel room deserves an art direction meeting.'],
+          ['MICHELLE SAYS', 'most things that look tappable are tappable. this website respects investigative clicking.'],
+          ['CRIB TIP', 'My Portfolio in the dock holds the client work, resume preview, and the practical reasons we might work together.'],
+          ['CRIB TIP', 'Camera and Photobooth use different filters. testing them all is quality assurance, technically.'],
+          ['PIXEL TIP', 'switch day and night mode with the cartridges in the top corners. same portfolio, different lighting budget.'],
+          ['MICHELLE SAYS', 'Messages, Mail, and Notes hide small details about how i think and work. yes, organization can have jokes.'],
+          ['CRIB TIP', 'Music keeps playing while you explore, with playback served by YouTube and the opinions supplied by me.'],
+          ['PIXEL TIP', 'open an app again for a different tip. this box stays on screen because good guidance should not vanish mid-tour.']
         ],
         apps: {
-          messages:['MESSAGES', 'my texts — mom checking if i ate, dad discovering emojis, emma the cat demanding her third dinner. feel free to answer for me, they\'ve stopped listening.'],
-          camera:['CAMERA', 'the camera — take a pic, try the filters. everything looks better in pixels, including me.'],
-          map:['MAPS', 'maps of maracay, my hometown in venezuela — the pins are the important spots. yes, the arepa place has its own pin. obviously.'],
-          music:['MUSIC', 'my music — 28 songs that raised me. press play. my taste is immaculate and i will not be taking questions.'],
-          photobooth:['PHOTOBOOTH', 'photobooth — four poses, zero shame. the strip comes out pixelated, like all good memories.'],
-          youtube:['MYTUBE', 'mytube — my watch history, unfiltered. yes, that\'s a 3-hour video essay about a show i\'ve never seen.'],
-          weather:['WEATHER', 'weather — current forecast: tropical, with a 100% chance of me complaining about anywhere colder.'],
-          voicememo:['VOICE MEMO', 'voice memos — exactly one lives here. it\'s called "just in case :)" and yes, it\'s for you. press play.'],
-          pages:['PAGES', 'pages — my resume lives here. tap it, download it, hire me. in that order, ideally.'],
-          notes:['NOTES', 'notes — resume, contact info, and the grocery list. harina pan is a whole personality and i\'m at peace with it.'],
-          calculator:['CALCULATOR', 'calculator — for invoices, rates, and splitting the check with mathematical justice.'],
-          compass:['COMPASS', 'compass — always points north, which is more direction than i have before coffee.'],
-          cards:['CARDS', 'cards — little letters i made. go on, read one. they\'re sweeter than my morning coffee.'],
-          clock:['CLOCK', 'clock — world clock for my timezones. jet lag is a lifestyle.'],
-          videos:['VIDEOS', 'videos — the moving pictures live here. few but iconic.'],
-          photos:['PHOTOS', 'photos — the camera roll, aka pastflash greatest hits. no bad angles, only bad lighting.'],
-          numbers:['NUMBERS', 'numbers — spreadsheets with feelings: the playlist tracker and expenses i regret.'],
-          instagram:['MICHISGRAM', 'michisgram — my feed, my rules. the grid is the portfolio. the likes are hypothetical.'],
-          garageband:['GARAGEBAND', 'garageband — where my unfinished hits live. one day the album. one day.'],
-          airport:['AIRPORT', 'airport — boarding passes and travel plans. maracay to everywhere.'],
-          phone:['PHONE', 'the phone app — dial someone. call your mom. this is a sign.'],
-          safari:['MY PORTFOLIO', 'welcome to my portfolio. every link is real client work, and the full resume is ready to preview or download.'],
-          mail:['MAIL', 'mail — the important one is from me. the button inside actually works. try it. i dare you. (please.)'],
-          settings:['SETTINGS', 'settings — toggles that actually work. try the wallpaper picker, i made extras just for you.']
+          messages:['MESSAGES', 'family updates, creative notes, and emma, my tuxedo cat, filing a formal request for another dinner. communication skills come in many formats.'],
+          camera:['CAMERA', 'take a photo and try the filters. creative direction is mostly choosing the right frame, plus a suspicious amount of moving things two pixels left.'],
+          map:['MAPS', 'a map of maracay, my hometown in venezuela. the important landmarks are pinned, including the arepa stop because priorities need coordinates.'],
+          music:['MUSIC', '28 songs that shaped my taste. playback comes from YouTube; the strong editorial opinions come directly from me.'],
+          photobooth:['PHOTOBOOTH', 'four poses, a printable strip, and absolutely no pressure to look corporate. good ideas occasionally need a silly test photo.'],
+          youtube:['MYTUBE', 'a tiny watch history with music, internet culture, and the occasional video essay long enough to qualify as professional development.'],
+          weather:['WEATHER', 'today\'s forecast is tropical with a strong chance of me recommending better lighting and a backup plan.'],
+          voicememo:['VOICE MEMO', 'one short memo lives here for visitors. concise, useful, and somehow more organized than most meeting recordings.'],
+          pages:['PAGES', 'my resume lives here with a proper preview, a back button, and a download. even paperwork deserves good UX.'],
+          notes:['NOTES', 'project thoughts, contact details, and a grocery list. strategy and harina pan share a workspace peacefully.'],
+          calculator:['CALCULATOR', 'for estimates, rates, timelines, and splitting the check with calm mathematical diplomacy.'],
+          compass:['COMPASS', 'it reliably points north. i provide the creative direction; the compass handles the literal kind.'],
+          cards:['CARDS', 'small notes and postcards from the crib. proof that thoughtful details do not need a large file size.'],
+          clock:['CLOCK', 'world clocks for the places and teams i work with. deadlines are friendlier when everyone agrees what time it is.'],
+          videos:['VIDEOS', 'the moving-image shelf: compact, intentional, and free of a ten-season commitment.'],
+          photos:['PHOTOS', 'the camera roll and selected pastflash work. good light, strong framing, and very selective evidence of the outtakes.'],
+          numbers:['NUMBERS', 'spreadsheets with personality: playlists, budgets, and the quiet infrastructure behind creative work.'],
+          instagram:['MICHISGRAM', 'my visual feed at @mydigitalcrib. the grid is curated; the cat supervision is not optional.'],
+          garageband:['GARAGEBAND', 'unfinished loops and optimistic project names. every creative process needs a drawer labeled maybe brilliant.'],
+          airport:['AIRPORT', 'boarding passes and travel plans from maracay outward. remote collaboration, but make it carry-on friendly.'],
+          phone:['PHONE', 'dial a number or call someone you have been meaning to call. useful communication remains undefeated.'],
+          safari:['MY PORTFOLIO', 'real client work, project context, and the full resume ready to preview or download. this is the practical part, wearing pixel art.'],
+          mail:['MAIL', 'a direct note from me plus a contact button that genuinely works. efficient, friendly, and no mysterious inquiry database involved.'],
+          settings:['SETTINGS', 'working controls for sound, wallpaper, and phone details. customization is a feature, not a committee meeting.']
         }
       },
       es: {
         intro: [
-          ['MISIÓN PRINCIPAL', '¡encontraste mi mangophone! soy michelle — diseñadora web, directora creativa y antigua dueña de este teléfono. 👆 toca esta barra para continuar'],
-          ['MISIÓN PRINCIPAL', 'controles rápidos: arrastra el mango hacia un lado para voltearlo. el botón redondo te lleva al inicio.'],
-          ['MISIÓN SECUNDARIA', 'cada app tiene una historia y yo te la cuento mientras exploras. piensa en mí como tu guía turística.']
+          ['MISIÓN PRINCIPAL', 'encontraste mi mangophone. soy michelle: diseñadora web, directora creativa y la persona que convirtió un currículum en un sistema operativo pequeño. toca esta barra y te muestro todo.'],
+          ['MISIÓN PRINCIPAL', 'controles rápidos: arrastra el mango hacia un lado para voltearlo. el botón redondo te lleva al inicio. deliciosamente retro y sospechosamente funcional.'],
+          ['MISIÓN SECUNDARIA', 'cada app muestra una parte de mi trabajo, mi proceso o mi personalidad. sirve para clientes, equipos de contratación, colaboradores y gente curiosa de internet.']
         ],
         guide: [
-          ['MISIÓN PRINCIPAL', 'primera parada: abre mi portfolio en el dock inferior. mis websites y mi resume viven ahí. dale, yo espero.'],
-          ['MISIÓN PRINCIPAL', 'buen gusto. ahora toca el resultado del resume para ver las dos páginas y descargar el PDF.'],
-          ['MISIÓN SECUNDARIA', 'resume desbloqueado. abre el PDF completo o descarga una copia; el resto del teléfono ya se puede curiosear legalmente. ¡disfruta!']
+          ['MISIÓN PRINCIPAL', 'primera parada: abre Mi Portfolio en el dock inferior. ahí viven los proyectos para clientes y el currículum completo, sorprendentemente ordenados.'],
+          ['MISIÓN PRINCIPAL', 'bien. ahora toca el resultado del currículum para ver las dos páginas y descargar el PDF. Pages ofrece la misma ruta con nostalgia de oficina.'],
+          ['MISIÓN SECUNDARIA', 'lo esencial está desbloqueado. explora el trabajo, prueba las apps o ve a contacto cuando sea momento de hablar de proyectos. la curiosidad es bienvenida.']
         ],
         advice: [
-          ['CONSEJO PIXEL', 'el botón redondo siempre te lleva al inicio. botón pequeño, responsabilidad enorme.'],
-          ['CONSEJO PIXEL', 'arrastra el mango hacia un lado cuando quieras voltearlo. sí, la parte de atrás también guarda secretos.'],
-          ['DICE MICHELLE', 'prueba otro fondo en ajustes. el diseño interior cuenta aunque el cuarto mida 320 píxeles.'],
-          ['DICE MICHELLE', 'las apps premian la curiosidad. toca todo lo que parezca sospechosamente tocable.'],
-          ['CONSEJO DEL CRIB', 'mi portfolio en el dock tiene el currículum descargable y todos los proyectos reales.'],
-          ['CONSEJO DEL CRIB', 'la cámara y el photobooth tienen filtros distintos. una investigación seria exige probarlos todos.'],
-          ['CONSEJO PIXEL', 'cambia entre día y noche con los cartuchos de las esquinas superiores.'],
-          ['DICE MICHELLE', 'mensajes, mail y notas esconden algunos de los mejores detalles del teléfono.'],
-          ['CONSEJO DEL CRIB', 'la música sigue sonando mientras exploras, exactamente como debe hacerlo un teléfono de 2010.'],
-          ['CONSEJO PIXEL', 'abre una app otra vez y seguiré dejando consejos distintos aquí. ahora vivo en esta caja.']
+          ['CONSEJO PIXEL', 'el botón redondo siempre te lleva al inicio. botón pequeño, límites excelentes.'],
+          ['CONSEJO PIXEL', 'arrastra el mango hacia un lado para ver la parte de atrás. un buen producto premia un poco de curiosidad.'],
+          ['DICE MICHELLE', 'Ajustes tiene fondos extra. hasta un cuarto de 320 píxeles merece una reunión de dirección de arte.'],
+          ['DICE MICHELLE', 'casi todo lo que parece tocable se puede tocar. este website respeta el click investigativo.'],
+          ['CONSEJO DEL CRIB', 'Mi Portfolio en el dock reúne proyectos reales, el currículum y las razones prácticas por las que podríamos trabajar juntos.'],
+          ['CONSEJO DEL CRIB', 'Cámara y Photobooth tienen filtros distintos. probarlos todos cuenta como control de calidad, técnicamente.'],
+          ['CONSEJO PIXEL', 'cambia entre día y noche con los cartuchos de las esquinas. el mismo portfolio, otro presupuesto de iluminación.'],
+          ['DICE MICHELLE', 'Mensajes, Mail y Notas guardan detalles sobre cómo pienso y trabajo. sí, la organización también puede contar chistes.'],
+          ['CONSEJO DEL CRIB', 'la música sigue sonando mientras exploras: YouTube pone el audio y yo pongo las opiniones.'],
+          ['CONSEJO PIXEL', 'abre una app otra vez para recibir otro consejo. esta caja se queda visible porque una buena guía no desaparece a mitad del recorrido.']
         ],
         apps: {
-          messages:['MENSAJES', 'mis mensajes — mamá preguntando si comí, papá descubriendo los emojis y emma exigiendo su tercera cena. puedes responder por mí.'],
-          camera:['CÁMARA', 'la cámara — toma una foto y prueba los filtros. todo se ve mejor en píxeles, incluyéndome.'],
-          map:['MAPAS', 'mapas de maracay, mi ciudad natal en venezuela. los pins marcan los lugares importantes. sí, el sitio de arepas tiene su propio pin.'],
-          music:['MÚSICA', 'mi música — 28 canciones que me criaron. dale play. mi gusto es impecable y no aceptaré preguntas.'],
-          photobooth:['PHOTOBOOTH', 'photobooth — cuatro poses y cero vergüenza. la tira sale pixelada, como todos los buenos recuerdos.'],
-          youtube:['MYTUBE', 'mytube — mi historial sin filtros. sí, hay un video ensayo de tres horas sobre una serie que nunca vi.'],
-          weather:['CLIMA', 'clima — pronóstico actual: tropical, con 100% de probabilidad de quejarme de cualquier lugar más frío.'],
-          voicememo:['NOTA DE VOZ', 'notas de voz — aquí vive exactamente una. se llama "por si acaso :)" y sí, es para ti. dale play.'],
-          pages:['PAGES', 'pages — aquí vive mi resume. tócalo, descárgalo y contrátame. idealmente en ese orden.'],
-          notes:['NOTAS', 'notas — resume, contacto y lista del mercado. la harina pan es una personalidad completa y estoy en paz con eso.'],
-          calculator:['CALCULADORA', 'calculadora — para facturas, tarifas y dividir la cuenta con justicia matemática.'],
-          compass:['BRÚJULA', 'brújula — siempre apunta al norte, más dirección de la que tengo antes del café.'],
-          cards:['TARJETAS', 'tarjetas — cartitas que hice. anda, lee una. son más dulces que mi café de la mañana.'],
-          clock:['RELOJ', 'reloj — horas del mundo para mis zonas horarias. el jet lag es un estilo de vida.'],
-          videos:['VIDEOS', 'videos — aquí viven las imágenes en movimiento. pocas pero icónicas.'],
-          photos:['FOTOS', 'fotos — el camera roll, también conocido como los grandes éxitos de pastflash. no hay malos ángulos, sólo mala luz.'],
-          numbers:['NUMBERS', 'numbers — hojas de cálculo con sentimientos: playlists y gastos de los que me arrepiento.'],
-          instagram:['MICHISGRAM', 'michisgram — mi feed, mis reglas. el grid es el portfolio. los likes son hipotéticos.'],
-          garageband:['GARAGEBAND', 'garageband — donde viven mis hits sin terminar. algún día sale el álbum. algún día.'],
-          airport:['AEROPUERTO', 'aeropuerto — pases de abordar y planes de viaje. de maracay para el mundo.'],
-          phone:['TELÉFONO', 'la app de teléfono — llama a alguien. llama a tu mamá. esta es una señal.'],
-          safari:['MI PORTFOLIO', 'bienvenido a mi portfolio. cada link es trabajo real para clientes y el resume completo está listo para ver o descargar.'],
-          mail:['MAIL', 'mail — el importante es el mío. el botón de adentro funciona de verdad. pruébalo. te reto. por favor.'],
-          settings:['AJUSTES', 'ajustes — controles que sí funcionan. prueba los wallpapers; hice extras sólo para ti.']
+          messages:['MENSAJES', 'actualizaciones familiares, notas creativas y emma, mi gata tuxedo, registrando una solicitud formal para otra cena. la comunicación tiene muchos formatos.'],
+          camera:['CÁMARA', 'toma una foto y prueba los filtros. la dirección creativa es elegir el encuadre correcto y mover algo dos píxeles a la izquierda muchas veces.'],
+          map:['MAPAS', 'un mapa de maracay, mi ciudad natal en venezuela. los lugares importantes están marcados, incluido el sitio de arepas porque las prioridades necesitan coordenadas.'],
+          music:['MÚSICA', '28 canciones que formaron mi gusto. YouTube pone la reproducción; las opiniones editoriales fuertes vienen directamente de mí.'],
+          photobooth:['PHOTOBOOTH', 'cuatro poses, una tira para guardar y cero presión por verse corporativo. las buenas ideas a veces necesitan una foto un poco absurda.'],
+          youtube:['MYTUBE', 'un historial pequeño con música, cultura de internet y algún video ensayo lo bastante largo como para contar como desarrollo profesional.'],
+          weather:['CLIMA', 'el pronóstico de hoy es tropical, con alta probabilidad de que recomiende mejor iluminación y un plan alternativo.'],
+          voicememo:['NOTA DE VOZ', 'aquí vive una nota corta para visitantes. concisa, útil y curiosamente más organizada que muchas grabaciones de reuniones.'],
+          pages:['PAGES', 'mi currículum vive aquí con vista previa, flecha para volver y descarga. hasta el papeleo merece buen UX.'],
+          notes:['NOTAS', 'ideas de proyectos, datos de contacto y una lista del mercado. la estrategia y la harina pan comparten espacio en paz.'],
+          calculator:['CALCULADORA', 'para presupuestos, tarifas, tiempos y dividir la cuenta con diplomacia matemática.'],
+          compass:['BRÚJULA', 'apunta al norte de forma confiable. yo pongo la dirección creativa; la brújula se ocupa de la literal.'],
+          cards:['TARJETAS', 'notas pequeñas y postales desde el crib. prueba de que un detalle pensado no necesita pesar muchos megabytes.'],
+          clock:['RELOJ', 'horas del mundo para los lugares y equipos con los que trabajo. los deadlines son más amables cuando todos saben qué hora es.'],
+          videos:['VIDEOS', 'el estante de imágenes en movimiento: compacto, intencional y sin compromiso de diez temporadas.'],
+          photos:['FOTOS', 'el camera roll y una selección de pastflash. buena luz, buen encuadre y evidencia muy selectiva de los descartes.'],
+          numbers:['NUMBERS', 'hojas de cálculo con personalidad: playlists, presupuestos y la infraestructura silenciosa detrás del trabajo creativo.'],
+          instagram:['MICHISGRAM', 'mi feed visual en @mydigitalcrib. el grid está curado; la supervisión felina no es opcional.'],
+          garageband:['GARAGEBAND', 'loops sin terminar y nombres de proyecto optimistas. todo proceso creativo necesita una carpeta llamada quizá brillante.'],
+          airport:['AEROPUERTO', 'pases de abordar y planes de viaje desde maracay hacia afuera. colaboración remota, pero compatible con equipaje de mano.'],
+          phone:['TELÉFONO', 'marca un número o llama a esa persona que tienes pendiente. la comunicación útil sigue invicta.'],
+          safari:['MI PORTFOLIO', 'trabajo real para clientes, contexto de proyectos y el currículum completo listo para ver o descargar. la parte práctica, vestida de pixel art.'],
+          mail:['MAIL', 'una nota directa de mi parte y un botón de contacto que sí funciona. eficiente, amable y sin ninguna base de datos misteriosa.'],
+          settings:['AJUSTES', 'controles funcionales para sonido, fondos y detalles del teléfono. personalizar es una función, no una reunión de comité.']
         }
       }
     };
@@ -13461,6 +13722,11 @@ window.siteUnlocked = true;
   // phone is sized correctly even if the main script stalls on a real device.
   function cribScale() {
     try {
+      if (typeof window.__requestCribPhoneScale === 'function') {
+        window.__requestCribPhoneScale();
+        return;
+      }
+      if (window.visualViewport && Math.abs(window.visualViewport.scale - 1) > 0.01) return;
       var vw = window.innerWidth, vh = window.innerHeight;
       var isMobile = vw <= 600, isTablet = vw > 600 && vw <= 1024;
       var wFactor = isMobile ? 1.06 : isTablet ? 1.05 : 0.95;
@@ -13628,7 +13894,8 @@ window.siteUnlocked = true;
   function bootNotifyParent() {
     try {
       if (window.parent && window.parent !== window) {
-        window.parent.postMessage({ type:'crib-mobile-ready' }, '*');
+        var targetOrigin = window.location.protocol === 'file:' ? '*' : window.location.origin;
+        window.parent.postMessage({ type:'crib-mobile-ready' }, targetOrigin);
       }
     } catch(e) {}
   }
@@ -13675,6 +13942,11 @@ window.siteUnlocked = true;
     bootRefreshLanguageLabels();
     window.addEventListener('message', function(event) {
       if (window.parent === window || event.source !== window.parent) return;
+      if (window.location.protocol === 'file:') {
+        if (event.origin !== 'null' && event.origin !== '') return;
+      } else if (event.origin !== window.location.origin) {
+        return;
+      }
       if (!event.data || event.data.type !== 'crib-language') return;
       bootApplyLanguage(event.data.language);
     });
@@ -13777,7 +14049,6 @@ window.siteUnlocked = true;
   });
   window.addEventListener('load', cribScale);
   window.addEventListener('resize', cribScale);
-  if (window.visualViewport) window.visualViewport.addEventListener('resize', cribScale);
   window.addEventListener('orientationchange', function() { setTimeout(cribScale, 250); });
   setTimeout(cribScale, 3200);
 

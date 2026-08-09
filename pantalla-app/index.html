@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
 
     <!-- Pixel Emoji Favicon -->
-    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" type="image/png" href="../assets/favicon.png" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -19,13 +19,13 @@
     <meta property="og:type" content="website" />
     <meta property="og:title" content="welcome :)" />
     <meta property="og:description" content="an interactive desktop experience" />
-    <meta property="og:image" content="/favicon.png" />
+    <meta property="og:image" content="../assets/favicon.png" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="welcome :)" />
     <meta name="twitter:description" content="an interactive desktop experience" />
-    <meta name="twitter:image" content="/favicon.png" />
+    <meta name="twitter:image" content="../assets/favicon.png" />
 
     <script src="../i18n.js"></script>
     <script type="module" crossorigin src="./assets/index-Csh_iLlX.js"></script>
@@ -111,10 +111,13 @@
           });
         });
 
-        observer.observe(document.getElementById('root'), {
-          childList: true,
-          subtree: true
-        });
+        var root = document.getElementById('root');
+        if (root) {
+          observer.observe(root, {
+            childList: true,
+            subtree: true
+          });
+        }
         window.addEventListener('resize', syncDesktopIconLayout);
       })();
     </script>
@@ -131,6 +134,12 @@
         cur.innerHTML = SVG;
         document.body.appendChild(cur);
         window.addEventListener('message', function (e) {
+          if (e.source !== window.parent) return;
+          if (window.location.protocol === 'file:') {
+            if (e.origin !== 'null' && e.origin !== '') return;
+          } else if (e.origin !== window.location.origin) {
+            return;
+          }
           var d = e.data;
           if (!d || d.type !== 'xp-cursor') return;
           if (d.hide) { cur.style.display = 'none'; return; }

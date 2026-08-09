@@ -1,0 +1,14 @@
+# Runtime and debug output
+*.log
+
+# Local secrets and Cloudflare state
+.env
+.env.*
+!.env.example
+.dev.vars
+.wrangler/
+
+# Local dependencies and editor/OS files
+node_modules/
+.DS_Store
+Thumbs.db

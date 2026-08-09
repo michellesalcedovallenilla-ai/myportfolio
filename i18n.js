@@ -41,7 +41,8 @@
     'for mom (not sent)':'Para mamá (no enviada)', 'if i ever actually mailed things':'Si alguna vez enviara cosas',
     'no older notifications':'No hay notificaciones anteriores', 'swipe to flip →':'desliza para voltear →',
     'slide to unlock':'desliza para desbloquear', 'tap to download':'toca para descargar',
-    'preview':'Vista previa', 'preview both pages':'Ver ambas páginas', 'open full pdf':'Abrir PDF completo',
+    'preview':'Vista previa', 'resume preview':'Vista previa del currículum',
+    'back to documents':'Volver a documentos', 'preview both pages':'Ver ambas páginas', 'open full pdf':'Abrir PDF completo',
     'download pdf':'Descargar PDF', 'main quest':'Misión principal', 'side quest':'Misión secundaria',
     'welcome':'Bienvenido', 'welcome :)':'bienvenido :)', 'password':'Contraseña', 'username':'Usuario',
     'log in':'Iniciar sesión', 'sign in':'Iniciar sesión', 'start':'Inicio', 'all programs':'Todos los programas',
@@ -59,7 +60,8 @@
     'pet the pixel cat':'acariciar a la gata pixelada',
     'light mode':'modo claro', 'night mode':'modo noche', 'michisearch':'michisearch',
     '7 results (0.42 seconds, obviously)':'7 resultados (0,42 segundos, obvio)',
-    'pdf · tap to download':'pdf · toca para descargar', 'edited today · 1 page':'editado hoy · 1 página',
+    'pdf · tap to download':'pdf · toca para descargar', 'pdf · tap to preview':'pdf · toca para ver',
+    'my digital crib — one sheet':'my digital crib — ficha rápida', 'edited today · 1 page':'editado hoy · 1 página',
     'edited yesterday · 5 slides':'editado ayer · 5 diapositivas', 'revised · 5 slides':'revisado · 5 diapositivas',
     '12 frames · 5 slides':'12 fotos · 5 diapositivas', '5 rows · regret':'5 filas · arrepentimiento',
     '6 rows · research':'6 filas · investigación', 'few but iconic':'pocos pero icónicos',
@@ -227,8 +229,9 @@
 
     /* MangoPhone app copy */
     ['thursday, january 1', 'jueves, 1 de enero'],
-    ['you should check this website again but in desktop', 'deberías volver a ver este sitio en desktop'],
-    ['its crazyyyy', 'es una locuraaa'], ['you literally just ate', 'literalmente acabas de comer'],
+    ['mobile portfolio online', 'portfolio móvil disponible'],
+    ['the full pixel room joins you on larger screens', 'el cuarto pixel completo aparece en pantallas más grandes'],
+    ['you literally just ate', 'literalmente acabas de comer'],
     ['third dinner it is', 'entonces será la tercera cena'],
     ['unknown number', 'número desconocido'], ['kindly send', 'por favor envía'],
     ['gift card', 'tarjeta de regalo'], ['emma the cat', 'emma la gata'],
@@ -426,6 +429,12 @@
 
   window.CribI18n = { setLanguage:setLanguage, getLanguage:function () { return language; }, translateTree:translateTree };
   window.addEventListener('message', function (event) {
+    if (event.source !== window.parent) return;
+    if (window.location.protocol === 'file:') {
+      if (event.origin !== 'null' && event.origin !== '') return;
+    } else if (event.origin !== window.location.origin) {
+      return;
+    }
     if (!event.data || event.data.type !== 'crib-language') return;
     setLanguage(event.data.language);
   });

@@ -2,13 +2,19 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>My Digital Crib</title>
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <script>
 /* modo mobile: oculta la version desktop (forzable con ?mobile para probar) */
 (function(){try{
+  window.cribMessageOrigin = location.protocol === 'file:' ? '*' : location.origin;
+  window.cribMessageIsTrusted = function(event, expectedSource) {
+    if (expectedSource && event.source !== expectedSource) return false;
+    if (location.protocol === 'file:') return event.origin === 'null' || event.origin === '';
+    return event.origin === location.origin;
+  };
   var force=/[?&#]mobile\b/.test(location.href);
   if(force||window.matchMedia('(max-width:820px)').matches)
     document.documentElement.classList.add('is-mobile');
@@ -471,6 +477,13 @@
 
   /* ---- modo mobile: solo la home mobile; la escena desktop queda oculta ---- */
   #mobileHome { display:none; }
+  html.is-mobile,
+  html.is-mobile body,
+  html.is-mobile #mobileHome,
+  html.is-mobile #mobileFrame {
+    touch-action: manipulation;
+    overscroll-behavior: none;
+  }
   html.is-mobile body > *:not(#mobileHome):not(#siteBoot) { display:none !important; }
   html.is-mobile #mobileHome {
     display:flex; position:fixed; inset:0; z-index:400;
@@ -524,8 +537,8 @@
   <div id="mobileHome">
     <img class="mh-face" src="assets/michelle.png" alt="Michelle">
     <div class="mh-title">MY DIGITAL CRIB</div>
-    <div class="mh-sub" id="mhSub">mobile version in the works</div>
-    <div class="mh-note" id="mhNote">meanwhile, the full pixel room lives on desktop</div>
+    <div class="mh-sub" id="mhSub">mobile portfolio online</div>
+    <div class="mh-note" id="mhNote">the full pixel room joins you on larger screens</div>
     <iframe id="mobileFrame" src="about:blank" data-src="mobile-app/index.html" title="my digital crib — mobile"></iframe>
   </div>
   <div class="scene" id="scene">
@@ -712,6 +725,18 @@
       </div>
       <iframe id="nokiaFrame" title="doorsxd mobile" src="about:blank"></iframe>
       <div class="tips-box" id="tipsNK"><div class="tips-title">💡 TIPS</div><ul></ul></div>
+    </div>
+    <div class="xp-tut nokia-say" id="nokiaSay" role="status" aria-live="polite">
+      <img class="xp-tut-cat" id="nokiaSayCat" src="assets/michelle.png" alt="Michelle">
+      <div class="xp-tut-main">
+        <div class="xp-tut-head">
+          <span class="xp-tut-title" id="nokiaSayTitle"></span>
+        </div>
+        <div class="xp-tut-text" id="nokiaSayText"></div>
+      </div>
+      <div class="xp-tut-nav">
+        <button class="xp-tut-btn primary" id="nokiaSayNext" type="button"></button>
+      </div>
     </div>
   </div>
 
@@ -977,7 +1002,10 @@
       const pf = ensureDeskScreenLoaded();
       if (!pf || !pf.contentWindow) return;
       const n = cursorNorm(el);
-      pf.contentWindow.postMessage({ type: 'xp-cursor', x: n.x, y: n.y }, '*');
+      pf.contentWindow.postMessage(
+        { type: 'xp-cursor', x: n.x, y: n.y },
+        window.cribMessageOrigin || '*'
+      );
     }
     /* clickcito sintetico (respeta el mute del tutorial) */
     function mouseClickSnd() {
@@ -1189,6 +1217,13 @@
   }
   #xpOverlay.with-tut .xp-tut { display:flex; animation:dlgIn .2s ease-out; }
   #xpOverlay.with-say .xp-tut { display:flex; animation:dlgIn .2s ease-out; cursor:pointer; }
+  #nokiaOverlay.with-say { flex-direction:column; gap:10px; padding:10px; }
+  #nokiaOverlay.with-say .nokia-window {
+    height:min(66vh,188vw); max-height:66vh; flex:0 0 auto;
+  }
+  #nokiaOverlay.with-say .nokia-say {
+    display:flex; width:min(94vw,620px); animation:dlgIn .2s ease-out;
+  }
   .xp-tut-cat {
     width:58px; height:58px; object-fit:cover; border-radius:8px; flex:0 0 auto;
     image-rendering:pixelated; border:2px solid #3d4763; background:#0a0c12;
@@ -1220,6 +1255,7 @@
     .coach-text { font-size:16px; }
     #xpOverlay.with-tut .xp-window,
     #xpOverlay.with-say .xp-window { max-height:44vh; }
+    #nokiaOverlay.with-say .nokia-window { height:min(58vh,188vw); max-height:58vh; }
     .xp-tut { padding:8px 10px; gap:8px; }
     .xp-tut-cat { width:42px; height:42px; }
     .xp-tut-text { font-size:15px; }
@@ -1256,10 +1292,10 @@
   const T = {
     en: {
       name: 'MICHELLE SALCEDO PORTFOLIO',
-      entry: "Hey, traveler! Welcome to my room.\nHow do you want to enter?",
+      entry: "Welcome to my digital crib.\nChoose your preferred soundtrack level.",
       sound: 'ENTER WITH SOUND', quiet: 'ENTER QUIETLY', skip: 'SKIP TUTORIAL',
-      questPC: 'MAIN QUEST\nTurn on the computer. Press the power button!',
-      questScreen: "Quest complete!\nNow click the screen to enter my main portfolio.",
+      questPC: 'MAIN QUEST\nTurn on the computer. The serious work is hiding inside the least serious interface.',
+      questScreen: "Quest complete!\nClick the screen to enter the main portfolio.",
       xpC1: 'Log in, then DOUBLE-CLICK the desktop icons to open each app.',
       xpC2: 'Drag windows around by their title bars, just like real Windows.',
       xpC3: "To go back: press ESC, the X button, or the monitor's power button.",
@@ -1267,7 +1303,7 @@
       nkC1: 'Move through the menus with the D-PAD and press the center to select.',
       nkC2: 'The number keys work too — tap them, or tap items right on the screen.',
       nkC3: 'Press ESC or the X to come back to the room.',
-      finale: 'The computer holds the main portfolio.\nEverything else is yours to discover. Good luck!',
+      finale: 'The computer holds the main portfolio.\nEverything else is bonus material with working buttons. Explore freely.',
       finish: 'FINISH', cont: '▼',
       xsTitle: 'HOW TO USE THIS PC', xsSkip: 'skip', xsGotIt: 'GOT IT ✓',
       xs1: "Wait for the loading screen, then click 'Michelle Salcedo'.\nThe password types itself — no typing needed!",
@@ -1278,10 +1314,10 @@
     },
     es: {
       name: 'MICHELLE SALCEDO PORTFOLIO',
-      entry: '¡Hey, viajero! Bienvenido a mi cuarto.\n¿Cómo quieres entrar?',
+      entry: 'Bienvenido a my digital crib.\nElige tu nivel preferido de soundtrack.',
       sound: 'ENTRAR CON SONIDO', quiet: 'ENTRAR SIN SONIDO', skip: 'SALTAR TUTORIAL',
-      questPC: 'MISIÓN PRINCIPAL\nEnciende la computadora. ¡Presiona el botón de poder!',
-      questScreen: '¡Misión cumplida!\nAhora haz click en la pantalla para entrar a mi portafolio principal.',
+      questPC: 'MISIÓN PRINCIPAL\nEnciende la computadora. El trabajo serio está escondido dentro de la interfaz menos seria.',
+      questScreen: '¡Misión cumplida!\nHaz click en la pantalla para entrar al portfolio principal.',
       xpC1: 'Inicia sesión y haz DOBLE CLICK en los íconos del escritorio para abrir cada app.',
       xpC2: 'Arrastra las ventanas por su barra de título, como en Windows de verdad.',
       xpC3: 'Para volver: presiona ESC, la X, o el botón de poder del monitor.',
@@ -1289,7 +1325,7 @@
       nkC1: 'Muévete por los menús con el D-PAD y presiona el centro para elegir.',
       nkC2: 'Las teclas numéricas también funcionan — tócalas o toca los elementos en pantalla.',
       nkC3: 'Presiona ESC o la X para volver al cuarto.',
-      finale: 'La computadora guarda el portafolio principal.\nTodo lo demás es tuyo para descubrir. ¡Suerte!',
+      finale: 'La computadora guarda el portfolio principal.\nTodo lo demás es material extra con botones funcionales. Explora con libertad.',
       finish: 'TERMINAR', cont: '▼',
       xsTitle: 'CÓMO USAR ESTA PC', xsSkip: 'saltar', xsGotIt: 'ENTENDIDO ✓',
       xs1: "Espera la pantalla de carga y haz click en 'Michelle Salcedo'.\n¡La contraseña se escribe sola!",
@@ -1302,31 +1338,31 @@
 
   const DESKTOP_TALK = {
     en: {
-      welcome: ['MAIN QUEST', "welcome to my digital crib. i'm michelle, your pixel tour guide. click the computer to enter the portfolio, and keep this box nearby for clues."],
+      welcome: ['MAIN QUEST', "welcome to my digital crib. i'm michelle. the computer holds the client work and resume; the room shows how my brain organizes ideas. this box stays nearby with useful clues."],
       next: 'NEXT TIP',
       advice: [
-        ['PIXEL TIP', 'turn on the computer, then click its screen to enter the main portfolio.'],
-        ['MICHELLE SAYS', 'double-click the desktop icons inside the computer. every app has something different to explore.'],
-        ['CRIB TIP', 'the orange cat opens my resume, and the cow opens my projects. excellent staffing choices.'],
-        ['PIXEL TIP', 'drag the lamp, phone, speaker, and mouse around the room. the room remembers where you leave them.'],
-        ['MICHELLE SAYS', 'the Nokia on the desk is interactive too. use its D-pad and center button to explore it.'],
-        ['CRIB TIP', 'press the green start button inside the computer to find every app in one place.'],
-        ['PIXEL TIP', 'day and night each have their own room details. use the switch in the corner to compare them.'],
-        ['MICHELLE SAYS', 'open an app again and i will trade the introduction for another useful tip. i live in this box now.']
+        ['PIXEL TIP', 'turn on the computer, then click its screen to enter the main portfolio. no IT ticket required.'],
+        ['MICHELLE SAYS', 'double-click the desktop icons inside the computer. each one opens a different part of the work or process.'],
+        ['CRIB TIP', 'the orange cat opens my resume and the cow opens client projects. unconventional filing system, very clear results.'],
+        ['PIXEL TIP', 'drag the lamp, phone, speaker, and mouse around the room. their positions are remembered because details matter.'],
+        ['MICHELLE SAYS', 'the Nokia is interactive too. use its D-pad and center button for the smaller, more button-heavy tour.'],
+        ['CRIB TIP', 'the green start button gathers every app in one menu. even a playful portfolio respects efficient navigation.'],
+        ['PIXEL TIP', 'day and night have different room details. use the corner switch to compare the lighting direction.'],
+        ['MICHELLE SAYS', 'open an app again and i will swap the introduction for another tip. this box stays visible throughout the visit.']
       ]
     },
     es: {
-      welcome: ['MISIÓN PRINCIPAL', 'bienvenido a my digital crib. soy michelle, tu guía pixel. haz click en la computadora para entrar al portafolio y mantén esta caja cerca para encontrar pistas.'],
+      welcome: ['MISIÓN PRINCIPAL', 'bienvenido a my digital crib. soy michelle. la computadora guarda los proyectos y el currículum; el cuarto muestra cómo organizo las ideas. esta caja se queda cerca con pistas útiles.'],
       next: 'OTRO CONSEJO',
       advice: [
-        ['CONSEJO PIXEL', 'enciende la computadora y luego haz click en su pantalla para entrar al portafolio principal.'],
-        ['DICE MICHELLE', 'haz doble click en los iconos dentro de la computadora. cada app tiene algo distinto para explorar.'],
-        ['CONSEJO DEL CRIB', 'el gato naranja abre mi resume y la vaca abre mis proyectos. excelente selección de personal.'],
-        ['CONSEJO PIXEL', 'arrastra la lámpara, el teléfono, el speaker y el mouse por el cuarto. el cuarto recuerda dónde los dejas.'],
-        ['DICE MICHELLE', 'el Nokia del escritorio también es interactivo. usa el D-pad y el botón central para explorarlo.'],
-        ['CONSEJO DEL CRIB', 'presiona el botón verde start dentro de la computadora para encontrar todas las apps.'],
-        ['CONSEJO PIXEL', 'el día y la noche tienen detalles distintos. usa el switch de la esquina para compararlos.'],
-        ['DICE MICHELLE', 'abre una app otra vez y cambiaré su explicación por otro consejo útil. ahora vivo en esta caja.']
+        ['CONSEJO PIXEL', 'enciende la computadora y haz click en la pantalla para entrar al portfolio principal. no hace falta abrir un ticket de soporte.'],
+        ['DICE MICHELLE', 'haz doble click en los iconos del escritorio. cada uno abre una parte distinta del trabajo o del proceso.'],
+        ['CONSEJO DEL CRIB', 'el gato naranja abre mi currículum y la vaca abre proyectos de clientes. archivo poco convencional, resultados bastante claros.'],
+        ['CONSEJO PIXEL', 'arrastra la lámpara, el teléfono, el speaker y el mouse. sus posiciones se guardan porque los detalles importan.'],
+        ['DICE MICHELLE', 'el Nokia también es interactivo. usa su D-pad y el botón central para el recorrido pequeño con muchos botones.'],
+        ['CONSEJO DEL CRIB', 'el botón verde start reúne todas las apps. hasta un portfolio juguetón respeta una navegación eficiente.'],
+        ['CONSEJO PIXEL', 'el día y la noche tienen detalles distintos. usa el switch de la esquina para comparar la dirección de iluminación.'],
+        ['DICE MICHELLE', 'abre una app otra vez y cambiaré la introducción por otro consejo. esta caja se mantiene visible durante toda la visita.']
       ]
     }
   };
@@ -1341,6 +1377,10 @@
   const telefono = document.getElementById('el-telefono');
   const xpOv = document.getElementById('xpOverlay');
   const nokiaOv = document.getElementById('nokiaOverlay');
+  const nokiaSayCat = document.getElementById('nokiaSayCat');
+  const nokiaSayTitle = document.getElementById('nokiaSayTitle');
+  const nokiaSayText = document.getElementById('nokiaSayText');
+  const nokiaSayNext = document.getElementById('nokiaSayNext');
 
   /* acceso seguro: si el navegador/preview bloquea localStorage, no romper nada */
   const store = {
@@ -1359,19 +1399,27 @@
     store.set('pr_lang', lang);
     document.documentElement.lang = lang;
     const mobileCopy = {
-      en: ['mobile version in the works', 'meanwhile, the full pixel room lives on desktop'],
-      es: ['version mobile en construccion', 'mientras, el pixel room completo vive en desktop']
+      en: ['mobile portfolio online', 'the full pixel room joins you on larger screens'],
+      es: ['portfolio móvil disponible', 'el cuarto pixel completo aparece en pantallas más grandes']
     }[lang];
     const mobileSub = document.getElementById('mhSub');
     const mobileNote = document.getElementById('mhNote');
     if (mobileSub) mobileSub.textContent = mobileCopy[0];
     if (mobileNote) mobileNote.textContent = mobileCopy[1];
     if (step) render();
-    else if (persistentTalk) showDesktopWelcome();
+    else hideDesktopTalk();
     if (xpSayMode && xpOv.classList.contains('open')) xpSayShow(null, true);
+    if (nokiaOv.classList.contains('with-say')) renderNokiaSay();
     if (window.CribI18n) window.CribI18n.setLanguage(lang);
     document.querySelectorAll('iframe').forEach(frame => {
-      try { if (frame.contentWindow) frame.contentWindow.postMessage({ type:'crib-language', language:lang }, '*'); }
+      try {
+        if (frame.contentWindow) {
+          frame.contentWindow.postMessage(
+            { type:'crib-language', language:lang },
+            window.cribMessageOrigin || '*'
+          );
+        }
+      }
       catch (error) {}
     });
     return lang;
@@ -1462,19 +1510,48 @@
     renderPersistentTalk();
   }
 
+  function hideDesktopTalk() {
+    persistentTalk = null;
+    clearInterval(twTimer);
+    typing = false;
+    faceTalk(false);
+    dlg.classList.remove('show');
+  }
+
+  let nokiaAdviceIndex = 0;
+  function renderNokiaSay() {
+    const t = T[lang];
+    const advice = [t.nkC1, t.nkC2, t.nkC3];
+    nokiaAdviceIndex = Math.max(0, Math.min(nokiaAdviceIndex, advice.length - 1));
+    nokiaSayTitle.textContent = '💬 ' + (lang === 'es' ? 'GUÍA NOKIA' : 'NOKIA GUIDE');
+    nokiaSayText.textContent = advice[nokiaAdviceIndex];
+    nokiaSayNext.textContent = lang === 'es' ? 'OTRO CONSEJO' : 'NEXT TIP';
+    nokiaSayCat.src = FACE_TALK;
+  }
+  function showNokiaSay(reset) {
+    if (!nokiaOv.classList.contains('open')) return;
+    if (reset) nokiaAdviceIndex = 0;
+    renderNokiaSay();
+    nokiaOv.classList.add('with-say');
+  }
+  function hideNokiaSay() {
+    nokiaOv.classList.remove('with-say');
+    nokiaSayCat.src = FACE_IDLE;
+  }
+  nokiaSayNext.addEventListener('click', e => {
+    e.stopPropagation();
+    nokiaAdviceIndex = (nokiaAdviceIndex + 1) % 3;
+    renderNokiaSay();
+    blip();
+  });
+
   function render() {
     const t = T[lang];
     dlgName.textContent = t.name;
     dlgActions.innerHTML = '';
     clearHl();
     if (!step) {
-      if (desktopTalkingEnabled()) {
-        if (!persistentTalk) persistentTalk = DESKTOP_TALK[lang].welcome;
-        renderPersistentTalk();
-      } else {
-        faceTalk(false);
-        dlg.classList.remove('show');
-      }
+      hideDesktopTalk();
       return;
     }
     dlg.classList.add('show');
@@ -1521,8 +1598,7 @@
     store.set('pr_tutorialDone', '1');
     store.set('pr_step', '');
     step = null;
-    persistentTalk = null;
-    showDesktopAdvice();
+    hideDesktopTalk();
   }
 
   /* sonido: silencia/activa TODOS los audios existentes; nunca reproduce solo */
@@ -1589,7 +1665,15 @@
     showMark();
   }
   function startXPCoach() { startXPTut(); } /* el panel guiado reemplaza al coach XP */
-  function startNokiaCoach() { startCoach('nk', 'pr_tutNokiaDone'); }
+  function startNokiaCoach() {
+    if (coach && coach.tag === 'nk') {
+      coach.marks = coachMarksNokia();
+      showMark();
+      return;
+    }
+    hideNokiaSay();
+    startCoach('nk', 'pr_tutNokiaDone');
+  }
   function showMark() {
     if (!coach) return;
     const m = coach.marks[coach.i], r = m.rect();
@@ -1618,6 +1702,7 @@
     const c = coach; coach = null;
     coachEl.style.display = 'none'; coachHl.style.display = 'none';
     if (save && c.doneKey) store.set(c.doneKey, '1');
+    if (c.tag === 'nk' && nokiaOv.classList.contains('open')) showNokiaSay(true);
   }
   coachEl.addEventListener('click', nextMark);
   window.addEventListener('resize', () => { if (coach) showMark(); });
@@ -1798,56 +1883,56 @@
      La app XP emite 'xp-window-open' (mismo origen); aqui Michelle lo
      comenta en el mismo panel/estilo del tutorial. Solo tras el tutorial. */
   const XP_SAY = {
-    about:      { en: "That's my story — skills, experience, and why your feed needs me. 📖",
-                  es: 'Esa soy yo — skills, experiencia y por qué tu feed me necesita. 📖' },
-    contact:    { en: 'Email AND phone, right there. I made it easy for you — say hi! ☎️',
-                  es: 'Email Y teléfono, ahí mismo. Te lo dejé fácil — ¡escríbeme! ☎️' },
-    resume:     { en: "The sacred scroll. There's a download button — take me with you. 📜",
-                  es: 'El pergamino sagrado. Hay botón de descarga — llévame contigo. 📜' },
-    portfolio:  { en: 'My work lives here! Photography in @pastflash 2019 and my websites portfolio. 📸',
-                  es: '¡Aquí vive mi trabajo! Fotografía en @pastflash 2019 y mi portafolio de websites. 📸' },
-    finder:     { en: 'Files and projects — click around, everything opens. 🗂️',
-                  es: 'Archivos y proyectos — dale click a todo, todo abre. 🗂️' },
-    camera:     { en: "Smile! ...or don't. The flying pig doesn't judge. 📷",
-                  es: '¡Sonríe! ...o no. El cerdito volador no juzga. 📷' },
-    music:      { en: 'My playlist. Volume up, obviously. 🎵',
-                  es: 'Mi playlist. Volumen al máximo, obviamente. 🎵' },
-    minesweeper:{ en: '10 mines. One wrong click and boom. GLHF. 💣',
-                  es: '10 minas. Un click mal y boom. Suerte. 💣' },
-    ie:         { en: 'My website inside my website. Site-ception. 🌐',
-                  es: 'Mi website dentro de mi website. Web-cepción. 🌐' },
-    messenger:  { en: 'Sign my guestbook! I read everything. ☀️',
-                  es: '¡Firma mi guestbook! Lo leo todo. ☀️' },
-    video:      { en: '“Naturally” by Selena Gomez. A certified classic. 📼',
-                  es: '“Naturally” de Selena Gomez. Un clásico certificado. 📼' },
-    project:    { en: 'One of my babies. Look at it. LOOK AT IT. 👀',
-                  es: 'Uno de mis bebés. Míralo. MÍRALO. 👀' },
-    paint:      { en: 'The tool of legends. Draw me something. 🎨',
-                  es: 'La herramienta de leyendas. Dibújame algo. 🎨' },
-    solitaire:  { en: 'Productivity ends here. 🃏',
-                  es: 'La productividad termina aquí. 🃏' }
+    about:      { en: 'Skills, experience, and the short version of how i turn ideas into organized creative work.',
+                  es: 'Skills, experiencia y la versión corta de cómo convierto ideas en trabajo creativo organizado.' },
+    contact:    { en: 'Email and phone, easy to find on purpose. Good communication starts before the first meeting.',
+                  es: 'Email y teléfono, fáciles de encontrar a propósito. la buena comunicación empieza antes de la primera reunión.' },
+    resume:     { en: 'The useful document behind the playful interface. Preview it here or download a copy for later.',
+                  es: 'El documento útil detrás de la interfaz juguetona. míralo aquí o descarga una copia para después.' },
+    portfolio:  { en: 'Selected websites, photography, and project context. The work gets the main window, as it should.',
+                  es: 'Websites, fotografía y contexto de proyectos seleccionados. el trabajo ocupa la ventana principal, como debe ser.' },
+    finder:     { en: 'Files and projects live here. Click around; this filing cabinet actually rewards curiosity.',
+                  es: 'Aquí viven archivos y proyectos. haz click; este archivo sí premia la curiosidad.' },
+    camera:     { en: 'Try the camera. The flying pig is an art director with a very relaxed approval process.',
+                  es: 'Prueba la cámara. el cerdito volador es un director de arte con un proceso de aprobación bastante relajado.' },
+    music:      { en: 'A playlist for browsing the work. Volume is optional; having an opinion about the track is not.',
+                  es: 'Una playlist para recorrer el trabajo. el volumen es opcional; tener una opinión sobre la canción no.' },
+    minesweeper:{ en: 'Ten mines and one careful strategy. Project management, but with more immediate consequences.',
+                  es: 'Diez minas y una estrategia cuidadosa. gestión de proyectos, pero con consecuencias más inmediatas.' },
+    ie:         { en: 'My website inside my website. Very 2008, fully intentional, and somehow still useful.',
+                  es: 'Mi website dentro de mi website. muy 2008, totalmente intencional y de alguna manera todavía útil.' },
+    messenger:  { en: 'The guestbook is open. Short notes, project thoughts, and friendly hellos are all welcome.',
+                  es: 'El guestbook está abierto. notas cortas, ideas de proyectos y saludos amistosos son bienvenidos.' },
+    video:      { en: '“Naturally” by Selena Gomez. A certified classic and an important piece of operating-system culture.',
+                  es: '“Naturally” de Selena Gomez. un clásico certificado y una pieza importante de la cultura de sistemas operativos.' },
+    project:    { en: 'A closer look at one project: the choices, the details, and the work behind the polished final frame.',
+                  es: 'Una mirada cercana a un proyecto: las decisiones, los detalles y el trabajo detrás del resultado final.' },
+    paint:      { en: 'A tiny drawing tool for large creative authority. Make something; perfection has been disabled.',
+                  es: 'Una herramienta pequeña con gran autoridad creativa. dibuja algo; la perfección fue desactivada.' },
+    solitaire:  { en: 'A strategic pause disguised as a card game. Returning to the portfolio remains entirely possible.',
+                  es: 'Una pausa estratégica disfrazada de juego de cartas. volver al portfolio sigue siendo totalmente posible.' }
   };
   const XP_TALK = {
     en: {
-      welcome: ['WELCOME TO MY PORTFOLIO', 'double-click an icon and i will explain what lives inside. open it again and i will leave you a different tip.'],
+      welcome: ['WELCOME TO MY PORTFOLIO', 'double-click an icon to open the work, resume, or smaller experiments. the first visit gets context; later visits get a different useful tip.'],
       advice: [
-        ['PIXEL TIP', 'the orange cat is Resume.pdf. open it to preview or download my resume.'],
-        ['CRIB TIP', 'the cow opens Projects, where the client work lives.'],
-        ['MICHELLE SAYS', 'drag any open window by its blue title bar. yes, even the serious-looking ones.'],
-        ['PIXEL TIP', 'the green start button collects every app in one menu.'],
-        ['CRIB TIP', 'use the taskbar buttons to bring an open window back to the front.'],
-        ['MICHELLE SAYS', 'Internet Explorer opens my website inside my website. very 2008, very intentional.']
+        ['PIXEL TIP', 'the orange cat is Resume.pdf. open it to preview the experience and skills, then download a copy if useful.'],
+        ['CRIB TIP', 'the cow opens Projects, where client work gets context instead of being left alone in a pretty screenshot.'],
+        ['MICHELLE SAYS', 'drag any open window by its blue title bar. even serious information benefits from flexible placement.'],
+        ['PIXEL TIP', 'the green start button collects every app in one menu for visitors with efficient clicking agendas.'],
+        ['CRIB TIP', 'use the taskbar buttons to bring an open window forward. multitasking, preserved in pixel form.'],
+        ['MICHELLE SAYS', 'Internet Explorer opens my website inside my website. very 2008, very intentional, still practical.']
       ]
     },
     es: {
-      welcome: ['BIENVENIDO A MI PORTFOLIO', 'haz doble click en un icono y te explicaré qué vive dentro. ábrelo otra vez y te dejaré un consejo distinto.'],
+      welcome: ['BIENVENIDO A MI PORTFOLIO', 'haz doble click en un icono para abrir proyectos, currículum o experimentos pequeños. la primera visita da contexto; las siguientes ofrecen otro consejo útil.'],
       advice: [
-        ['CONSEJO PIXEL', 'el gato naranja es Resume.pdf. ábrelo para ver o descargar mi resume.'],
-        ['CONSEJO DEL CRIB', 'la vaca abre Projects, donde viven los trabajos para clientes.'],
-        ['DICE MICHELLE', 'arrastra cualquier ventana abierta por su barra azul. sí, incluso las que parecen serias.'],
-        ['CONSEJO PIXEL', 'el botón verde start reúne todas las apps en un solo menú.'],
-        ['CONSEJO DEL CRIB', 'usa los botones de la taskbar para traer una ventana abierta al frente.'],
-        ['DICE MICHELLE', 'Internet Explorer abre mi website dentro de mi website. muy 2008, totalmente intencional.']
+        ['CONSEJO PIXEL', 'el gato naranja es Resume.pdf. ábrelo para ver la experiencia y los skills, y descarga una copia si te sirve.'],
+        ['CONSEJO DEL CRIB', 'la vaca abre Projects, donde el trabajo para clientes tiene contexto y no sólo una captura bonita.'],
+        ['DICE MICHELLE', 'arrastra cualquier ventana por su barra azul. hasta la información seria agradece una ubicación flexible.'],
+        ['CONSEJO PIXEL', 'el botón verde start reúne todas las apps para quienes llegan con una agenda de clicks eficiente.'],
+        ['CONSEJO DEL CRIB', 'usa la taskbar para traer una ventana al frente. multitasking preservado en formato pixel.'],
+        ['DICE MICHELLE', 'Internet Explorer abre mi website dentro de mi website. muy 2008, totalmente intencional y todavía práctico.']
       ]
     }
   };
@@ -1927,7 +2012,7 @@
     else if (step === 'questScreen' && off) setStep('questPC');
   }, 60));
 
-  new MutationObserver(() => {
+  const xpOverlayObserver = new MutationObserver(() => {
     const open = xpOv.classList.contains('open');
     if (open) {
       if (step === 'questScreen') setStep('xpTips');
@@ -1940,18 +2025,22 @@
       if (coach && coach.tag === 'xp') endCoach(true);
       if (step === 'xpTips') setStep('questPhone');
     }
-  }).observe(xpOv, { attributes: true, attributeFilter: ['class'] });
+  });
+  if (xpOv) xpOverlayObserver.observe(xpOv, { attributes: true, attributeFilter: ['class'] });
 
-  new MutationObserver(() => {
+  const nokiaOverlayObserver = new MutationObserver(() => {
     const open = nokiaOv.classList.contains('open');
     if (open) {
       if (step === 'questPhone') setStep('phoneTips');
       else if (!step && !store.get('pr_tutNokiaDone')) startNokiaCoach();
+      else if (!step && !coach && !nokiaOv.classList.contains('with-say')) showNokiaSay(true);
     } else {
       if (coach && coach.tag === 'nk') endCoach(true);
+      hideNokiaSay();
       if (step === 'phoneTips') setStep('finale');
     }
-  }).observe(nokiaOv, { attributes: true, attributeFilter: ['class'] });
+  });
+  if (nokiaOv) nokiaOverlayObserver.observe(nokiaOv, { attributes: true, attributeFilter: ['class'] });
 
   /* teclado: coach primero, luego dialogos */
   let lastEsc = 0; /* Escape puede llegar duplicado desde iframes: ignorar el eco */
@@ -1998,8 +2087,8 @@
   if (document.documentElement.classList.contains('is-mobile')) {
     const mhLang = store.get('pr_lang') === 'es' ? 'es' : 'en';
     const mhTxt = {
-      en: ['mobile version in the works', 'meanwhile, the full pixel room lives on desktop'],
-      es: ['versión mobile en construcción', 'mientras, el pixel room completo vive en desktop']
+      en: ['mobile portfolio online', 'the full pixel room joins you on larger screens'],
+      es: ['portfolio móvil disponible', 'el cuarto pixel completo aparece en pantallas más grandes']
     }[mhLang];
     document.getElementById('mhSub').textContent = mhTxt[0];
     document.getElementById('mhNote').textContent = mhTxt[1];
@@ -2016,7 +2105,7 @@
     const saved = store.get('pr_step');
     setStep(forceTut ? 'entry' : (resumeMap[saved] || saved || 'entry'));
   } else {
-    showDesktopWelcome();
+    hideDesktopTalk();
   }
 })();
 </script>
@@ -2136,7 +2225,10 @@
     const mobileFrame = document.getElementById('mobileFrame');
     try {
       if (mobileFrame && mobileFrame.contentWindow) {
-        mobileFrame.contentWindow.postMessage({ type:'crib-language', language:selectedLanguage }, '*');
+        mobileFrame.contentWindow.postMessage(
+          { type:'crib-language', language:selectedLanguage },
+          window.cribMessageOrigin || '*'
+        );
       }
     } catch (error) {}
     refreshLanguageCopy();
@@ -2190,7 +2282,7 @@
     let reportReady;
     const childReady = new Promise(resolve => { reportReady = resolve; });
     const onMessage = event => {
-      if (event.source !== frame.contentWindow) return;
+      if (!window.cribMessageIsTrusted(event, frame.contentWindow)) return;
       if (!event.data || event.data.type !== 'crib-mobile-ready') return;
       window.removeEventListener('message', onMessage);
       setProgress(91, copy('aligned'));
