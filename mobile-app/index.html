@@ -880,6 +880,7 @@
     transform-origin: top left;
     background: #000;
     overflow: hidden;
+    touch-action: manipulation;
     border-radius: 10px;
     /* deep inset shadows — screen set into the mango body */
     box-shadow:
@@ -4370,6 +4371,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const iconGrid2 = document.getElementById('iconGrid2');
   const dockBar = document.getElementById('dockBar');
   const appContainer = document.getElementById('appScreensContainer');
+  const phoneScreenSlot = document.querySelector('.phone__screen-slot');
   const phoneFlipper = document.getElementById('phoneFlipper');
   const flipHint = document.getElementById('flipHint');
 
@@ -4377,9 +4379,40 @@ document.addEventListener('DOMContentLoaded', () => {
   let phoneState = 'locked';
   let currentPage = 0;
   let currentApp = null;
+  let appLaunchBlockedUntil = 0;
   let jiggleMode = false;
   let cameraStream = null;
   const capturedPhotos = [];
+
+  // Mobile browsers can synthesize a second click while handling a double tap.
+  // Keep that gesture inside the Mangophone instead of reopening the site/app.
+  if (phoneScreenSlot) {
+    let lastScreenTap = { time: 0, x: 0, y: 0, target: null };
+    const stopDoubleActivation = event => {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    };
+    phoneScreenSlot.addEventListener('dblclick', stopDoubleActivation, { capture: true });
+    phoneScreenSlot.addEventListener('click', event => {
+      if (event.detail > 1 || performance.now() < appLaunchBlockedUntil) stopDoubleActivation(event);
+    }, { capture: true });
+    phoneScreenSlot.addEventListener('touchend', event => {
+      const touch = event.changedTouches && event.changedTouches[0];
+      if (!touch) return;
+      const now = performance.now();
+      const target = event.target;
+      const sameTarget = target === lastScreenTap.target ||
+        (lastScreenTap.target && target instanceof Element && lastScreenTap.target instanceof Element &&
+          (target.contains(lastScreenTap.target) || lastScreenTap.target.contains(target)));
+      const nearby = Math.hypot(touch.clientX - lastScreenTap.x, touch.clientY - lastScreenTap.y) < 28;
+      if (sameTarget && nearby && now - lastScreenTap.time < 380) {
+        stopDoubleActivation(event);
+        lastScreenTap.time = 0;
+        return;
+      }
+      lastScreenTap = { time: now, x: touch.clientX, y: touch.clientY, target };
+    }, { capture: true, passive: false });
+  }
 
   // ===== MUSIC STATE =====
   let musicCtx = null;
@@ -12565,9 +12598,11 @@ mydigitalcrib.com · linkedin link: https://www.linkedin.com/in/marketingwithcat
 
   // ===== APP OPEN/CLOSE =====
   function openApp(appId) {
-    if (jiggleMode) return;
+    const now = performance.now();
+    if (jiggleMode || phoneState !== 'home' || currentApp || now < appLaunchBlockedUntil) return;
     const screen = allApps[appId];
     if (!screen) return;
+    appLaunchBlockedUntil = now + 450;
     iPhoneSounds.tap();
     currentApp = appId;
     phoneState = 'app';

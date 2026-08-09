@@ -1179,7 +1179,8 @@
 
   /* panel de tutorial guiado dentro de XP (espacio negro bajo la ventana) */
   #xpOverlay { flex-direction:column; gap:10px; padding:10px; }
-  #xpOverlay.with-tut .xp-window { width:min(94vw,116vh); max-height:62vh; flex:0 0 auto; }
+  #xpOverlay.with-tut .xp-window,
+  #xpOverlay.with-say .xp-window { width:min(94vw,116vh); max-height:62vh; flex:0 0 auto; }
   .xp-tut {
     display:none; width:min(94vw,116vh); flex:0 0 auto; align-items:center; gap:12px;
     background:#10131c; border:3px solid #3d4763; border-radius:10px;
@@ -1217,7 +1218,8 @@
     #helpBtn { bottom:auto; top:14px; }
     .coach { max-width:78vw; }
     .coach-text { font-size:16px; }
-    #xpOverlay.with-tut .xp-window { max-height:44vh; }
+    #xpOverlay.with-tut .xp-window,
+    #xpOverlay.with-say .xp-window { max-height:44vh; }
     .xp-tut { padding:8px 10px; gap:8px; }
     .xp-tut-cat { width:42px; height:42px; }
     .xp-tut-text { font-size:15px; }
@@ -1298,6 +1300,37 @@
     }
   };
 
+  const DESKTOP_TALK = {
+    en: {
+      welcome: ['MAIN QUEST', "welcome to my digital crib. i'm michelle, your pixel tour guide. click the computer to enter the portfolio, and keep this box nearby for clues."],
+      next: 'NEXT TIP',
+      advice: [
+        ['PIXEL TIP', 'turn on the computer, then click its screen to enter the main portfolio.'],
+        ['MICHELLE SAYS', 'double-click the desktop icons inside the computer. every app has something different to explore.'],
+        ['CRIB TIP', 'the orange cat opens my resume, and the cow opens my projects. excellent staffing choices.'],
+        ['PIXEL TIP', 'drag the lamp, phone, speaker, and mouse around the room. the room remembers where you leave them.'],
+        ['MICHELLE SAYS', 'the Nokia on the desk is interactive too. use its D-pad and center button to explore it.'],
+        ['CRIB TIP', 'press the green start button inside the computer to find every app in one place.'],
+        ['PIXEL TIP', 'day and night each have their own room details. use the switch in the corner to compare them.'],
+        ['MICHELLE SAYS', 'open an app again and i will trade the introduction for another useful tip. i live in this box now.']
+      ]
+    },
+    es: {
+      welcome: ['MISIÓN PRINCIPAL', 'bienvenido a my digital crib. soy michelle, tu guía pixel. haz click en la computadora para entrar al portafolio y mantén esta caja cerca para encontrar pistas.'],
+      next: 'OTRO CONSEJO',
+      advice: [
+        ['CONSEJO PIXEL', 'enciende la computadora y luego haz click en su pantalla para entrar al portafolio principal.'],
+        ['DICE MICHELLE', 'haz doble click en los iconos dentro de la computadora. cada app tiene algo distinto para explorar.'],
+        ['CONSEJO DEL CRIB', 'el gato naranja abre mi resume y la vaca abre mis proyectos. excelente selección de personal.'],
+        ['CONSEJO PIXEL', 'arrastra la lámpara, el teléfono, el speaker y el mouse por el cuarto. el cuarto recuerda dónde los dejas.'],
+        ['DICE MICHELLE', 'el Nokia del escritorio también es interactivo. usa el D-pad y el botón central para explorarlo.'],
+        ['CONSEJO DEL CRIB', 'presiona el botón verde start dentro de la computadora para encontrar todas las apps.'],
+        ['CONSEJO PIXEL', 'el día y la noche tienen detalles distintos. usa el switch de la esquina para compararlos.'],
+        ['DICE MICHELLE', 'abre una app otra vez y cambiaré su explicación por otro consejo útil. ahora vivo en esta caja.']
+      ]
+    }
+  };
+
   const dlg = document.getElementById('dlg');
   const dlgName = document.getElementById('dlgName');
   const dlgText = document.getElementById('dlgText');
@@ -1318,6 +1351,8 @@
   let lang = store.get('pr_lang') || 'en';
   let step = null;
   let twTimer = null, twStr = '', typing = false;
+  let persistentTalk = null;
+  let persistentAdviceIndex = -1;
 
   function setSiteLanguage(nextLang) {
     lang = nextLang === 'es' ? 'es' : 'en';
@@ -1332,6 +1367,8 @@
     if (mobileSub) mobileSub.textContent = mobileCopy[0];
     if (mobileNote) mobileNote.textContent = mobileCopy[1];
     if (step) render();
+    else if (persistentTalk) showDesktopWelcome();
+    if (xpSayMode && xpOv.classList.contains('open')) xpSayShow(null, true);
     if (window.CribI18n) window.CribI18n.setLanguage(lang);
     document.querySelectorAll('iframe').forEach(frame => {
       try { if (frame.contentWindow) frame.contentWindow.postMessage({ type:'crib-language', language:lang }, '*'); }
@@ -1384,6 +1421,7 @@
   }
   dlgText.addEventListener('click', () => {
     if (typing) { clearInterval(twTimer); typing = false; dlgText.textContent = twStr; }
+    else if (!step && persistentTalk) showDesktopAdvice();
   });
 
   function mkBtn(label, cls, fn) {
@@ -1394,12 +1432,51 @@
     return b;
   }
 
+  function desktopTalkingEnabled() {
+    return !document.documentElement.classList.contains('is-mobile');
+  }
+
+  function renderPersistentTalk() {
+    if (!desktopTalkingEnabled() || !persistentTalk) return;
+    clearHl();
+    dlgName.textContent = persistentTalk[0];
+    dlgActions.innerHTML = '';
+    dlgActions.append(mkBtn(DESKTOP_TALK[lang].next, 'primary', showDesktopAdvice));
+    dlg.classList.add('show');
+    typeText(persistentTalk[1]);
+  }
+
+  function showDesktopWelcome() {
+    if (!desktopTalkingEnabled()) return;
+    persistentTalk = DESKTOP_TALK[lang].welcome;
+    renderPersistentTalk();
+  }
+
+  function showDesktopAdvice() {
+    if (!desktopTalkingEnabled()) return;
+    const advice = DESKTOP_TALK[lang].advice;
+    let nextIndex = Math.floor(Math.random() * advice.length);
+    if (advice.length > 1 && nextIndex === persistentAdviceIndex) nextIndex = (nextIndex + 1) % advice.length;
+    persistentAdviceIndex = nextIndex;
+    persistentTalk = advice[nextIndex];
+    renderPersistentTalk();
+  }
+
   function render() {
     const t = T[lang];
     dlgName.textContent = t.name;
     dlgActions.innerHTML = '';
     clearHl();
-    if (!step) { faceTalk(false); dlg.classList.remove('show'); return; }
+    if (!step) {
+      if (desktopTalkingEnabled()) {
+        if (!persistentTalk) persistentTalk = DESKTOP_TALK[lang].welcome;
+        renderPersistentTalk();
+      } else {
+        faceTalk(false);
+        dlg.classList.remove('show');
+      }
+      return;
+    }
     dlg.classList.add('show');
     if (step === 'entry') {
       typeText(t.entry);
@@ -1443,7 +1520,9 @@
   function finishTutorial() {
     store.set('pr_tutorialDone', '1');
     store.set('pr_step', '');
-    step = null; render();
+    step = null;
+    persistentTalk = null;
+    showDesktopAdvice();
   }
 
   /* sonido: silencia/activa TODOS los audios existentes; nunca reproduce solo */
@@ -1708,7 +1787,7 @@
 
   xpTutBack.addEventListener('click', () => { if (xt) { blip(); xtGo(xt.i - 1); } });
   xpTutNext.addEventListener('click', () => {
-    if (xpSayMode) { blip(); xpSayHide(); return; }
+    if (xpSayMode) { xpSayShow(null, true); return; }
     if (!xt) return;
     blip();
     if (xt.i === XT_STEPS.length - 1) endXPTut(true); else xtGo(xt.i + 1);
@@ -1748,36 +1827,77 @@
     solitaire:  { en: 'Productivity ends here. 🃏',
                   es: 'La productividad termina aquí. 🃏' }
   };
-  let xpSayMode = false, xpSayT = null;
+  const XP_TALK = {
+    en: {
+      welcome: ['WELCOME TO MY PORTFOLIO', 'double-click an icon and i will explain what lives inside. open it again and i will leave you a different tip.'],
+      advice: [
+        ['PIXEL TIP', 'the orange cat is Resume.pdf. open it to preview or download my resume.'],
+        ['CRIB TIP', 'the cow opens Projects, where the client work lives.'],
+        ['MICHELLE SAYS', 'drag any open window by its blue title bar. yes, even the serious-looking ones.'],
+        ['PIXEL TIP', 'the green start button collects every app in one menu.'],
+        ['CRIB TIP', 'use the taskbar buttons to bring an open window back to the front.'],
+        ['MICHELLE SAYS', 'Internet Explorer opens my website inside my website. very 2008, very intentional.']
+      ]
+    },
+    es: {
+      welcome: ['BIENVENIDO A MI PORTFOLIO', 'haz doble click en un icono y te explicaré qué vive dentro. ábrelo otra vez y te dejaré un consejo distinto.'],
+      advice: [
+        ['CONSEJO PIXEL', 'el gato naranja es Resume.pdf. ábrelo para ver o descargar mi resume.'],
+        ['CONSEJO DEL CRIB', 'la vaca abre Projects, donde viven los trabajos para clientes.'],
+        ['DICE MICHELLE', 'arrastra cualquier ventana abierta por su barra azul. sí, incluso las que parecen serias.'],
+        ['CONSEJO PIXEL', 'el botón verde start reúne todas las apps en un solo menú.'],
+        ['CONSEJO DEL CRIB', 'usa los botones de la taskbar para traer una ventana abierta al frente.'],
+        ['DICE MICHELLE', 'Internet Explorer abre mi website dentro de mi website. muy 2008, totalmente intencional.']
+      ]
+    }
+  };
+  const xpAppOpenCounts = Object.create(null);
+  let xpAdviceIndex = -1;
+  let xpSayMode = false;
+
+  function xpRandomAdvice() {
+    const advice = XP_TALK[lang].advice;
+    let nextIndex = Math.floor(Math.random() * advice.length);
+    if (advice.length > 1 && nextIndex === xpAdviceIndex) nextIndex = (nextIndex + 1) % advice.length;
+    xpAdviceIndex = nextIndex;
+    return advice[nextIndex];
+  }
 
   function xpSayHide() {
     xpSayMode = false;
-    clearTimeout(xpSayT);
     clearTimeout(xtFaceT);
     if (!xt) xpTutCat.src = FACE_IDLE;
     xpOv.classList.remove('with-say');
   }
-  function xpSayShow(detail) {
-    if (xt || xpSayMode === 'locked' || !store.get('pr_tutXPDone')) return; /* el tutorial manda */
+  function xpSayShow(detail, forceAdvice) {
+    if (xt || xpSayMode === 'locked') return; /* el tutorial guiado manda */
     if (!xpOv.classList.contains('open')) return;
     const d = detail || {};
     const key = (d.type === 'finder' && d.title === 'Portfolio') ? 'portfolio' : d.type;
     const say = XP_SAY[key];
-    if (!say) return;
+    let message;
+    if (forceAdvice) {
+      message = xpRandomAdvice();
+    } else if (say) {
+      xpAppOpenCounts[key] = (xpAppOpenCounts[key] || 0) + 1;
+      message = xpAppOpenCounts[key] === 1
+        ? [String(d.title || key).toUpperCase(), say[lang] || say.en]
+        : xpRandomAdvice();
+    } else {
+      message = XP_TALK[lang].welcome;
+    }
     xpSayMode = true;
-    xpTutTitle.textContent = '💬 ' + String(d.title || key).toUpperCase();
+    xpTutTitle.textContent = '💬 ' + message[0];
     xpTutCount.textContent = '';
     xpTutCount.classList.remove('done');
-    xpTutText.textContent = say[lang] || say.en;
-    xpTutCat.src = FACE_TALK; /* habla sin parar mientras el panel este visible (cache, sin re-descarga) */
+    xpTutText.textContent = message[1];
+    xpTutCat.src = FACE_TALK;
     clearTimeout(xtFaceT);
     xpTutBack.style.display = 'none';
     xpTutSkip.style.display = 'none';
-    xpTutNext.style.display = 'none'; /* sin boton: click al panel o 9s y se va */
+    xpTutNext.style.display = 'none';
     if (!xpOv.classList.contains('with-say')) xpOv.classList.add('with-say');
     blip();
-    clearTimeout(xpSayT);
-    xpSayT = setTimeout(xpSayHide, 9000);
   }
   function xpSayBind(frame) {
     try {
@@ -1791,9 +1911,9 @@
     xpSayBind(xpFrameEl);
     xpSayBind(document.getElementById('el-pantalla'));
   }
-  /* sin boton "got it": tocar el panel lo cierra */
+  /* El panel siempre permanece: tocarlo cambia a otro consejo. */
   document.getElementById('xpTut').addEventListener('click', () => {
-    if (xpSayMode === true) { blip(); xpSayHide(); }
+    if (xpSayMode === true) xpSayShow(null, true);
   });
   xpFrameEl.addEventListener('load', xpSayAttach);
   const elPantallaFrame = document.getElementById('el-pantalla');
@@ -1813,6 +1933,7 @@
       if (step === 'questScreen') setStep('xpTips');
       /* guard !xt: startXPTut muta la clase (with-tut) y re-dispara este observer */
       else if (!step && !xt && !store.get('pr_tutXPDone')) startXPCoach();
+      else if (!step && !xt && !xpSayMode) xpSayShow();
     } else {
       if (xt) endXPTut(true);
       if (xpSayMode) xpSayHide();
@@ -1848,7 +1969,7 @@
       return;
     }
     if (xpSayMode === true) {
-      if (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') { xpSayHide(); e.preventDefault(); }
+      if (e.key === 'Enter' || e.key === ' ') { xpSayShow(null, true); e.preventDefault(); }
       return;
     }
     if (coach) {
@@ -1894,6 +2015,8 @@
     const resumeMap = { xpTips: 'questScreen', phoneTips: 'questPhone' };
     const saved = store.get('pr_step');
     setStep(forceTut ? 'entry' : (resumeMap[saved] || saved || 'entry'));
+  } else {
+    showDesktopWelcome();
   }
 })();
 </script>
