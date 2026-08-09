@@ -6625,7 +6625,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="ig-stat"><strong>312</strong><span>following</span></div>
               </div>
             </div>
-            <div class="ig-profile-name">michisgram</div>
+            <div class="ig-profile-name">@mydigitalcrib</div>
             <div class="ig-bio">hi, thanks for stopping by :)<br>web designer · influencer marketing · ai workflows<br>photography portfolio here at <span>@pastflash</span><br><span>www.mydigitalcrib.com</span></div>
             <div class="ig-followed">Followed by <strong>gabriela.jps</strong>, <strong>sinairlvodo</strong> + 51 more</div>
             <div class="ig-profile-btns"><div class="ig-pbtn" id="igBtnFollow">Following ⌄</div><div class="ig-pbtn" id="igBtnMsg">Message</div><div class="ig-pbtn ig-pbtn-add" id="igBtnAdd">＋</div></div>
@@ -6659,11 +6659,11 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="ig-lightbox" id="igLightbox">
         <div class="ig-lb-close" id="igLbClose">✕</div>
         <div class="ig-lb-card">
-          <div class="ig-lb-head"><div class="ig-avatar"><img src="assets/michelle-talk.gif" alt=""></div><div class="ig-username">michisgram</div></div>
+          <div class="ig-lb-head"><div class="ig-avatar"><img src="assets/michelle-talk.gif" alt=""></div><div class="ig-username">@mydigitalcrib</div></div>
           <div class="ig-lb-media"><img id="igLbImg" alt=""></div>
           <div class="ig-lb-actions"><span class="ig-like-btn" id="igLbLike">♥</span><span id="igLbComment" style="cursor:pointer">💬</span><span id="igLbShare" style="cursor:pointer">✈</span></div>
           <div class="ig-lb-likes"><strong id="igLbLikes"></strong></div>
-          <div class="ig-lb-cap"><strong>michisgram</strong> <span id="igLbCap"></span></div>
+          <div class="ig-lb-cap"><strong>@mydigitalcrib</strong> <span id="igLbCap"></span></div>
         </div>
       </div>
       <div class="ig-hlview" id="igHlView">
@@ -6673,7 +6673,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="ig-hl-close">tap anywhere to close</div>
       </div>
       <div class="ig-dm" id="igDm">
-        <div class="ig-dm-head"><div class="ig-dm-back" id="igDmBack">‹ michisgram</div><div class="ig-dm-title">michisgram 💌</div></div>
+        <div class="ig-dm-head"><div class="ig-dm-back" id="igDmBack">‹ @mydigitalcrib</div><div class="ig-dm-title">@mydigitalcrib 💌</div></div>
         <div class="ig-dm-msgs" id="igDmMsgs"></div>
         <div class="ig-dm-inputbar"><input id="igDmInput" placeholder="say something nice…"><div class="ig-dm-send" id="igDmSend">Send</div></div>
       </div>
@@ -6739,11 +6739,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const igFeedView = igScreen.querySelector('#igViewFeed');
     igPosts.forEach(p => {
       const card = document.createElement('div'); card.className = 'ig-feed-card';
-      card.innerHTML = `<div class="ig-fc-head"><div class="ig-fc-avatar"><img src="assets/michelle-talk.gif" alt=""></div><div class="ig-fc-name">michisgram</div></div>
+      card.innerHTML = `<div class="ig-fc-head"><div class="ig-fc-avatar"><img src="assets/michelle-talk.gif" alt=""></div><div class="ig-fc-name">@mydigitalcrib</div></div>
         <img class="ig-fc-img" src="${p.src}" loading="lazy" alt="">
         <div class="ig-fc-actions"><span class="ig-like-btn">♥</span><span class="ig-fc-comment" style="cursor:pointer">💬</span><span class="ig-fc-share" style="cursor:pointer">✈</span></div>
         <div class="ig-fc-likes"><strong>${p.likes} likes</strong></div>
-        <div class="ig-fc-cap"><strong>michisgram</strong> ${p.caption}</div>`;
+        <div class="ig-fc-cap"><strong>@mydigitalcrib</strong> ${p.caption}</div>`;
       card.querySelector('.ig-fc-img').addEventListener('click', () => { iPhoneSounds.tap(); igOpenLb(p); });
       card.querySelector('.ig-like-btn').addEventListener('click', (e) => igLikeToggle(e.target, p, card.querySelector('.ig-fc-likes strong')));
       card.querySelector('.ig-fc-comment').addEventListener('click', () => { iPhoneSounds.tap(); igToast('comments are off — the paparazzi were getting weird 📸'); });
