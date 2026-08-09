@@ -37,6 +37,88 @@
 
     <!-- React entry -->
 
+    <!-- Keep the animal desktop composition stable inside laptop-sized XP windows. -->
+    <style>
+      @media (min-width: 769px) and (max-width: 1440px) and (max-height: 900px) {
+        .xp-landscape-icon {
+          width: 56px !important;
+        }
+
+        .xp-landscape-animal {
+          width: 40px !important;
+          max-width: 40px !important;
+        }
+      }
+    </style>
+    <script>
+      (function () {
+        var LAPTOP_LAYOUT = {
+          'Internet Explorer': { x: 19.8, y: 2 },
+          'Video Player': { x: 37.7, y: 10 },
+          'Portfolio': { x: 50, y: 17.5 },
+          'Camera': { x: 70.8, y: 13 },
+          'Music': { x: 7.4, y: 22.5 },
+          'Contact': { x: 4.5, y: 50 },
+          'About Me': { x: 27.5, y: 41.5 },
+          'Resume.pdf': { x: 42.4, y: 44.5 },
+          'Projects': { x: 54.8, y: 46.5 },
+          'Games': { x: 73.5, y: 51 }
+        };
+
+        function laptopLayoutIsActive() {
+          return window.innerWidth >= 769
+            && window.innerWidth <= 1440
+            && window.innerHeight <= 900;
+        }
+
+        function syncDesktopIconLayout() {
+          var laptop = laptopLayoutIsActive();
+          var mode = laptop ? 'laptop' : 'desktop';
+          var icons = document.querySelectorAll('.xp-landscape-icon');
+
+          for (var i = 0; i < icons.length; i++) {
+            var icon = icons[i];
+            var labelNode = icon.querySelector('.xp-landscape-label');
+            var label = labelNode ? labelNode.textContent.trim() : '';
+            var position = LAPTOP_LAYOUT[label];
+
+            if (!icon.dataset.defaultLeft) {
+              icon.dataset.defaultLeft = icon.style.left;
+              icon.dataset.defaultTop = icon.style.top;
+            }
+
+            if (icon.dataset.responsiveLayout === mode) continue;
+
+            if (laptop && position) {
+              icon.style.left = position.x + 'vw';
+              icon.style.top = position.y + 'vh';
+            } else {
+              icon.style.left = icon.dataset.defaultLeft;
+              icon.style.top = icon.dataset.defaultTop;
+            }
+
+            icon.dataset.responsiveLayout = mode;
+          }
+        }
+
+        var framePending = false;
+        var observer = new MutationObserver(function () {
+          if (framePending) return;
+          framePending = true;
+          requestAnimationFrame(function () {
+            framePending = false;
+            syncDesktopIconLayout();
+          });
+        });
+
+        observer.observe(document.getElementById('root'), {
+          childList: true,
+          subtree: true
+        });
+        window.addEventListener('resize', syncDesktopIconLayout);
+      })();
+    </script>
+
     <!-- cursor controlado por el mouse pixel-art de la escena (postMessage) -->
     <script>
       (function () {
