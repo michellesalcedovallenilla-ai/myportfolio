@@ -580,7 +580,7 @@
       <span class="tag">cat</span>
     </div>
     <div class="el sprite" id="el-lamp" data-name="lamp"
-         style="left:81.771%; top:26.389%; width:5.469%;"
+         style="left:83.7024%; top:28.8618%; width:5.469%;"
          role="button" tabindex="0" aria-label="Toggle lamp" aria-pressed="false"
          onclick="toggleLamp()"
          onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleLamp();}">
@@ -754,9 +754,19 @@
   }
 
   /* ---------- lampara on/off ---------- */
+  const LAMP_POSITION_KEY = 'pr_lamp_position_v1';
   const lampMotionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
   let lampFlickerTimer = null;
   let lampFlickerEndTimer = null;
+  let lampAmbientTimer = null;
+  let lampAmbientRestoreTimer = null;
+  let lampInteractionVersion = 0;
+  let lampPreferredOn = false;
+
+  function isDesktopLamp() {
+    return !document.documentElement.classList.contains('is-mobile');
+  }
+
   function stopLampFlicker() {
     clearTimeout(lampFlickerTimer);
     clearTimeout(lampFlickerEndTimer);
@@ -781,21 +791,92 @@
       }, 820);
     }, 7000 + Math.random() * 10000);
   }
+
   function syncLampGlow(left, top) {
     const glow = document.getElementById('lampGlow');
     glow.style.left = (left - 15.771) + '%';
     glow.style.top = (top - 18.389) + '%';
   }
-  function toggleLamp() {
+
+  function saveLampPosition() {
     const lamp = document.getElementById('el-lamp');
-    if (lamp.dataset.dragged === '1') { lamp.dataset.dragged = ''; return; }
+    const left = parseFloat(lamp.style.left);
+    const top = parseFloat(lamp.style.top);
+    if (!Number.isFinite(left) || !Number.isFinite(top)) return;
+    try { localStorage.setItem(LAMP_POSITION_KEY, JSON.stringify({ left, top })); } catch (e) {}
+  }
+
+  function restoreLampPosition() {
+    const lamp = document.getElementById('el-lamp');
+    let position = null;
+    try { position = JSON.parse(localStorage.getItem(LAMP_POSITION_KEY)); } catch (e) {}
+    const left = position && Number.isFinite(position.left) ? position.left : parseFloat(lamp.style.left);
+    const top = position && Number.isFinite(position.top) ? position.top : parseFloat(lamp.style.top);
+    if (left < 0 || left > 100 || top < 0 || top > 100) return;
+    lamp.style.left = left + '%';
+    lamp.style.top = top + '%';
+    syncLampGlow(left, top);
+  }
+
+  function setLampState(isOn) {
+    const lamp = document.getElementById('el-lamp');
     const scene = document.getElementById('scene');
-    const isOn = lamp.classList.toggle('on');
+    lamp.classList.toggle('on', isOn);
     scene.classList.toggle('lamp-on', isOn);
     lamp.setAttribute('aria-pressed', String(isOn));
     if (isOn) scheduleLampFlicker();
     else stopLampFlicker();
   }
+
+  function stopLampAmbientCycle(restorePreferred) {
+    clearTimeout(lampAmbientTimer);
+    clearTimeout(lampAmbientRestoreTimer);
+    lampAmbientTimer = null;
+    lampAmbientRestoreTimer = null;
+    if (restorePreferred) setLampState(lampPreferredOn);
+  }
+
+  function scheduleLampAmbientCycle(delay) {
+    stopLampAmbientCycle(true);
+    const lamp = document.getElementById('el-lamp');
+    if (!isDesktopLamp() || lampMotionPreference.matches || document.hidden || lamp.classList.contains('dragging')) return;
+    const wait = Number.isFinite(delay) ? delay : 18000 + Math.random() * 16000;
+    lampAmbientTimer = setTimeout(() => {
+      if (document.hidden || lamp.classList.contains('dragging')) {
+        scheduleLampAmbientCycle(8000);
+        return;
+      }
+      const version = lampInteractionVersion;
+      setLampState(!lampPreferredOn);
+      const displayTime = lampPreferredOn ? 450 + Math.random() * 650 : 2400 + Math.random() * 2200;
+      lampAmbientRestoreTimer = setTimeout(() => {
+        if (version !== lampInteractionVersion || lamp.classList.contains('dragging')) return;
+        setLampState(lampPreferredOn);
+        scheduleLampAmbientCycle();
+      }, displayTime);
+    }, wait);
+  }
+
+  function toggleLamp() {
+    const lamp = document.getElementById('el-lamp');
+    if (lamp.dataset.dragged === '1') { lamp.dataset.dragged = ''; return; }
+    lampInteractionVersion += 1;
+    stopLampAmbientCycle(false);
+    lampPreferredOn = !lamp.classList.contains('on');
+    setLampState(lampPreferredOn);
+    scheduleLampAmbientCycle();
+  }
+
+  restoreLampPosition();
+  scheduleLampAmbientCycle(7000 + Math.random() * 5000);
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      lampInteractionVersion += 1;
+      stopLampAmbientCycle(true);
+    } else {
+      scheduleLampAmbientCycle(6000 + Math.random() * 5000);
+    }
+  });
 
   /* ---------- boton power: apaga/enciende la pantalla ---------- */
   function togglePC() {
@@ -920,7 +1001,11 @@
                  x0: e.clientX, y0: e.clientY };
         el.dataset.w = drag.w; el.dataset.h = drag.h;
         el.classList.add('dragging');
-        if (id === 'el-lamp') stopLampFlicker();
+        if (id === 'el-lamp') {
+          lampInteractionVersion += 1;
+          stopLampFlicker();
+          stopLampAmbientCycle(false);
+        }
         el.setPointerCapture(e.pointerId);
       });
       el.addEventListener('pointermove', e => {
@@ -939,10 +1024,17 @@
           sendCursor(el);
         }
       });
-      const end = () => {
+      const end = event => {
+        const wasDragged = el.dataset.dragged === '1';
         drag = null;
         el.classList.remove('dragging');
-        if (id === 'el-lamp') scheduleLampFlicker();
+        if (id === 'el-lamp') {
+          if (wasDragged) saveLampPosition();
+          if (wasDragged || event.type === 'pointercancel') {
+            setLampState(lampPreferredOn);
+            scheduleLampAmbientCycle();
+          }
+        }
       };
       el.addEventListener('pointerup', end);
       el.addEventListener('pointercancel', end);
